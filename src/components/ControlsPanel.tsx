@@ -1,9 +1,10 @@
 import React from 'react';
-import { Switch, Checkbox, Divider } from 'antd';
+import { Switch, Checkbox, Divider, Button, List } from 'antd';
 import { SlidersOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
 import type { DataSource, PivotRow } from '../features/types';
+import Item from 'antd/es/list/Item';
 
 interface ControlsPanelProps {
   onFilesUpload: (files: File[]) => void;
@@ -59,24 +60,28 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 Select Models to Compare
               </span>
               <div className='space-x-2'>
-                <a
+                <Button
+                  type='link'
+                  size='small'
                   onClick={handleSelectAll}
-                  className='text-xs text-blue-600 cursor-pointer hover:underline'
+                  style={{ padding: 0, height: 'auto' }}
                 >
                   All
-                </a>
+                </Button>
                 <span className='text-gray-400'>|</span>
-                <a
+                <Button
+                  type='link'
+                  size='small'
                   onClick={handleClearAll}
-                  className='text-xs text-blue-600 cursor-pointer hover:underline'
+                  style={{ padding: 0, height: 'auto' }}
                 >
                   None
-                </a>
+                </Button>
               </div>
             </div>
-            <div className='space-y-2 max-h-60 overflow-y-auto border rounded p-2 bg-white'>
+            <List className='space-y-2 max-h-80 overflow-y-auto'>
               {sources.map((source) => (
-                <div key={source.id} className='flex items-center'>
+                <Item key={source.id} className='flex items-center'>
                   <Checkbox
                     checked={selectedSourceIds.includes(source.id)}
                     onChange={(e) =>
@@ -100,9 +105,9 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                       </div>
                     </span>
                   </Checkbox>
-                </div>
+                </Item>
               ))}
-            </div>
+            </List>
           </div>
         </>
       )}
