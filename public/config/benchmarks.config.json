@@ -1,22 +1,76 @@
 {
   "official": [
     {
-      "id": "llama-4-maverick-128k-twinkle-eval-v1",
-      "label": "Llama 4 Maverick 128k — Twinkle Eval V1",
+      "id": "llama-4-maverick-twinkle-eval-v1",
+      "label": "Llama 4 Maverick — Twinkle Eval V1",
       "provider": "Meta",
-      "modelName": "llama-4-maverick-128k",
+      "modelName": "llama-4-maverick",
       "variance": "default",
       "openSource": true,
       "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/llama-4-eval-logs-and-scores/tree/main/results/maverick"
     },
     {
-      "id": "llama-4-scout-128k-twinkle-eval-v1",
-      "label": "Llama 4 Scout 128k — Twinkle Eval V1",
+      "id": "llama-4-scout-twinkle-eval-v1",
+      "label": "Llama 4 Scout — Twinkle Eval V1",
       "provider": "Meta",
-      "modelName": "llama-4-scout-128k",
+      "modelName": "llama-4-scout",
       "variance": "default",
       "openSource": true,
       "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/llama-4-eval-logs-and-scores/tree/main/results/scout"
+    },
+    {
+      "id": "GPT-OSS-120B-default-twinkle-eval-v1",
+      "label": "GPT-OSS 120B — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-120b",
+      "variance": "low",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-120b/low"
+    },
+    {
+      "id": "GPT-OSS-120B-medium-twinkle-eval-v1",
+      "label": "GPT-OSS 120B Medium — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-120b",
+      "variance": "medium",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-120b/medium"
+    },
+    {
+      "id": "GPT-OSS-120B-high-twinkle-eval-v1",
+      "label": "GPT-OSS 120B High — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-120b",
+      "variance": "high",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-120b/high"
+    },
+    {
+      "id": "GPT-OSS-20B-default-twinkle-eval-v1",
+      "label": "GPT-OSS 20B — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-20b",
+      "variance": "low",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-20b/low"
+    },
+    {
+      "id": "GPT-OSS-20B-medium-twinkle-eval-v1",
+      "label": "GPT-OSS 20B Medium — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-20b",
+      "variance": "medium",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-20b/medium"
+    },
+    {
+      "id": "GPT-OSS-20B-high-twinkle-eval-v1",
+      "label": "GPT-OSS 20B High — Twinkle Eval V1",
+      "provider": "OpenAI",
+      "modelName": "gpt-oss-20b",
+      "variance": "high",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/gpt-oss-eval-logs-and-scores/tree/main/results/gpt-oss-20b/high"
     }
   ],
   "ui": {
