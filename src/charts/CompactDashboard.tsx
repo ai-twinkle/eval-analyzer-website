@@ -99,8 +99,8 @@ function drawRadarChart(
     .append('line')
     .attr('x1', 0)
     .attr('y1', 0)
-    .attr('x2', (_d, i) => rScale(1) * Math.cos(angleSlice * i))
-    .attr('y2', (_d, i) => rScale(1) * Math.sin(angleSlice * i))
+    .attr('x2', (_d, i) => rScale(1) * Math.cos(angleSlice * i - Math.PI / 2))
+    .attr('y2', (_d, i) => rScale(1) * Math.sin(angleSlice * i - Math.PI / 2))
     .attr('stroke', (d) => (selectedCategory === d ? '#1890ff' : '#CDCDCD'))
     .attr('stroke-width', (d) => (selectedCategory === d ? 2 : 1));
 
@@ -111,11 +111,11 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .attr('dy', '0.35em')
     .attr('x', (_d, i) => {
-      const angle = angleSlice * i;
+      const angle = angleSlice * i - Math.PI / 2;
       return rScale(1) * 1.15 * Math.cos(angle);
     })
     .attr('y', (_d, i) => {
-      const angle = angleSlice * i;
+      const angle = angleSlice * i - Math.PI / 2;
       return rScale(1) * 1.15 * Math.sin(angle);
     })
     .text((d) => {
@@ -131,7 +131,7 @@ function drawRadarChart(
       // Add background box for better readability
       const textNode = this as SVGTextElement;
       const bbox = textNode.getBBox();
-      const angle = angleSlice * i;
+      const angle = angleSlice * i - Math.PI / 2;
       const x = rScale(1) * 1.15 * Math.cos(angle);
       const y = rScale(1) * 1.15 * Math.sin(angle);
 
@@ -232,11 +232,11 @@ function drawRadarChart(
       .attr('r', isHighlighted ? 4.5 : 3)
       .attr(
         'cx',
-        (d, i) => rScale(d.value) * Math.cos(angleSlice * i),
+        (d, i) => rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2),
       )
       .attr(
         'cy',
-        (d, i) => rScale(d.value) * Math.sin(angleSlice * i),
+        (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2),
       )
       .style('fill', color)
       .style('stroke', 'white')
