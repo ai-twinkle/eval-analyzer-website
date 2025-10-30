@@ -45,9 +45,9 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [highlightedModel, setHighlightedModel] = useState<string | null>(null);
-  const [testSortMode, setTestSortMode] = useState<'accuracy' | 'benchmark' | 'name'>(
-    'accuracy',
-  );
+  const [testSortMode, setTestSortMode] = useState<
+    'accuracy' | 'benchmark' | 'name'
+  >('accuracy');
 
   // Process data hierarchically by category
   const categoryStats = useMemo(() => {
@@ -56,10 +56,13 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     sources.forEach((source) => {
       const results = flattenDatasetResults(source.rawData);
       const grouped = groupByCategory(results);
-      
+
       // Extract individual runs data from rawData
       const rawData = source.rawData as Record<string, unknown>;
-      const datasetResults = (rawData?.dataset_results || {}) as Record<string, unknown>;
+      const datasetResults = (rawData?.dataset_results || {}) as Record<
+        string,
+        unknown
+      >;
 
       for (const [categoryName, categoryResults] of Object.entries(grouped)) {
         if (!categories.has(categoryName)) {
@@ -85,10 +88,8 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           const testName = result.category.split('/').pop() || result.category;
           // Extract dataset name from the full path (e.g., "mmlu/test" -> "mmlu")
           const datasetName = result.category.split('/')[0] || 'unknown';
-          
-          let testEntry = catData.tests.find(
-            (t) => t.testName === testName,
-          );
+
+          let testEntry = catData.tests.find((t) => t.testName === testName);
           if (!testEntry) {
             testEntry = {
               testName: testName,
@@ -98,25 +99,36 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             };
             catData.tests.push(testEntry);
           }
-          
+
           // Extract min/max from individual runs if available
           let min = result.accuracy_mean;
           let max = result.accuracy_mean;
-          
+
           // Try to find the individual runs data - match by exact file path
           for (const [, datasetValue] of Object.entries(datasetResults)) {
             const dataset = datasetValue as Record<string, unknown>;
             if (dataset?.results && Array.isArray(dataset.results)) {
-              const testResult = dataset.results.find((r: Record<string, unknown>) => {
-                const file = r.file as string | undefined;
-                // Match by exact file path to avoid cross-contamination
-                return file === result.file;
-              }) as Record<string, unknown> | undefined;
-              
+              const testResult = dataset.results.find(
+                (r: Record<string, unknown>) => {
+                  const file = r.file as string | undefined;
+                  // Match by exact file path to avoid cross-contamination
+                  return file === result.file;
+                },
+              ) as Record<string, unknown> | undefined;
+
               if (testResult?.individual_runs) {
-                const individualRuns = testResult.individual_runs as Record<string, unknown>;
-                const accuracies = individualRuns.accuracies as number[] | undefined;
-                if (accuracies && Array.isArray(accuracies) && accuracies.length > 0) {
+                const individualRuns = testResult.individual_runs as Record<
+                  string,
+                  unknown
+                >;
+                const accuracies = individualRuns.accuracies as
+                  | number[]
+                  | undefined;
+                if (
+                  accuracies &&
+                  Array.isArray(accuracies) &&
+                  accuracies.length > 0
+                ) {
                   min = Math.min(...accuracies);
                   max = Math.max(...accuracies);
                   break; // Found the right test, stop searching
@@ -124,7 +136,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
               }
             }
           }
-          
+
           testEntry.values.set(source.modelName, {
             avg: result.accuracy_mean,
             min,
@@ -193,22 +205,30 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     if (!categoryInfo) return;
 
     // Create a color scale for datasets/benchmarks
-    const uniqueDatasets = Array.from(new Set(categoryInfo.tests.map(t => t.dataset)));
-    const datasetColorScale = d3.scaleOrdinal(d3.schemePaired).domain(uniqueDatasets);
+    const uniqueDatasets = Array.from(
+      new Set(categoryInfo.tests.map((t) => t.dataset)),
+    );
+    const datasetColorScale = d3
+      .scaleOrdinal(d3.schemePaired)
+      .domain(uniqueDatasets);
 
     // Sort tests
     const sortedTests = [...categoryInfo.tests].sort((a, b) => {
       if (testSortMode === 'accuracy') {
-        const avgA = d3.mean(Array.from(a.values.values()).map(v => v.avg)) || 0;
-        const avgB = d3.mean(Array.from(b.values.values()).map(v => v.avg)) || 0;
+        const avgA =
+          d3.mean(Array.from(a.values.values()).map((v) => v.avg)) || 0;
+        const avgB =
+          d3.mean(Array.from(b.values.values()).map((v) => v.avg)) || 0;
         return avgB - avgA; // Descending
       } else if (testSortMode === 'benchmark') {
         // Group by benchmark first, then by accuracy within each benchmark
         if (a.dataset !== b.dataset) {
           return a.dataset.localeCompare(b.dataset);
         }
-        const avgA = d3.mean(Array.from(a.values.values()).map(v => v.avg)) || 0;
-        const avgB = d3.mean(Array.from(b.values.values()).map(v => v.avg)) || 0;
+        const avgA =
+          d3.mean(Array.from(a.values.values()).map((v) => v.avg)) || 0;
+        const avgB =
+          d3.mean(Array.from(b.values.values()).map((v) => v.avg)) || 0;
         return avgB - avgA;
       } else {
         return a.testName.localeCompare(b.testName);
@@ -291,8 +311,11 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
       // Color-coded dataset badge background
       const badgeY = (yScale(test.testName) || 0) + yScale.bandwidth() / 2;
-      const datasetText = test.dataset.length > 10 ? test.dataset.slice(0, 8) + '..' : test.dataset;
-      
+      const datasetText =
+        test.dataset.length > 10
+          ? test.dataset.slice(0, 8) + '..'
+          : test.dataset;
+
       g.append('rect')
         .attr('x', -margin.left + 40)
         .attr('y', badgeY - 8)
@@ -379,7 +402,9 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             setHighlightedModel(null);
           })
           .append('title')
-          .text(`${source.modelName}\nMin: ${formatValue(stats.min, scale0100)}`);
+          .text(
+            `${source.modelName}\nMin: ${formatValue(stats.min, scale0100)}`,
+          );
 
         // Avg bar (middle, medium opacity)
         g.append('rect')
@@ -391,19 +416,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('opacity', isHighlighted ? 0.75 : 0.22)
           .attr('rx', 1)
           .style('cursor', 'pointer')
-          .on('mouseenter', function () {
-            setHighlightedModel(source.modelName);
-            d3.select(this)
-              .attr('opacity', 1)
-              .attr('stroke', '#262626')
-              .attr('stroke-width', 1.5);
-          })
-          .on('mouseleave', function () {
-            setHighlightedModel(null);
-            d3.select(this).attr('stroke', 'none').attr('opacity', isHighlighted ? 0.75 : 0.22);
-          })
           .append('title')
-          .text(`${source.modelName}\nAvg: ${formatValue(stats.avg, scale0100)}`);
+          .text(
+            `${source.modelName}\nAvg: ${formatValue(stats.avg, scale0100)}`,
+          );
 
         // Max bar (bottom, darkest)
         g.append('rect')
@@ -422,7 +438,9 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             setHighlightedModel(null);
           })
           .append('title')
-          .text(`${source.modelName}\nMax: ${formatValue(stats.max, scale0100)}`);
+          .text(
+            `${source.modelName}\nMax: ${formatValue(stats.max, scale0100)}`,
+          );
 
         // Label for avg bar (only if space allows)
         if (isHighlighted && xScale(stats.avg) > 50) {
@@ -558,7 +576,6 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
   return (
     <div className='space-y-4'>
-
       {/* Radar Chart View - Always Visible */}
       <Card
         title={
@@ -568,16 +585,19 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           </span>
         }
       >
-        <div className="mb-3 text-sm text-gray-600 bg-blue-50 p-3 rounded border border-blue-200">
-          <strong>💡 Tip:</strong> Click on a category label in the radar chart to view detailed test results below
+        <div className='mb-3 text-sm text-gray-600 bg-blue-50 p-3 rounded border border-blue-200'>
+          <strong>💡 Tip:</strong> Click on a category label in the radar chart
+          to view detailed test results below
         </div>
-        <CompactDashboard 
-          sources={sources} 
+        <CompactDashboard
+          sources={sources}
           scale0100={scale0100}
           selectedCategory={expandedCategory}
           highlightedModel={highlightedModel}
           onCategoryClick={(category) => {
-            setExpandedCategory(expandedCategory === category ? null : category);
+            setExpandedCategory(
+              expandedCategory === category ? null : category,
+            );
           }}
           onModelHighlight={(model) => {
             setHighlightedModel(model);
@@ -588,7 +608,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       {/* Expanded Detail Chart */}
       {expandedCategory && (
         <>
-          <Card size='small' title="Test View Controls">
+          <Card size='small' title='Test View Controls'>
             <Space direction='horizontal' size='middle'>
               <Space size='small'>
                 <span style={{ fontWeight: 600 }}>Sort Tests:</span>
@@ -626,7 +646,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
               </span>
             }
           >
-            <div ref={detailChartRef} style={{ width: '100%', minHeight: 450 }} />
+            <div
+              ref={detailChartRef}
+              style={{ width: '100%', minHeight: 450 }}
+            />
           </Card>
         </>
       )}

@@ -193,7 +193,8 @@ function drawRadarChart(
     const opacity = isHighlighted ? 1 : 0.2;
 
     // Radar area (filled polygon) - curveLinearClosed handles closing automatically
-    const radarPath = g.append('path')
+    const radarPath = g
+      .append('path')
       .datum(data.values)
       .attr('class', `radar-area radar-area-${idx}`)
       .attr('d', radarLine)
@@ -205,9 +206,7 @@ function drawRadarChart(
       .style('cursor', 'pointer')
       .on('mouseenter', function () {
         // Temporarily highlight this model on hover
-        d3.select(this)
-          .style('fill-opacity', 0.4)
-          .style('stroke-width', 3.5);
+        d3.select(this).style('fill-opacity', 0.4).style('stroke-width', 3.5);
       })
       .on('mouseleave', function () {
         // Restore original style
@@ -219,9 +218,12 @@ function drawRadarChart(
         // Toggle model highlight on click
         onModelClick(data.source);
       });
-    
-    radarPath.append('title')
-      .text(`${data.source}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`);
+
+    radarPath
+      .append('title')
+      .text(
+        `${data.source}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`,
+      );
 
     // Radar circles (data points)
     g.selectAll(`.radar-circle-${idx}`)
@@ -246,7 +248,7 @@ function drawRadarChart(
       .on('mouseenter', function (event, d) {
         // Enlarge circle
         d3.select(this).attr('r', 7).style('stroke-width', 3);
-        
+
         // Highlight the entire radar path temporarily
         g.select(`.radar-area-${idx}`)
           .style('fill-opacity', 0.4)
@@ -290,21 +292,22 @@ function drawRadarChart(
         d3.select(this)
           .attr('r', isHighlighted ? 4.5 : 3)
           .style('stroke-width', 2);
-        
+
         // Reset radar path
         g.select(`.radar-area-${idx}`)
           .style('fill-opacity', 0.2 * opacity)
           .style('stroke-width', isHighlighted ? 2.5 : 1.5);
-        
+
         svg.selectAll('.tooltip-radar').remove();
       })
-      .on('click', function() {
+      .on('click', function () {
         // Toggle model highlight on click
         onModelClick(data.source);
       })
       .append('title')
       .text(
-        (d) => `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`,
+        (d) =>
+          `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`,
       );
   });
 
@@ -325,7 +328,9 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .style('font-size', '12px')
     .style('fill', '#666')
-    .text('Hover over lines/dots to see details • Click category labels or model legend to highlight');
+    .text(
+      'Hover over lines/dots to see details • Click category labels or model legend to highlight',
+    );
 
   // Legend (clickable)
   const legendG = svg
@@ -420,12 +425,22 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
   onModelHighlight,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [internalSelectedCategory, setInternalSelectedCategory] = useState<string | null>(null);
-  const [internalHighlightedModel, setInternalHighlightedModel] = useState<string | null>(null);
+  const [internalSelectedCategory, setInternalSelectedCategory] = useState<
+    string | null
+  >(null);
+  const [internalHighlightedModel, setInternalHighlightedModel] = useState<
+    string | null
+  >(null);
 
   // Use external selected category if provided, otherwise use internal state
-  const selectedCategory = externalSelectedCategory !== undefined ? externalSelectedCategory : internalSelectedCategory;
-  const highlightedModel = externalHighlightedModel !== undefined ? externalHighlightedModel : internalHighlightedModel;
+  const selectedCategory =
+    externalSelectedCategory !== undefined
+      ? externalSelectedCategory
+      : internalSelectedCategory;
+  const highlightedModel =
+    externalHighlightedModel !== undefined
+      ? externalHighlightedModel
+      : internalHighlightedModel;
 
   useEffect(() => {
     if (!containerRef.current || sources.length === 0) return;
@@ -495,7 +510,9 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
       (category) => {
         // Update internal state if not controlled by parent
         if (externalSelectedCategory === undefined) {
-          setInternalSelectedCategory(internalSelectedCategory === category ? null : category);
+          setInternalSelectedCategory(
+            internalSelectedCategory === category ? null : category,
+          );
         }
         // Notify parent if callback provided
         if (onCategoryClick) {
@@ -505,7 +522,9 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
       (model) => {
         // Update internal state if not controlled by parent
         if (externalHighlightedModel === undefined) {
-          setInternalHighlightedModel(internalHighlightedModel === model ? null : model);
+          setInternalHighlightedModel(
+            internalHighlightedModel === model ? null : model,
+          );
         }
         // Notify parent if callback provided
         if (onModelHighlight) {
@@ -513,7 +532,18 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
         }
       },
     );
-  }, [sources, scale0100, selectedCategory, highlightedModel, onCategoryClick, onModelHighlight, externalSelectedCategory, externalHighlightedModel, internalSelectedCategory, internalHighlightedModel]);
+  }, [
+    sources,
+    scale0100,
+    selectedCategory,
+    highlightedModel,
+    onCategoryClick,
+    onModelHighlight,
+    externalSelectedCategory,
+    externalHighlightedModel,
+    internalSelectedCategory,
+    internalHighlightedModel,
+  ]);
 
   if (sources.length === 0) {
     return (
