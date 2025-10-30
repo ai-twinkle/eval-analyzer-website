@@ -598,6 +598,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             Performance Radar - Category Overview
           </span>
         }
+        className={'!mb-5'}
       >
         <div className='mb-3 text-sm text-gray-600 bg-blue-50 p-3 rounded border border-blue-200'>
           <strong>💡 Tip:</strong> Click on a category label in the radar chart

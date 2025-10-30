@@ -250,15 +250,20 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
         <Space>
-          <TableOutlined style={{ fontSize: 24 }} />
-          <Title level={2} style={{ margin: 0 }}>
+          <TableOutlined style={{ fontSize: 12 }} />
+          <Title level={5} style={{ margin: 0 }}>
             Ranking Tables
           </Title>
         </Space>
         <Space>
           <SortAscendingOutlined />
           <Text>Sort by:</Text>
-          <Select value={sortBy} onChange={setSortBy} style={{ width: 200 }}>
+          <Select
+            value={sortBy}
+            onChange={setSortBy}
+            style={{ width: 225 }}
+            size={'middle'}
+          >
             <Option value='modelName'>Model Name (A-Z)</Option>
             <Option value='average'>Average Score (High to Low)</Option>
           </Select>
@@ -319,7 +324,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
                 showTotal: (total) => `Total ${total} models`,
               }}
               scroll={{ x: 'max-content' }}
-              size='middle'
+              size='small'
               bordered
             />
           </Card>

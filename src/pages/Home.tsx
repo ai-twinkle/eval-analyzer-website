@@ -1,6 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { App, Radio } from 'antd';
-import { BarChartOutlined, TableOutlined } from '@ant-design/icons';
+import { App, Button, Flex, Radio, Space } from 'antd';
+import {
+  BarChartOutlined,
+  TableOutlined,
+  GithubOutlined,
+} from '@ant-design/icons';
 import { ControlsPanel } from '../components/ControlsPanel';
 import { CategoryDashboard } from '../charts/CategoryDashboard';
 import { BenchmarkRankingTable } from '../charts/BenchmarkRankingTable';
@@ -237,25 +241,37 @@ export const Home: React.FC = () => {
       <div className='flex-1 overflow-y-auto p-6 pt-0'>
         {/* Header with title and view toggle - Sticky and half opacity*/}
         <div className='sticky top-0 z-10 bg-white pt-6 pb-4 mb-2 border-b border-gray-200'>
-          <div className='flex items-center justify-between'>
-            <h1 className='text-3xl font-bold'>
-              Twinkle Eval Benchmark Visualizer
+          <Flex justify='space-between' align='center'>
+            <h1 className='text-2xl font-bold !mb-0'>
+              Twinkle Eval Visualizer
             </h1>
-
-            {/* View Mode Toggle */}
-            <Radio.Group
-              value={viewMode}
-              onChange={(e) => setViewMode(e.target.value)}
-              buttonStyle='solid'
-            >
-              <Radio.Button value='dashboard'>
-                <BarChartOutlined /> Dashboard
-              </Radio.Button>
-              <Radio.Button value='table'>
-                <TableOutlined /> Ranking Table
-              </Radio.Button>
-            </Radio.Group>
-          </div>
+            <Space size={'small'}>
+              {/* View Mode Toggle */}
+              <Radio.Group
+                value={viewMode}
+                onChange={(e) => setViewMode(e.target.value)}
+                buttonStyle='solid'
+                size={'middle'}
+              >
+                <Radio.Button value='dashboard'>
+                  <BarChartOutlined /> Dashboard
+                </Radio.Button>
+                <Radio.Button value='table'>
+                  <TableOutlined /> Ranking Table
+                </Radio.Button>
+              </Radio.Group>
+              <Button
+                variant={'text'}
+                shape='circle'
+                href='https://github.com/ai-twinkle/eval-analyzer-website'
+                target='_blank'
+                rel='noopener noreferrer'
+                title='View on GitHub'
+                icon={<GithubOutlined className={'!text-xl'} />}
+                className={'!border-none'}
+              />
+            </Space>
+          </Flex>
         </div>
 
         {loading ? (
