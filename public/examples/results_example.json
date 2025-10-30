@@ -1,0 +1,1894 @@
+{
+  "timestamp": "20250806_1543",
+  "config": {
+    "llm_api": {
+      "base_url": "https://gpt-oss-120b-trt.runai-inference.knative.apmic.ai/v1",
+      "disable_ssl_verify": false,
+      "api_rate_limit": -1,
+      "max_retries": 5,
+      "timeout": 600
+    },
+    "model": {
+      "name": "gpt-oss-120b",
+      "temperature": 0,
+      "top_p": 0.9,
+      "max_tokens": 4096,
+      "frequency_penalty": 0,
+      "presence_penalty": 0
+    },
+    "evaluation": {
+      "dataset_paths": [
+        "datasets/mmlu/",
+        "datasets/tmmluplus",
+        "datasets/tw-legal-benchmark-v1"
+      ],
+      "evaluation_method": "box",
+      "system_prompt": {
+        "zh": "使用者將提供一個題目，並附上選項 A、B、C、D\n請仔細閱讀題目要求，根據題意選出最符合的選項，並將選項以以下格式輸出：\n\\box{選項}\n請確保僅將選項包含在 { } 中，否則將不計算為有效答案。\n務必精確遵循輸出格式，避免任何多餘內容或錯誤格式。\nReasoning: high",
+        "en": "The user will provide a question along with options A, B, C, and D.\nPlease read the question carefully and select the option that best fits the requirements.\nOutput the selected option in the following format:\n\\box{Option}\nMake sure to include only the option within the curly braces; otherwise, it will not be considered a valid answer.\nStrictly follow the output format and avoid any extra content or incorrect formatting.\nReasoning: high"
+      },
+      "datasets_prompt_map": {
+        "datasets/mmlu/": "en"
+      },
+      "repeat_runs": 3,
+      "shuffle_options": true
+    },
+    "logging": {
+      "level": "INFO"
+    }
+  },
+  "dataset_results": {
+    "datasets/mmlu/": {
+      "results": [
+        {
+          "file": "datasets/mmlu/logical_fallacies_test.csv",
+          "accuracy_mean": 0.8466257668711656,
+          "accuracy_std": 0.010018362956168451,
+          "individual_runs": {
+            "accuracies": [
+              0.8588957055214724, 0.8466257668711656, 0.8343558282208589
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/econometrics_test.csv",
+          "accuracy_mean": 0.847953216374269,
+          "accuracy_std": 0.00827025475071988,
+          "individual_runs": {
+            "accuracies": [
+              0.8596491228070176, 0.8421052631578947, 0.8421052631578947
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_macroeconomics_test.csv",
+          "accuracy_mean": 0.9213675213675213,
+          "accuracy_std": 0.004358136336404125,
+          "individual_runs": {
+            "accuracies": [
+              0.9153846153846154, 0.9230769230769231, 0.9256410256410257
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_mathematics_test.csv",
+          "accuracy_mean": 0.9766666666666666,
+          "accuracy_std": 0.012472191289246483,
+          "individual_runs": {
+            "accuracies": [0.98, 0.99, 0.96],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/nutrition_test.csv",
+          "accuracy_mean": 0.903050108932462,
+          "accuracy_std": 0.008151759012579364,
+          "individual_runs": {
+            "accuracies": [
+              0.8921568627450981, 0.9052287581699346, 0.9117647058823529
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_biology_test.csv",
+          "accuracy_mean": 0.9791666666666666,
+          "accuracy_std": 0.009820927516479843,
+          "individual_runs": {
+            "accuracies": [
+              0.9861111111111112, 0.9652777777777778, 0.9861111111111112
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/human_aging_test.csv",
+          "accuracy_mean": 0.8131539611360239,
+          "accuracy_std": 0.010569608089485046,
+          "individual_runs": {
+            "accuracies": [
+              0.820627802690583, 0.820627802690583, 0.7982062780269058
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/sociology_test.csv",
+          "accuracy_mean": 0.8723051409618575,
+          "accuracy_std": 0.0023452961233384555,
+          "individual_runs": {
+            "accuracies": [
+              0.8706467661691543, 0.8706467661691543, 0.8756218905472637
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_medicine_test.csv",
+          "accuracy_mean": 0.8863198458574182,
+          "accuracy_std": 0.0054497632461390924,
+          "individual_runs": {
+            "accuracies": [
+              0.8901734104046243, 0.8786127167630058, 0.8901734104046243
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_statistics_test.csv",
+          "accuracy_mean": 0.9135802469135802,
+          "accuracy_std": 0.007868857274062923,
+          "individual_runs": {
+            "accuracies": [
+              0.9166666666666666, 0.9027777777777778, 0.9212962962962963
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/human_sexuality_test.csv",
+          "accuracy_mean": 0.8549618320610687,
+          "accuracy_std": 0.006232798327692576,
+          "individual_runs": {
+            "accuracies": [
+              0.8625954198473282, 0.8549618320610687, 0.8473282442748091
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/electrical_engineering_test.csv",
+          "accuracy_mean": 0.8298850574712643,
+          "accuracy_std": 0.013004262642511245,
+          "individual_runs": {
+            "accuracies": [
+              0.8206896551724138, 0.8206896551724138, 0.8482758620689655
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/international_law_test.csv",
+          "accuracy_mean": 0.8705234159779615,
+          "accuracy_std": 0.01947952565252201,
+          "individual_runs": {
+            "accuracies": [
+              0.8842975206611571, 0.8842975206611571, 0.8429752066115702
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_physics_test.csv",
+          "accuracy_mean": 0.9271523178807947,
+          "accuracy_std": 0.0,
+          "individual_runs": {
+            "accuracies": [
+              0.9271523178807947, 0.9271523178807947, 0.9271523178807947
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/marketing_test.csv",
+          "accuracy_mean": 0.9316239316239315,
+          "accuracy_std": 0.006978603255792505,
+          "individual_runs": {
+            "accuracies": [
+              0.9230769230769231, 0.9401709401709402, 0.9316239316239316
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/conceptual_physics_test.csv",
+          "accuracy_mean": 0.9163120567375885,
+          "accuracy_std": 0.002005976684217159,
+          "individual_runs": {
+            "accuracies": [
+              0.9191489361702128, 0.9148936170212766, 0.9148936170212766
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_european_history_test.csv",
+          "accuracy_mean": 0.8747474747474747,
+          "accuracy_std": 0.0028569970957032405,
+          "individual_runs": {
+            "accuracies": [
+              0.8787878787878788, 0.8727272727272727, 0.8727272727272727
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_psychology_test.csv",
+          "accuracy_mean": 0.9480122324159023,
+          "accuracy_std": 0.0008649624234697568,
+          "individual_runs": {
+            "accuracies": [
+              0.9486238532110092, 0.9486238532110092, 0.9467889908256881
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_us_history_test.csv",
+          "accuracy_mean": 0.9199346405228758,
+          "accuracy_std": 0.008331731231360781,
+          "individual_runs": {
+            "accuracies": [
+              0.9117647058823529, 0.9313725490196079, 0.9166666666666666
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/clinical_knowledge_test.csv",
+          "accuracy_mean": 0.9119496855345912,
+          "accuracy_std": 0.00641386102338715,
+          "individual_runs": {
+            "accuracies": [
+              0.909433962264151, 0.9056603773584906, 0.9207547169811321
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/world_religions_test.csv",
+          "accuracy_mean": 0.8908382066276803,
+          "accuracy_std": 0.0027567515835733108,
+          "individual_runs": {
+            "accuracies": [
+              0.8888888888888888, 0.8888888888888888, 0.8947368421052632
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/jurisprudence_test.csv",
+          "accuracy_mean": 0.8734567901234569,
+          "accuracy_std": 0.008729713347982055,
+          "individual_runs": {
+            "accuracies": [
+              0.8611111111111112, 0.8796296296296297, 0.8796296296296297
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_chemistry_test.csv",
+          "accuracy_mean": 0.9211822660098523,
+          "accuracy_std": 0.012066451934892489,
+          "individual_runs": {
+            "accuracies": [
+              0.9211822660098522, 0.9359605911330049, 0.9064039408866995
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/abstract_algebra_test.csv",
+          "accuracy_mean": 0.96,
+          "accuracy_std": 0.0,
+          "individual_runs": {
+            "accuracies": [0.96, 0.96, 0.96],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/security_studies_test.csv",
+          "accuracy_mean": 0.7646258503401361,
+          "accuracy_std": 0.0157494379629799,
+          "individual_runs": {
+            "accuracies": [
+              0.7428571428571429, 0.7714285714285715, 0.7795918367346939
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_government_and_politics_test.csv",
+          "accuracy_mean": 0.9620034542314335,
+          "accuracy_std": 0.00646227527940234,
+          "individual_runs": {
+            "accuracies": [
+              0.9533678756476683, 0.9637305699481865, 0.9689119170984456
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/miscellaneous_test.csv",
+          "accuracy_mean": 0.9514687100893998,
+          "accuracy_std": 0.0010427797968425557,
+          "individual_runs": {
+            "accuracies": [
+              0.9501915708812261, 0.9514687100893997, 0.9527458492975734
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/anatomy_test.csv",
+          "accuracy_mean": 0.8790123456790123,
+          "accuracy_std": 0.009238660214256619,
+          "individual_runs": {
+            "accuracies": [
+              0.8888888888888888, 0.8666666666666667, 0.8814814814814815
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/computer_security_test.csv",
+          "accuracy_mean": 0.8533333333333334,
+          "accuracy_std": 0.004714045207910321,
+          "individual_runs": {
+            "accuracies": [0.85, 0.86, 0.85],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/philosophy_test.csv",
+          "accuracy_mean": 0.8060021436227224,
+          "accuracy_std": 0.007578850816576101,
+          "individual_runs": {
+            "accuracies": [
+              0.8006430868167203, 0.8167202572347267, 0.8006430868167203
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/moral_disputes_test.csv",
+          "accuracy_mean": 0.7524084778420038,
+          "accuracy_std": 0.008934121864639436,
+          "individual_runs": {
+            "accuracies": [
+              0.7398843930635838, 0.7572254335260116, 0.7601156069364162
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/global_facts_test.csv",
+          "accuracy_mean": 0.6333333333333333,
+          "accuracy_std": 0.012472191289246483,
+          "individual_runs": {
+            "accuracies": [0.65, 0.63, 0.62],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/us_foreign_policy_test.csv",
+          "accuracy_mean": 0.8666666666666667,
+          "accuracy_std": 0.012472191289246483,
+          "individual_runs": {
+            "accuracies": [0.85, 0.87, 0.88],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_computer_science_test.csv",
+          "accuracy_mean": 0.9833333333333334,
+          "accuracy_std": 0.004714045207910321,
+          "individual_runs": {
+            "accuracies": [0.98, 0.99, 0.98],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/elementary_mathematics_test.csv",
+          "accuracy_mean": 0.9761904761904762,
+          "accuracy_std": 0.0,
+          "individual_runs": {
+            "accuracies": [
+              0.9761904761904762, 0.9761904761904762, 0.9761904761904762
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/prehistory_test.csv",
+          "accuracy_mean": 0.8868312757201645,
+          "accuracy_std": 0.014329617569119477,
+          "individual_runs": {
+            "accuracies": [
+              0.8919753086419753, 0.9012345679012346, 0.8672839506172839
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_chemistry_test.csv",
+          "accuracy_mean": 0.7633333333333333,
+          "accuracy_std": 0.009428090415820642,
+          "individual_runs": {
+            "accuracies": [0.77, 0.75, 0.77],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/virology_test.csv",
+          "accuracy_mean": 0.5461847389558233,
+          "accuracy_std": 0.012378341371423622,
+          "individual_runs": {
+            "accuracies": [
+              0.5481927710843374, 0.5602409638554217, 0.5301204819277109
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_mathematics_test.csv",
+          "accuracy_mean": 0.9864197530864197,
+          "accuracy_std": 0.0034918853391928324,
+          "individual_runs": {
+            "accuracies": [
+              0.9888888888888889, 0.9888888888888889, 0.9814814814814815
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/business_ethics_test.csv",
+          "accuracy_mean": 0.82,
+          "accuracy_std": 0.008164965809277223,
+          "individual_runs": {
+            "accuracies": [0.81, 0.82, 0.83],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/medical_genetics_test.csv",
+          "accuracy_mean": 0.9566666666666667,
+          "accuracy_std": 0.012472191289246483,
+          "individual_runs": {
+            "accuracies": [0.96, 0.94, 0.97],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/public_relations_test.csv",
+          "accuracy_mean": 0.693939393939394,
+          "accuracy_std": 0.011338355717496815,
+          "individual_runs": {
+            "accuracies": [
+              0.7090909090909091, 0.6818181818181818, 0.6909090909090909
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/professional_psychology_test.csv",
+          "accuracy_mean": 0.8534858387799565,
+          "accuracy_std": 0.0060159918394266385,
+          "individual_runs": {
+            "accuracies": [
+              0.8611111111111112, 0.8464052287581699, 0.8529411764705882
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_physics_test.csv",
+          "accuracy_mean": 0.9834983498349835,
+          "accuracy_std": 0.009334742985961032,
+          "individual_runs": {
+            "accuracies": [
+              0.9702970297029703, 0.9900990099009901, 0.9900990099009901
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/formal_logic_test.csv",
+          "accuracy_mean": 0.9576719576719576,
+          "accuracy_std": 0.007482611441127512,
+          "individual_runs": {
+            "accuracies": [
+              0.9523809523809523, 0.9682539682539683, 0.9523809523809523
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_microeconomics_test.csv",
+          "accuracy_mean": 0.9677871148459384,
+          "accuracy_std": 0.010480833016173469,
+          "individual_runs": {
+            "accuracies": [
+              0.9705882352941176, 0.9789915966386554, 0.9537815126050421
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/professional_accounting_test.csv",
+          "accuracy_mean": 0.9113475177304965,
+          "accuracy_std": 0.010439433648141653,
+          "individual_runs": {
+            "accuracies": [
+              0.9219858156028369, 0.9148936170212766, 0.8971631205673759
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/machine_learning_test.csv",
+          "accuracy_mean": 0.8958333333333334,
+          "accuracy_std": 0.004208968935634196,
+          "individual_runs": {
+            "accuracies": [
+              0.8928571428571429, 0.8928571428571429, 0.9017857142857143
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/college_computer_science_test.csv",
+          "accuracy_mean": 0.9733333333333333,
+          "accuracy_std": 0.009428090415820642,
+          "individual_runs": {
+            "accuracies": [0.98, 0.96, 0.98],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/professional_medicine_test.csv",
+          "accuracy_mean": 0.9375,
+          "accuracy_std": 0.0,
+          "individual_runs": {
+            "accuracies": [0.9375, 0.9375, 0.9375],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/professional_law_test.csv",
+          "accuracy_mean": 0.6864406779661016,
+          "accuracy_std": 0.006045383634612621,
+          "individual_runs": {
+            "accuracies": [
+              0.6949152542372882, 0.6831812255541069, 0.68122555410691
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_geography_test.csv",
+          "accuracy_mean": 0.8989898989898989,
+          "accuracy_std": 0.00714249273925805,
+          "individual_runs": {
+            "accuracies": [
+              0.9090909090909091, 0.8939393939393939, 0.8939393939393939
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_biology_test.csv",
+          "accuracy_mean": 0.9279569892473117,
+          "accuracy_std": 0.0030413194889744055,
+          "individual_runs": {
+            "accuracies": [
+              0.9258064516129032, 0.932258064516129, 0.9258064516129032
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/astronomy_test.csv",
+          "accuracy_mean": 0.9364035087719298,
+          "accuracy_std": 0.011182060336826274,
+          "individual_runs": {
+            "accuracies": [
+              0.9407894736842105, 0.9210526315789473, 0.9473684210526315
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/high_school_world_history_test.csv",
+          "accuracy_mean": 0.9170182841068918,
+          "accuracy_std": 0.007171616756107995,
+          "individual_runs": {
+            "accuracies": [
+              0.9240506329113924, 0.9071729957805907, 0.919831223628692
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/moral_scenarios_test.csv",
+          "accuracy_mean": 0.8677839851024208,
+          "accuracy_std": 0.008476578530160922,
+          "individual_runs": {
+            "accuracies": [
+              0.8793296089385475, 0.8592178770949721, 0.864804469273743
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/mmlu/management_test.csv",
+          "accuracy_mean": 0.8770226537216829,
+          "accuracy_std": 0.009153485840602606,
+          "individual_runs": {
+            "accuracies": [
+              0.883495145631068, 0.8640776699029126, 0.883495145631068
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        }
+      ],
+      "average_accuracy": 0.8818350136716133,
+      "average_std": 0.007607586804335853
+    },
+    "datasets/tmmluplus": {
+      "results": [
+        {
+          "file": "datasets/tmmluplus/insurance_studies_test.csv",
+          "accuracy_mean": 0.5701754385964911,
+          "accuracy_std": 0.010323335347315634,
+          "individual_runs": {
+            "accuracies": [
+              0.5565789473684211, 0.5815789473684211, 0.5723684210526315
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/music_test.csv",
+          "accuracy_mean": 0.6534772182254196,
+          "accuracy_std": 0.012227864540989865,
+          "individual_runs": {
+            "accuracies": [
+              0.6366906474820144, 0.658273381294964, 0.6654676258992805
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/education_(profession_level)_test.csv",
+          "accuracy_mean": 0.6021947873799726,
+          "accuracy_std": 0.009699681497757861,
+          "individual_runs": {
+            "accuracies": [
+              0.6090534979423868, 0.6090534979423868, 0.588477366255144
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/nautical_science_test.csv",
+          "accuracy_mean": 0.6636418632788869,
+          "accuracy_std": 0.010513095702953897,
+          "individual_runs": {
+            "accuracies": [
+              0.6497277676950998, 0.6751361161524501, 0.6660617059891107
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/engineering_math_test.csv",
+          "accuracy_mean": 0.8446601941747572,
+          "accuracy_std": 0.020973270868633844,
+          "individual_runs": {
+            "accuracies": [
+              0.8640776699029126, 0.8543689320388349, 0.8155339805825242
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/national_protection_test.csv",
+          "accuracy_mean": 0.7140600315955767,
+          "accuracy_std": 0.009738410747186382,
+          "individual_runs": {
+            "accuracies": [
+              0.7251184834123223, 0.7014218009478673, 0.7156398104265402
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/culinary_skills_test.csv",
+          "accuracy_mean": 0.6849315068493151,
+          "accuracy_std": 0.01008191879717791,
+          "individual_runs": {
+            "accuracies": [
+              0.6746575342465754, 0.6815068493150684, 0.6986301369863014
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/business_management_test.csv",
+          "accuracy_mean": 0.6786570743405275,
+          "accuracy_std": 0.003391399430151286,
+          "individual_runs": {
+            "accuracies": [
+              0.6762589928057554, 0.6762589928057554, 0.6834532374100719
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/organic_chemistry_test.csv",
+          "accuracy_mean": 0.8685015290519877,
+          "accuracy_std": 0.004324812117348888,
+          "individual_runs": {
+            "accuracies": [
+              0.8715596330275229, 0.8715596330275229, 0.8623853211009175
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/marketing_management_test.csv",
+          "accuracy_mean": 0.8566308243727598,
+          "accuracy_std": 0.0182760556042752,
+          "individual_runs": {
+            "accuracies": [
+              0.8494623655913979, 0.8817204301075269, 0.8387096774193549
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/tve_chinese_language_test.csv",
+          "accuracy_mean": 0.8122843340234644,
+          "accuracy_std": 0.008508507940605934,
+          "individual_runs": {
+            "accuracies": [
+              0.8136645962732919, 0.8012422360248447, 0.8219461697722568
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/anti_money_laundering_test.csv",
+          "accuracy_mean": 0.746268656716418,
+          "accuracy_std": 0.01612124551842751,
+          "individual_runs": {
+            "accuracies": [
+              0.7686567164179104, 0.7388059701492538, 0.7313432835820896
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/accounting_test.csv",
+          "accuracy_mean": 0.5514834205933682,
+          "accuracy_std": 0.0024680864962881525,
+          "individual_runs": {
+            "accuracies": [
+              0.5549738219895288, 0.5497382198952879, 0.5497382198952879
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/clinical_psychology_test.csv",
+          "accuracy_mean": 0.8186666666666667,
+          "accuracy_std": 0.01359738536958072,
+          "individual_runs": {
+            "accuracies": [0.832, 0.824, 0.8],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/chinese_language_and_literature_test.csv",
+          "accuracy_mean": 0.559463986599665,
+          "accuracy_std": 0.0023688669386484106,
+          "individual_runs": {
+            "accuracies": [
+              0.5577889447236181, 0.5628140703517588, 0.5577889447236181
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/jce_humanities_test.csv",
+          "accuracy_mean": 0.6962962962962962,
+          "accuracy_std": 0.02283116297395918,
+          "individual_runs": {
+            "accuracies": [0.6666666666666666, 0.7222222222222222, 0.7],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/education_test.csv",
+          "accuracy_mean": 0.6854838709677419,
+          "accuracy_std": 0.02374129265141897,
+          "individual_runs": {
+            "accuracies": [
+              0.717741935483871, 0.6774193548387096, 0.6612903225806451
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/tve_natural_sciences_test.csv",
+          "accuracy_mean": 0.85062893081761,
+          "accuracy_std": 0.011607565298925626,
+          "individual_runs": {
+            "accuracies": [
+              0.8372641509433962, 0.8490566037735849, 0.8655660377358491
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/logic_reasoning_test.csv",
+          "accuracy_mean": 0.7577937649880097,
+          "accuracy_std": 0.013565597720605248,
+          "individual_runs": {
+            "accuracies": [
+              0.7482014388489209, 0.7769784172661871, 0.7482014388489209
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/secondary_physics_test.csv",
+          "accuracy_mean": 0.8452380952380952,
+          "accuracy_std": 0.004208968935634196,
+          "individual_runs": {
+            "accuracies": [
+              0.8482142857142857, 0.8482142857142857, 0.8392857142857143
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/physical_education_test.csv",
+          "accuracy_mean": 0.7430167597765363,
+          "accuracy_std": 0.012068418432789316,
+          "individual_runs": {
+            "accuracies": [
+              0.7318435754189944, 0.7374301675977654, 0.7597765363128491
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/traditional_chinese_medicine_clinical_medicine_test.csv",
+          "accuracy_mean": 0.5023980815347722,
+          "accuracy_std": 0.022431998721666315,
+          "individual_runs": {
+            "accuracies": [
+              0.49640287769784175, 0.5323741007194245, 0.4784172661870504
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/technical_test.csv",
+          "accuracy_mean": 0.7081260364842454,
+          "accuracy_std": 0.013215072512860065,
+          "individual_runs": {
+            "accuracies": [
+              0.7089552238805971, 0.6915422885572139, 0.7238805970149254
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/financial_analysis_test.csv",
+          "accuracy_mean": 0.9083769633507854,
+          "accuracy_std": 0.0037021297444321502,
+          "individual_runs": {
+            "accuracies": [
+              0.9109947643979057, 0.9031413612565445, 0.9109947643979057
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/junior_social_studies_test.csv",
+          "accuracy_mean": 0.8201058201058201,
+          "accuracy_std": 0.030623907150238685,
+          "individual_runs": {
+            "accuracies": [
+              0.8492063492063492, 0.7777777777777778, 0.8333333333333334
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/macroeconomics_test.csv",
+          "accuracy_mean": 0.8329278183292782,
+          "accuracy_std": 0.00413545783746373,
+          "individual_runs": {
+            "accuracies": [
+              0.8345498783454988, 0.8272506082725061, 0.8369829683698297
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/geography_of_taiwan_test.csv",
+          "accuracy_mean": 0.7508680555555555,
+          "accuracy_std": 0.0070787788325954995,
+          "individual_runs": {
+            "accuracies": [
+              0.7486979166666666, 0.7604166666666666, 0.7434895833333334
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/linear_algebra_test.csv",
+          "accuracy_mean": 0.8015873015873017,
+          "accuracy_std": 0.011223917161691244,
+          "individual_runs": {
+            "accuracies": [
+              0.7857142857142857, 0.8095238095238095, 0.8095238095238095
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/tve_design_test.csv",
+          "accuracy_mean": 0.8208333333333333,
+          "accuracy_std": 0.004500514373894332,
+          "individual_runs": {
+            "accuracies": [0.8229166666666666, 0.825, 0.8145833333333333],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/veterinary_pathology_test.csv",
+          "accuracy_mean": 0.7491166077738516,
+          "accuracy_std": 0.007633381270209462,
+          "individual_runs": {
+            "accuracies": [
+              0.7455830388692579, 0.7420494699646644, 0.7597173144876325
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/three_principles_of_people_test.csv",
+          "accuracy_mean": 0.7649880095923262,
+          "accuracy_std": 0.020629077378999112,
+          "individual_runs": {
+            "accuracies": [
+              0.762589928057554, 0.7410071942446043, 0.7913669064748201
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/politic_science_test.csv",
+          "accuracy_mean": 0.8003350083752094,
+          "accuracy_std": 0.009001694366863898,
+          "individual_runs": {
+            "accuracies": [
+              0.7939698492462312, 0.8130653266331658, 0.7939698492462312
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/junior_math_exam_test.csv",
+          "accuracy_mean": 0.9466666666666667,
+          "accuracy_std": 0.0071269664509979805,
+          "individual_runs": {
+            "accuracies": [
+              0.9371428571428572, 0.9542857142857143, 0.9485714285714286
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/junior_chinese_exam_test.csv",
+          "accuracy_mean": 0.859047619047619,
+          "accuracy_std": 0.01942483624225822,
+          "individual_runs": {
+            "accuracies": [0.84, 0.8857142857142857, 0.8514285714285714],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/trust_practice_test.csv",
+          "accuracy_mean": 0.5586034912718204,
+          "accuracy_std": 0.010774298750470255,
+          "individual_runs": {
+            "accuracies": [
+              0.5536159600997507, 0.57356608478803, 0.5486284289276808
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/real_estate_test.csv",
+          "accuracy_mean": 0.5253623188405797,
+          "accuracy_std": 0.01847470838258255,
+          "individual_runs": {
+            "accuracies": [0.5434782608695652, 0.5, 0.532608695652174],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/economics_test.csv",
+          "accuracy_mean": 0.8837998303647159,
+          "accuracy_std": 0.007296289454658717,
+          "individual_runs": {
+            "accuracies": [
+              0.8829516539440203, 0.8931297709923665, 0.8753180661577609
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/junior_science_exam_test.csv",
+          "accuracy_mean": 0.917057902973396,
+          "accuracy_std": 0.007979686249753981,
+          "individual_runs": {
+            "accuracies": [
+              0.9248826291079812, 0.92018779342723, 0.9061032863849765
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/auditing_test.csv",
+          "accuracy_mean": 0.6593939393939394,
+          "accuracy_std": 0.005999693900976756,
+          "individual_runs": {
+            "accuracies": [
+              0.6581818181818182, 0.6527272727272727, 0.6672727272727272
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/pharmacology_test.csv",
+          "accuracy_mean": 0.8821490467937608,
+          "accuracy_std": 0.0037439287685775884,
+          "individual_runs": {
+            "accuracies": [
+              0.8838821490467937, 0.8856152512998267, 0.8769497400346621
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/veterinary_pharmacology_test.csv",
+          "accuracy_mean": 0.8919753086419752,
+          "accuracy_std": 0.004619330107128309,
+          "individual_runs": {
+            "accuracies": [
+              0.8907407407407407, 0.8870370370370371, 0.8981481481481481
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/finance_banking_test.csv",
+          "accuracy_mean": 0.6222222222222222,
+          "accuracy_std": 0.0302406141084343,
+          "individual_runs": {
+            "accuracies": [
+              0.6592592592592592, 0.6222222222222222, 0.5851851851851851
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/physics_test.csv",
+          "accuracy_mean": 0.9347079037800686,
+          "accuracy_std": 0.017522403826779352,
+          "individual_runs": {
+            "accuracies": [
+              0.9278350515463918, 0.9587628865979382, 0.9175257731958762
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/administrative_law_test.csv",
+          "accuracy_mean": 0.5182539682539682,
+          "accuracy_std": 0.019472768486325853,
+          "individual_runs": {
+            "accuracies": [0.5095238095238095, 0.5, 0.5452380952380952],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/statistics_and_machine_learning_test.csv",
+          "accuracy_mean": 0.9315476190476191,
+          "accuracy_std": 0.005567942539842155,
+          "individual_runs": {
+            "accuracies": [0.9330357142857143, 0.9375, 0.9241071428571429],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/official_document_management_test.csv",
+          "accuracy_mean": 0.6186186186186186,
+          "accuracy_std": 0.01887358121618098,
+          "individual_runs": {
+            "accuracies": [
+              0.5990990990990991, 0.6441441441441441, 0.6126126126126126
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/trade_test.csv",
+          "accuracy_mean": 0.5717131474103585,
+          "accuracy_std": 0.010665589909833373,
+          "individual_runs": {
+            "accuracies": [
+              0.5597609561752988, 0.5856573705179283, 0.5697211155378487
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/basic_medical_science_test.csv",
+          "accuracy_mean": 0.9374563242487771,
+          "accuracy_std": 0.0030057041464159957,
+          "individual_runs": {
+            "accuracies": [
+              0.9371069182389937, 0.9412997903563941, 0.9339622641509434
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/tve_mathematics_test.csv",
+          "accuracy_mean": 0.9777777777777779,
+          "accuracy_std": 0.008314794192830984,
+          "individual_runs": {
+            "accuracies": [0.9666666666666667, 0.98, 0.9866666666666667],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/pharmacy_test.csv",
+          "accuracy_mean": 0.6820119352088662,
+          "accuracy_std": 0.006379637488105623,
+          "individual_runs": {
+            "accuracies": [
+              0.6751918158567775, 0.680306905370844, 0.690537084398977
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/junior_chemistry_test.csv",
+          "accuracy_mean": 0.9441786283891546,
+          "accuracy_std": 0.004511048045847165,
+          "individual_runs": {
+            "accuracies": [
+              0.9473684210526315, 0.937799043062201, 0.9473684210526315
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/ttqav2_test.csv",
+          "accuracy_mean": 0.8112094395280236,
+          "accuracy_std": 0.0110373374241119,
+          "individual_runs": {
+            "accuracies": [
+              0.8141592920353983, 0.8230088495575221, 0.7964601769911505
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/management_accounting_test.csv",
+          "accuracy_mean": 0.8527131782945737,
+          "accuracy_std": 0.014377703093791798,
+          "individual_runs": {
+            "accuracies": [
+              0.8325581395348837, 0.8651162790697674, 0.8604651162790697
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/mechanical_test.csv",
+          "accuracy_mean": 0.7598870056497175,
+          "accuracy_std": 0.014404009925403359,
+          "individual_runs": {
+            "accuracies": [
+              0.7796610169491526, 0.7457627118644068, 0.7542372881355932
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/advance_chemistry_test.csv",
+          "accuracy_mean": 0.8780487804878049,
+          "accuracy_std": 0.013276367169556503,
+          "individual_runs": {
+            "accuracies": [
+              0.8943089430894309, 0.8617886178861789, 0.8780487804878049
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/optometry_test.csv",
+          "accuracy_mean": 0.667391304347826,
+          "accuracy_std": 0.006212473985319645,
+          "individual_runs": {
+            "accuracies": [
+              0.6641304347826087, 0.6619565217391304, 0.6760869565217391
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/human_behavior_test.csv",
+          "accuracy_mean": 0.8155339805825242,
+          "accuracy_std": 0.02348602055779639,
+          "individual_runs": {
+            "accuracies": [
+              0.7928802588996764, 0.8058252427184466, 0.8478964401294499
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/computer_science_test.csv",
+          "accuracy_mean": 0.9501915708812261,
+          "accuracy_std": 0.0071679260283025814,
+          "individual_runs": {
+            "accuracies": [
+              0.9482758620689655, 0.9425287356321839, 0.9597701149425287
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/general_principles_of_law_test.csv",
+          "accuracy_mean": 0.5880503144654088,
+          "accuracy_std": 0.0247610310503516,
+          "individual_runs": {
+            "accuracies": [
+              0.5660377358490566, 0.5754716981132075, 0.6226415094339622
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/taxation_test.csv",
+          "accuracy_mean": 0.43555555555555553,
+          "accuracy_std": 0.00699911811023273,
+          "individual_runs": {
+            "accuracies": [0.42933333333333334, 0.44533333333333336, 0.432],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/dentistry_test.csv",
+          "accuracy_mean": 0.7861319966583125,
+          "accuracy_std": 0.013156237049309624,
+          "individual_runs": {
+            "accuracies": [
+              0.8045112781954887, 0.7794486215538847, 0.7744360902255639
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/educational_psychology_test.csv",
+          "accuracy_mean": 0.8314393939393939,
+          "accuracy_std": 0.019314467854518107,
+          "individual_runs": {
+            "accuracies": [0.8579545454545454, 0.8238636363636364, 0.8125],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/occupational_therapy_for_psychological_disorders_test.csv",
+          "accuracy_mean": 0.7894413750767342,
+          "accuracy_std": 0.013644021344931184,
+          "individual_runs": {
+            "accuracies": [
+              0.7826887661141805, 0.7771639042357275, 0.8084714548802947
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/agriculture_test.csv",
+          "accuracy_mean": 0.6821192052980133,
+          "accuracy_std": 0.010814524250698369,
+          "individual_runs": {
+            "accuracies": [
+              0.6821192052980133, 0.6688741721854304, 0.695364238410596
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/taiwanese_hokkien_test.csv",
+          "accuracy_mean": 0.48320413436692505,
+          "accuracy_std": 0.014617194443132765,
+          "individual_runs": {
+            "accuracies": [
+              0.4728682170542636, 0.4728682170542636, 0.5038759689922481
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/fire_science_test.csv",
+          "accuracy_mean": 0.696236559139785,
+          "accuracy_std": 0.01005821878165041,
+          "individual_runs": {
+            "accuracies": [
+              0.7096774193548387, 0.6854838709677419, 0.6935483870967742
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        },
+        {
+          "file": "datasets/tmmluplus/introduction_to_law_test.csv",
+          "accuracy_mean": 0.6061884669479606,
+          "accuracy_std": 0.010525055940292391,
+          "individual_runs": {
+            "accuracies": [
+              0.5949367088607594, 0.6033755274261603, 0.620253164556962
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        }
+      ],
+      "average_accuracy": 0.748643355473787,
+      "average_std": 0.01192027465013415
+    },
+    "datasets/tw-legal-benchmark-v1": {
+      "results": [
+        {
+          "file": "datasets/tw-legal-benchmark-v1/benchmark.csv",
+          "accuracy_mean": 0.45933014354066987,
+          "accuracy_std": 0.01353314413754157,
+          "individual_runs": {
+            "accuracies": [
+              0.4688995215311005, 0.4688995215311005, 0.44019138755980863
+            ],
+            "results": [
+              "results/details/eval_results_20250806_1543_run0.jsonl",
+              "results/details/eval_results_20250806_1543_run1.jsonl",
+              "results/details/eval_results_20250806_1543_run2.jsonl"
+            ]
+          }
+        }
+      ],
+      "average_accuracy": 0.45933014354066987,
+      "average_std": 0.01353314413754157
+    }
+  },
+  "duration_seconds": 21155.434076
+}
