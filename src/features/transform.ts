@@ -34,7 +34,16 @@ function extractCategory(filename: string): string {
 function categorizeTest(filename: string): string {
   const name = filename.toLowerCase();
 
+  // Computer Science
   if (
+    name.includes('computer') ||
+    name.includes('machine_learning') ||
+    name.includes('security')
+  ) {
+    return 'Computer Science';
+  }
+  // Mathematics
+  else if (
     name.includes('math') ||
     name.includes('algebra') ||
     name.includes('calculus') ||
@@ -43,49 +52,149 @@ function categorizeTest(filename: string): string {
     name.includes('trigonometry')
   ) {
     return 'Mathematics';
-  } else if (
-    name.includes('physics') ||
-    name.includes('chemistry') ||
-    name.includes('biology') ||
-    name.includes('astronomy')
-  ) {
-    return 'Science';
-  } else if (
-    name.includes('computer') ||
-    name.includes('machine_learning') ||
-    name.includes('security')
-  ) {
-    return 'Computer Science';
-  } else if (
-    name.includes('law') ||
-    name.includes('legal') ||
-    name.includes('jurisprudence')
-  ) {
-    return 'Law';
-  } else if (
-    name.includes('history') ||
-    name.includes('geography') ||
-    name.includes('philosophy')
-  ) {
-    return 'Humanities';
-  } else if (
-    name.includes('business') ||
-    name.includes('economics') ||
-    name.includes('marketing') ||
-    name.includes('accounting') ||
-    name.includes('management')
-  ) {
-    return 'Business & Economics';
-  } else if (
+  }
+  // Medicine & Health
+  else if (
     name.includes('medicine') ||
     name.includes('nutrition') ||
     name.includes('anatomy') ||
     name.includes('clinical') ||
-    name.includes('virology')
+    name.includes('virology') ||
+    name.includes('genetics') ||
+    name.includes('pharmacology') ||
+    name.includes('veterinary') ||
+    name.includes('dentistry') ||
+    name.includes('pharmacy') ||
+    name.includes('optometry') ||
+    name.includes('occupational') ||
+    name.includes('therapy') ||
+    name.includes('psychological') ||
+    name.includes('pathology') ||
+    name.includes('medical')
   ) {
     return 'Medicine & Health';
-  } else if (name.includes('psychology') || name.includes('sociology')) {
+  }
+  // Science
+  else if (
+    name.includes('physics') ||
+    name.includes('chemistry') ||
+    name.includes('biology') ||
+    name.includes('astronomy') ||
+    name.includes('science') ||
+    name.includes('medical')
+  ) {
+    return 'Science';
+  }
+  // Law & Government
+  else if (
+    name.includes('law') ||
+    name.includes('legal') ||
+    name.includes('jurisprudence') ||
+    name.includes('government') ||
+    name.includes('politics') ||
+    name.includes('foreign') ||
+    name.includes('policy') ||
+    name.includes('politic') ||
+    name.includes('national') ||
+    name.includes('protection')
+  ) {
+    return 'Law & Government';
+  }
+  // Humanities & Philosophy
+  else if (
+    name.includes('ttqav2') ||
+    name.includes('history') ||
+    name.includes('geography') ||
+    name.includes('philosophy') ||
+    name.includes('logic') ||
+    name.includes('logical') ||
+    name.includes('reasoning') ||
+    name.includes('religions') ||
+    name.includes('principles') ||
+    name.includes('moral')
+  ) {
+    return 'Humanities & Philosophy';
+  }
+  // Business & Economics
+  else if (
+    name.includes('business') ||
+    name.includes('economics') ||
+    name.includes('marketing') ||
+    name.includes('accounting') ||
+    name.includes('management') ||
+    name.includes('finance') ||
+    name.includes('financial') ||
+    name.includes('analysis') ||
+    name.includes('auditing') ||
+    name.includes('taxation') ||
+    name.includes('insurance') ||
+    name.includes('trade') ||
+    name.includes('real') ||
+    name.includes('estate') ||
+    name.includes('trust') ||
+    name.includes('public') ||
+    name.includes('relations') ||
+    name.includes('money') ||
+    name.includes('laundering') ||
+    name.includes('econometrics') ||
+    name.includes('humanities')
+  ) {
+    return 'Business & Economics';
+  }
+  // Social Sciences
+  else if (
+    name.includes('psychology') ||
+    name.includes('sociology') ||
+    name.includes('behavior') ||
+    name.includes('sexuality') ||
+    name.includes('aging') ||
+    name.includes('social') ||
+    name.includes('studies')
+  ) {
     return 'Social Sciences';
+  }
+  // Education
+  else if (name.includes('education') || name.includes('profession')) {
+    return 'Education';
+  }
+  // Engineering & Technical
+  else if (
+    name.includes('mechanical') ||
+    name.includes('technical') ||
+    name.includes('electrical') ||
+    name.includes('engineering')
+  ) {
+    return 'Engineering & Technical';
+  }
+  // Vocational & Arts
+  else if (
+    name.includes('music') ||
+    name.includes('culinary') ||
+    name.includes('physical') ||
+    name.includes('nautical') ||
+    name.includes('agriculture') ||
+    name.includes('fire')
+  ) {
+    return 'Vocational & Arts';
+  }
+  // Languages & Literature
+  else if (
+    name.includes('chinese') ||
+    name.includes('language') ||
+    name.includes('literature') ||
+    name.includes('taiwanese') ||
+    name.includes('hokkien')
+  ) {
+    return 'Languages & Literature';
+  }
+  // Miscellaneous
+  else if (
+    name.includes('miscellaneous') ||
+    name.includes('design') ||
+    name.includes('global') ||
+    name.includes('facts')
+  ) {
+    return 'Miscellaneous';
   }
 
   return 'Other';

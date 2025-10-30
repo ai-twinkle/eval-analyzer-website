@@ -8,7 +8,7 @@ import { discoverResultFiles, fetchResultFile } from '../features/discover';
 import { deriveSchema, mergeSchemas, validateData } from '../features/schema';
 import { parseJSONFile } from '../features/parse';
 import { buildPivotTable } from '../features/transform';
-import type { ZodType} from 'zod';
+import type { ZodType } from 'zod';
 
 export const Home: React.FC = () => {
   const { message } = App.useApp();

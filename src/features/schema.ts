@@ -47,10 +47,7 @@ export function deriveSchema(data: unknown): ZodType {
 /**
  * Merges two schemas, making fields optional if they don't exist in both
  */
-export function mergeSchemas(
-  schema1: ZodType,
-  schema2: ZodType,
-): ZodType {
+export function mergeSchemas(schema1: ZodType, schema2: ZodType): ZodType {
   // For simplicity, return a union of the two schemas
   // This allows validation to pass if data matches either schema
   return z.union([schema1 as ZodType, schema2 as ZodType]);
