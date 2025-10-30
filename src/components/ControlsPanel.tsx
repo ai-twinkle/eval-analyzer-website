@@ -1,59 +1,32 @@
 import React from 'react';
-import { Select, Switch, Checkbox, Divider } from 'antd';
+import { Switch, Checkbox, Divider } from 'antd';
 import { SlidersOutlined, CheckSquareOutlined } from '@ant-design/icons';
-import { OfficialSelector } from './OfficialSelector';
-import { RunSelector } from './RunSelector';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
 import type {
-  BenchmarkConfig,
   DataSource,
-  SortMode,
   PivotRow,
   DeltaRow,
 } from '../features/types';
-import type { ResultFile } from '../features/discover';
 
 interface ControlsPanelProps {
-  config: BenchmarkConfig | null;
-  selectedBenchmarkId: string | null;
-  onBenchmarkSelect: (id: string) => void;
-  runs: ResultFile[];
-  selectedRun: string | null;
-  onRunSelect: (timestamp: string) => void;
-  runsLoading: boolean;
   onFilesUpload: (files: File[]) => void;
   sources: DataSource[];
   selectedSourceIds: string[];
   onSourceSelectionChange: (ids: string[]) => void;
   scale0100: boolean;
   onScaleToggle: (checked: boolean) => void;
-  pageSize: number;
-  onPageSizeChange: (size: number) => void;
-  sortMode: SortMode;
-  onSortModeChange: (mode: SortMode) => void;
   pivotData: PivotRow[];
   deltaData: DeltaRow[];
 }
 
 export const ControlsPanel: React.FC<ControlsPanelProps> = ({
-  config,
-  selectedBenchmarkId,
-  onBenchmarkSelect,
-  runs,
-  selectedRun,
-  onRunSelect,
-  runsLoading,
   onFilesUpload,
   sources,
   selectedSourceIds,
   onSourceSelectionChange,
   scale0100,
   onScaleToggle,
-  pageSize,
-  onPageSizeChange,
-  sortMode,
-  onSortModeChange,
   pivotData,
   deltaData,
 }) => {
@@ -76,23 +49,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   return (
     <div className='h-full overflow-y-auto p-4 bg-gray-50'>
       <h2 className='text-xl font-bold mb-4'>Controls</h2>
-
-      {/* Official Benchmark Selection */}
-      <OfficialSelector
-        config={config}
-        selectedBenchmarkId={selectedBenchmarkId}
-        onSelect={onBenchmarkSelect}
-      />
-
-      {/* Run Timestamp Selection */}
-      <RunSelector
-        runs={runs}
-        selectedRun={selectedRun}
-        onSelect={onRunSelect}
-        loading={runsLoading}
-      />
-
-      <Divider />
 
       {/* File Upload */}
       <FileUploader onFilesSelected={onFilesUpload} />
@@ -154,8 +110,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               ))}
             </div>
           </div>
-
-          <Divider />
         </>
       )}
 
@@ -175,37 +129,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             unCheckedChildren='0-1'
           />
         </div>
-      </div>
-
-      {/* Page Size */}
-      {config && (
-        <div className='mb-4'>
-          <div className='font-medium mb-2'>Page Size</div>
-          <Select
-            style={{ width: '100%' }}
-            value={pageSize}
-            onChange={onPageSizeChange}
-            options={config.ui.pageSizes.map((size) => ({
-              label: size.toString(),
-              value: size,
-            }))}
-          />
-        </div>
-      )}
-
-      {/* Sort Mode */}
-      <div className='mb-4'>
-        <div className='font-medium mb-2'>Sort Mode</div>
-        <Select
-          style={{ width: '100%' }}
-          value={sortMode}
-          onChange={onSortModeChange}
-          options={[
-            { label: 'Mean (High to Low)', value: 'mean-desc' },
-            { label: 'Mean (Low to High)', value: 'mean-asc' },
-            { label: 'Alphabetical', value: 'alphabetical' },
-          ]}
-        />
       </div>
 
       <Divider />
