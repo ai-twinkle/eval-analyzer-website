@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import type { ZodSchema, ZodTypeAny } from 'zod';
+import type { ZodType } from 'zod';
 
 /**
  * Derives a Zod schema from a data object at runtime
  */
-export function deriveSchema(data: unknown): ZodSchema {
+export function deriveSchema(data: unknown): ZodType {
   if (data === null || data === undefined) {
     return z.unknown();
   }
@@ -22,11 +22,11 @@ export function deriveSchema(data: unknown): ZodSchema {
   }
 
   if (typeof data === 'object') {
-    const shape: Record<string, ZodTypeAny> = {};
+    const shape: Record<string, z.ZodType> = {};
     for (const [key, value] of Object.entries(data)) {
       shape[key] = deriveSchema(value);
     }
-    return z.object(shape).passthrough();
+    return z.object(shape).loose();
   }
 
   if (typeof data === 'string') {
@@ -48,12 +48,12 @@ export function deriveSchema(data: unknown): ZodSchema {
  * Merges two schemas, making fields optional if they don't exist in both
  */
 export function mergeSchemas(
-  schema1: ZodSchema,
-  schema2: ZodSchema,
-): ZodSchema {
+  schema1: ZodType,
+  schema2: ZodType,
+): ZodType {
   // For simplicity, return a union of the two schemas
   // This allows validation to pass if data matches either schema
-  return z.union([schema1 as ZodTypeAny, schema2 as ZodTypeAny]);
+  return z.union([schema1 as ZodType, schema2 as ZodType]);
 }
 
 /**
@@ -61,7 +61,7 @@ export function mergeSchemas(
  */
 export function validateData(
   data: unknown,
-  schema: ZodSchema,
+  schema: ZodType,
 ): { success: boolean; data?: unknown; error?: string } {
   try {
     const result = schema.parse(data);

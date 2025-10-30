@@ -24,7 +24,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
     const validFiles = fileList.filter((f) => {
       const isValid = f.name.endsWith('.json') || f.name.endsWith('.jsonl');
       if (!isValid) {
-        message.error(
+        void message.error(
           `Invalid file type: ${f.name}. Only .json and .jsonl files are accepted.`,
         );
       }
@@ -33,7 +33,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 
     if (validFiles.length > 0) {
       onFilesSelected(validFiles);
-      message.success(`${validFiles.length} file(s) selected`);
+      void message.success(`${validFiles.length} file(s) selected`);
     }
 
     // Reset input

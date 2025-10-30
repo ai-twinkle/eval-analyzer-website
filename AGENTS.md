@@ -137,8 +137,6 @@ Implement D3-only responsive SVG (ResizeObserver). Provide these views:
 /src
   /components
     ControlsPanel.tsx
-    OfficialSelector.tsx
-    RunSelector.tsx
     FileUploader.tsx
     Legend.tsx
     DownloadButtons.tsx
@@ -151,7 +149,7 @@ Implement D3-only responsive SVG (ResizeObserver). Provide these views:
     ChartUtils.ts
   /features
     schema.ts          // derive/merge schema from data (Zod helpers)
-    types.ts           // types inferred from schema
+    types.d.ts           // types inferred from schema
     parse.ts           // tolerant JSON/JSONL parsing
     discover.ts        // folder listing strategies + filename timestamp parser
     transform.ts       // flatten, pivot, Δ, sorting

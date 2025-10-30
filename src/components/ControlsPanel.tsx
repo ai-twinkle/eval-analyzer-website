@@ -3,11 +3,7 @@ import { Switch, Checkbox, Divider } from 'antd';
 import { SlidersOutlined, CheckSquareOutlined } from '@ant-design/icons';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
-import type {
-  DataSource,
-  PivotRow,
-  DeltaRow,
-} from '../features/types';
+import type { DataSource, PivotRow } from '../features/types';
 
 interface ControlsPanelProps {
   onFilesUpload: (files: File[]) => void;
@@ -17,7 +13,6 @@ interface ControlsPanelProps {
   scale0100: boolean;
   onScaleToggle: (checked: boolean) => void;
   pivotData: PivotRow[];
-  deltaData: DeltaRow[];
 }
 
 export const ControlsPanel: React.FC<ControlsPanelProps> = ({
@@ -28,7 +23,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   scale0100,
   onScaleToggle,
   pivotData,
-  deltaData,
 }) => {
   const handleSelectAll = () => {
     onSourceSelectionChange(sources.map((s) => s.id));
@@ -134,11 +128,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
       <Divider />
 
       {/* Download Buttons */}
-      <DownloadButtons
-        pivotData={pivotData}
-        deltaData={deltaData}
-        scale0100={scale0100}
-      />
+      <DownloadButtons pivotData={pivotData} scale0100={scale0100} />
     </div>
   );
 };

@@ -127,8 +127,6 @@ JSONL format is also supported (one JSON object per line).
     ControlsPanel.tsx
     DownloadButtons.tsx
     FileUploader.tsx
-    OfficialSelector.tsx
-    RunSelector.tsx
   /charts                           # D3 visualizations
     CategoryDashboard.tsx
     CompactDashboard.tsx
@@ -138,7 +136,7 @@ JSONL format is also supported (one JSON object per line).
     parse.ts
     schema.ts
     transform.ts
-    types.ts
+    types.d.ts
   /pages                            # Page components
     Home.tsx
   /types                            # Type definitions

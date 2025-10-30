@@ -1,4 +1,4 @@
-import type { DeltaRow, PivotRow } from './types';
+import type { PivotRow } from './types';
 import { formatValue } from './transform';
 
 /**
@@ -35,82 +35,6 @@ export function pivotToCSV(data: PivotRow[], scale0100: boolean): string {
       return '';
     });
     csv.push(values.join(','));
-  }
-
-  return csv.join('\n');
-}
-
-/**
- * Convert delta data to CSV
- */
-export function deltaToCSV(data: DeltaRow[], scale0100: boolean): string {
-  if (data.length === 0) return '';
-
-  const csv: string[] = [
-    [
-      'Category',
-      'Candidate',
-      'Baseline',
-      'Candidate Value',
-      'Delta',
-      'Abs Delta',
-    ]
-      .map(escapeCSVField)
-      .join(','),
-  ];
-
-  for (const row of data) {
-    csv.push(
-      [
-        escapeCSVField(row.category),
-        escapeCSVField(row.candidateLabel),
-        formatValue(row.baseline, scale0100),
-        formatValue(row.candidate, scale0100),
-        formatValue(row.delta, scale0100),
-        formatValue(row.absDelta, scale0100),
-      ].join(','),
-    );
-  }
-
-  return csv.join('\n');
-}
-
-/**
- * Per-candidate delta summary
- */
-export function candidateSummaryToCSV(
-  data: DeltaRow[],
-  scale0100: boolean,
-): string {
-  if (data.length === 0) return '';
-
-  // Group by candidate
-  const candidateMap = new Map<string, DeltaRow[]>();
-  for (const row of data) {
-    const existing = candidateMap.get(row.candidateLabel) || [];
-    existing.push(row);
-    candidateMap.set(row.candidateLabel, existing);
-  }
-
-  const csv: string[] = [
-    ['Candidate', 'Mean Delta', 'Mean Abs Delta', 'Count']
-      .map(escapeCSVField)
-      .join(','),
-  ];
-
-  for (const [candidate, rows] of candidateMap) {
-    const meanDelta = rows.reduce((sum, r) => sum + r.delta, 0) / rows.length;
-    const meanAbsDelta =
-      rows.reduce((sum, r) => sum + r.absDelta, 0) / rows.length;
-
-    csv.push(
-      [
-        escapeCSVField(candidate),
-        formatValue(meanDelta, scale0100),
-        formatValue(meanAbsDelta, scale0100),
-        rows.length.toString(),
-      ].join(','),
-    );
   }
 
   return csv.join('\n');

@@ -47,19 +47,3 @@ export interface PivotRow {
   category: string;
   [sourceLabel: string]: number | string;
 }
-
-export interface DeltaRow {
-  category: string;
-  baseline: number;
-  candidate: number;
-  delta: number;
-  absDelta: number;
-  candidateLabel: string;
-}
-
-export type SortMode = 'mean-desc' | 'mean-asc' | 'alphabetical';
-export type DeltaSortMode =
-  | 'abs-desc'
-  | 'delta-desc'
-  | 'delta-asc'
-  | 'category';

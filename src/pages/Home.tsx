@@ -8,14 +8,14 @@ import { discoverResultFiles, fetchResultFile } from '../features/discover';
 import { deriveSchema, mergeSchemas, validateData } from '../features/schema';
 import { parseJSONFile } from '../features/parse';
 import { buildPivotTable } from '../features/transform';
-import type { ZodSchema } from 'zod';
+import type { ZodType} from 'zod';
 
 export const Home: React.FC = () => {
   const { message } = App.useApp();
   const [config, setConfig] = useState<BenchmarkConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<DataSource[]>([]);
-  const [dataSchema, setDataSchema] = useState<ZodSchema | null>(null);
+  const [dataSchema, setDataSchema] = useState<ZodType | null>(null);
 
   // UI state
   const [scale0100, setScale0100] = useState(false);
@@ -39,11 +39,11 @@ export const Home: React.FC = () => {
           setConfig(result.data);
           setScale0100(result.data.ui.defaultScale0100);
         } else {
-          message.error('Invalid config file');
+          void message.error('Invalid config file');
         }
       })
       .catch(() => {
-        message.error('Failed to load config');
+        void message.error('Failed to load config');
       });
   }, [message]);
 
@@ -135,11 +135,13 @@ export const Home: React.FC = () => {
           `Loaded ${successCount} of ${config.official.length} benchmarks (${errorCount} failed)`,
         );
       } else {
-        message.success(`Loaded latest results from all ${successCount} benchmarks`);
+        message.success(
+          `Loaded latest results from all ${successCount} benchmarks`,
+        );
       }
     };
 
-    loadAllLatestResults();
+    void loadAllLatestResults();
   }, [config, message]);
 
   // Handle file uploads
@@ -219,7 +221,6 @@ export const Home: React.FC = () => {
           scale0100={scale0100}
           onScaleToggle={setScale0100}
           pivotData={pivotData}
-          deltaData={[]}
         />
       </div>
 
@@ -229,15 +230,15 @@ export const Home: React.FC = () => {
 
         {loading ? (
           <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>Loading latest results from all benchmarks...</p>
+            <p className='text-lg'>
+              Loading latest results from all benchmarks...
+            </p>
             <p className='mt-2 text-sm'>This may take a moment.</p>
           </div>
         ) : sources.length === 0 ? (
           <div className='text-center text-gray-500 mt-20'>
             <p className='text-lg'>No data loaded yet.</p>
-            <p className='mt-2'>
-              Upload files to get started.
-            </p>
+            <p className='mt-2'>Upload files to get started.</p>
           </div>
         ) : selectedSourceIds.length === 0 ? (
           <div className='text-center text-gray-500 mt-20'>
