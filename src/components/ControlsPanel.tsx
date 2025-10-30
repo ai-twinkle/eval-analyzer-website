@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { Switch, Checkbox, Divider, Button, List, Input } from 'antd';
-import { SlidersOutlined, CheckSquareOutlined, SearchOutlined } from '@ant-design/icons';
+import {
+  SlidersOutlined,
+  CheckSquareOutlined,
+  SearchOutlined,
+} from '@ant-design/icons';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
 import type { DataSource, PivotRow } from '../features/types';

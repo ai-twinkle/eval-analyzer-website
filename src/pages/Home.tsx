@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { App } from 'antd';
+import { App, Radio } from 'antd';
+import { BarChartOutlined, TableOutlined } from '@ant-design/icons';
 import { ControlsPanel } from '../components/ControlsPanel';
 import { CategoryDashboard } from '../charts/CategoryDashboard';
+import { BenchmarkRankingTable } from '../charts/BenchmarkRankingTable';
 import type { BenchmarkConfig, DataSource } from '../features/types';
 import { BenchmarkConfigSchema } from '../features/types';
 import { discoverResultFiles, fetchResultFile } from '../features/discover';
@@ -9,6 +11,8 @@ import { deriveSchema, mergeSchemas, validateData } from '../features/schema';
 import { parseJSONFile } from '../features/parse';
 import { buildPivotTable } from '../features/transform';
 import type { ZodType } from 'zod';
+
+type ViewMode = 'dashboard' | 'table';
 
 export const Home: React.FC = () => {
   const { message } = App.useApp();
@@ -19,6 +23,7 @@ export const Home: React.FC = () => {
 
   // UI state
   const [scale0100, setScale0100] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
 
   // Model selection for comparison (simple multi-select)
   const [selectedSourceIds, setSelectedSourceIds] = useState<string[]>([]);
@@ -47,7 +52,7 @@ export const Home: React.FC = () => {
       });
   }, [message]);
 
-  // Auto-load latest results from all benchmarks when config is loaded
+  // Autoload latest results from all benchmarks when config is loaded
   useEffect(() => {
     if (!config) return;
 
@@ -117,15 +122,15 @@ export const Home: React.FC = () => {
       });
 
       const results = await Promise.all(loadPromises);
-      
+
       // Filter out nulls and sort alphabetically by label
       const validSources = results.filter((s): s is DataSource => s !== null);
       validSources.sort((a, b) => a.label.localeCompare(b.label));
-      
+
       // Add all sources at once
       setSources((prev) => {
-        const existingIds = new Set(prev.map(s => s.id));
-        const newSources = validSources.filter(s => !existingIds.has(s.id));
+        const existingIds = new Set(prev.map((s) => s.id));
+        const newSources = validSources.filter((s) => !existingIds.has(s.id));
         return [...prev, ...newSources];
       });
 
@@ -229,8 +234,29 @@ export const Home: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className='flex-1 overflow-y-auto p-6'>
-        <h1 className='text-3xl font-bold mb-6'>Benchmark Visualizer</h1>
+      <div className='flex-1 overflow-y-auto p-6 pt-0'>
+        {/* Header with title and view toggle - Sticky and half opacity*/}
+        <div className='sticky top-0 z-10 bg-white pt-6 pb-4 mb-2 border-b border-gray-200'>
+          <div className='flex items-center justify-between'>
+            <h1 className='text-3xl font-bold'>
+              Twinkle Eval Benchmark Visualizer
+            </h1>
+
+            {/* View Mode Toggle */}
+            <Radio.Group
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value)}
+              buttonStyle='solid'
+            >
+              <Radio.Button value='dashboard'>
+                <BarChartOutlined /> Dashboard
+              </Radio.Button>
+              <Radio.Button value='table'>
+                <TableOutlined /> Ranking Table
+              </Radio.Button>
+            </Radio.Group>
+          </div>
+        </div>
 
         {loading ? (
           <div className='text-center text-gray-500 mt-20'>
@@ -251,8 +277,13 @@ export const Home: React.FC = () => {
               Select one or more models from the sidebar to compare.
             </p>
           </div>
-        ) : (
+        ) : viewMode === 'dashboard' ? (
           <CategoryDashboard sources={selectedSources} scale0100={scale0100} />
+        ) : (
+          <BenchmarkRankingTable
+            sources={selectedSources}
+            scale0100={scale0100}
+          />
         )}
       </div>
     </div>
