@@ -7,6 +7,10 @@ import { formatValue } from '../features/transform';
 interface CompactDashboardProps {
   sources: DataSource[];
   scale0100: boolean;
+  onCategoryClick?: (category: string) => void;
+  selectedCategory?: string | null;
+  highlightedModel?: string | null;
+  onModelHighlight?: (model: string | null) => void;
 }
 
 interface CategoryData {
@@ -42,9 +46,8 @@ function drawRadarChart(
   const centerX = width / 2;
   const centerY = height / 2 + 20;
 
-  // Use top categories
-  const maxCategories = Math.min(categoryData.length, 8);
-  const topCategories = categoryData.slice(0, maxCategories);
+  // Use all categories - no limit
+  const topCategories = categoryData;
   const allAxis = topCategories.map((d) => d.category);
   const total = allAxis.length;
   const angleSlice = (Math.PI * 2) / total;
@@ -96,8 +99,8 @@ function drawRadarChart(
     .append('line')
     .attr('x1', 0)
     .attr('y1', 0)
-    .attr('x2', (_d, i) => rScale(1) * Math.cos(angleSlice * i - Math.PI / 2))
-    .attr('y2', (_d, i) => rScale(1) * Math.sin(angleSlice * i - Math.PI / 2))
+    .attr('x2', (_d, i) => rScale(1) * Math.cos(angleSlice * i))
+    .attr('y2', (_d, i) => rScale(1) * Math.sin(angleSlice * i))
     .attr('stroke', (d) => (selectedCategory === d ? '#1890ff' : '#CDCDCD'))
     .attr('stroke-width', (d) => (selectedCategory === d ? 2 : 1));
 
@@ -108,11 +111,11 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .attr('dy', '0.35em')
     .attr('x', (_d, i) => {
-      const angle = angleSlice * i - Math.PI / 2;
+      const angle = angleSlice * i;
       return rScale(1) * 1.15 * Math.cos(angle);
     })
     .attr('y', (_d, i) => {
-      const angle = angleSlice * i - Math.PI / 2;
+      const angle = angleSlice * i;
       return rScale(1) * 1.15 * Math.sin(angle);
     })
     .text((d) => {
@@ -128,7 +131,7 @@ function drawRadarChart(
       // Add background box for better readability
       const textNode = this as SVGTextElement;
       const bbox = textNode.getBBox();
-      const angle = angleSlice * i - Math.PI / 2;
+      const angle = angleSlice * i;
       const x = rScale(1) * 1.15 * Math.cos(angle);
       const y = rScale(1) * 1.15 * Math.sin(angle);
 
@@ -176,11 +179,12 @@ function drawRadarChart(
   });
 
   // Function to generate polygon coordinates using lineRadial
+  // Properly configure the angle to match axis positions exactly
   const radarLine = d3
     .lineRadial<RadarDataPoint>()
     .radius((d) => rScale(d.value))
     .angle((_d, i) => i * angleSlice)
-    .curve(d3.curveLinearClosed);
+    .curve(d3.curveLinearClosed); // Use curveLinearClosed for proper polygon closure
 
   // Draw radar blobs
   radarData.forEach((data, idx) => {
@@ -188,8 +192,8 @@ function drawRadarChart(
     const isHighlighted = !highlightedModel || highlightedModel === data.source;
     const opacity = isHighlighted ? 1 : 0.2;
 
-    // Radar area (filled polygon)
-    g.append('path')
+    // Radar area (filled polygon) - curveLinearClosed handles closing automatically
+    const radarPath = g.append('path')
       .datum(data.values)
       .attr('class', `radar-area radar-area-${idx}`)
       .attr('d', radarLine)
@@ -198,7 +202,26 @@ function drawRadarChart(
       .style('stroke', color)
       .style('stroke-width', isHighlighted ? 2.5 : 1.5)
       .style('opacity', opacity)
-      .style('transition', 'all 0.3s ease');
+      .style('cursor', 'pointer')
+      .on('mouseenter', function () {
+        // Temporarily highlight this model on hover
+        d3.select(this)
+          .style('fill-opacity', 0.4)
+          .style('stroke-width', 3.5);
+      })
+      .on('mouseleave', function () {
+        // Restore original style
+        d3.select(this)
+          .style('fill-opacity', 0.2 * opacity)
+          .style('stroke-width', isHighlighted ? 2.5 : 1.5);
+      })
+      .on('click', function () {
+        // Toggle model highlight on click
+        onModelClick(data.source);
+      });
+    
+    radarPath.append('title')
+      .text(`${data.source}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`);
 
     // Radar circles (data points)
     g.selectAll(`.radar-circle-${idx}`)
@@ -209,20 +232,25 @@ function drawRadarChart(
       .attr('r', isHighlighted ? 4.5 : 3)
       .attr(
         'cx',
-        (d, i) => rScale(d.value) * Math.cos(angleSlice * i - Math.PI / 2),
+        (d, i) => rScale(d.value) * Math.cos(angleSlice * i),
       )
       .attr(
         'cy',
-        (d, i) => rScale(d.value) * Math.sin(angleSlice * i - Math.PI / 2),
+        (d, i) => rScale(d.value) * Math.sin(angleSlice * i),
       )
       .style('fill', color)
       .style('stroke', 'white')
       .style('stroke-width', 2)
       .style('opacity', opacity)
       .style('cursor', 'pointer')
-      .style('transition', 'all 0.3s ease')
       .on('mouseenter', function (event, d) {
-        d3.select(this).attr('r', 6).style('fill-opacity', 1);
+        // Enlarge circle
+        d3.select(this).attr('r', 7).style('stroke-width', 3);
+        
+        // Highlight the entire radar path temporarily
+        g.select(`.radar-area-${idx}`)
+          .style('fill-opacity', 0.4)
+          .style('stroke-width', 3.5);
 
         // Show tooltip
         const [mouseX, mouseY] = d3.pointer(event, svg.node());
@@ -258,14 +286,25 @@ function drawRadarChart(
           .attr('rx', 4);
       })
       .on('mouseleave', function () {
+        // Reset circle size
         d3.select(this)
           .attr('r', isHighlighted ? 4.5 : 3)
-          .style('fill-opacity', 0.8);
+          .style('stroke-width', 2);
+        
+        // Reset radar path
+        g.select(`.radar-area-${idx}`)
+          .style('fill-opacity', 0.2 * opacity)
+          .style('stroke-width', isHighlighted ? 2.5 : 1.5);
+        
         svg.selectAll('.tooltip-radar').remove();
+      })
+      .on('click', function() {
+        // Toggle model highlight on click
+        onModelClick(data.source);
       })
       .append('title')
       .text(
-        (d) => `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}`,
+        (d) => `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`,
       );
   });
 
@@ -286,7 +325,7 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .style('font-size', '12px')
     .style('fill', '#666')
-    .text('Click category labels to focus • Click model legend to highlight');
+    .text('Hover over lines/dots to see details • Click category labels or model legend to highlight');
 
   // Legend (clickable)
   const legendG = svg
@@ -375,10 +414,18 @@ function drawRadarChart(
 export const CompactDashboard: React.FC<CompactDashboardProps> = ({
   sources,
   scale0100,
+  onCategoryClick,
+  selectedCategory: externalSelectedCategory,
+  highlightedModel: externalHighlightedModel,
+  onModelHighlight,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [highlightedModel, setHighlightedModel] = useState<string | null>(null);
+  const [internalSelectedCategory, setInternalSelectedCategory] = useState<string | null>(null);
+  const [internalHighlightedModel, setInternalHighlightedModel] = useState<string | null>(null);
+
+  // Use external selected category if provided, otherwise use internal state
+  const selectedCategory = externalSelectedCategory !== undefined ? externalSelectedCategory : internalSelectedCategory;
+  const highlightedModel = externalHighlightedModel !== undefined ? externalHighlightedModel : internalHighlightedModel;
 
   useEffect(() => {
     if (!containerRef.current || sources.length === 0) return;
@@ -446,13 +493,27 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
       highlightedModel,
       selectedCategory,
       (category) => {
-        setSelectedCategory(selectedCategory === category ? null : category);
+        // Update internal state if not controlled by parent
+        if (externalSelectedCategory === undefined) {
+          setInternalSelectedCategory(internalSelectedCategory === category ? null : category);
+        }
+        // Notify parent if callback provided
+        if (onCategoryClick) {
+          onCategoryClick(category);
+        }
       },
       (model) => {
-        setHighlightedModel(highlightedModel === model ? null : model);
+        // Update internal state if not controlled by parent
+        if (externalHighlightedModel === undefined) {
+          setInternalHighlightedModel(internalHighlightedModel === model ? null : model);
+        }
+        // Notify parent if callback provided
+        if (onModelHighlight) {
+          onModelHighlight(highlightedModel === model ? null : model);
+        }
       },
     );
-  }, [sources, scale0100, selectedCategory, highlightedModel]);
+  }, [sources, scale0100, selectedCategory, highlightedModel, onCategoryClick, onModelHighlight, externalSelectedCategory, externalHighlightedModel, internalSelectedCategory, internalHighlightedModel]);
 
   if (sources.length === 0) {
     return (
@@ -469,26 +530,6 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
         className='w-full'
         style={{ minHeight: '700px' }}
       />
-      {selectedCategory && (
-        <div className='mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm'>
-          <strong className='text-blue-700'>Focused Category:</strong>{' '}
-          <span className='font-medium'>{selectedCategory}</span>
-          <span className='text-gray-600'>
-            {' '}
-            - Click category label again to clear focus
-          </span>
-        </div>
-      )}
-      {highlightedModel && (
-        <div className='mt-4 p-3 bg-green-50 border border-green-200 rounded-lg text-sm'>
-          <strong className='text-green-700'>Highlighted Model:</strong>{' '}
-          <span className='font-medium'>{highlightedModel}</span>
-          <span className='text-gray-600'>
-            {' '}
-            - Click model legend again to clear highlight
-          </span>
-        </div>
-      )}
     </div>
   );
 };
