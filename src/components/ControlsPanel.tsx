@@ -135,6 +135,11 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                   >
                     <span className='text-sm'>
                       {source.modelName}
+                      {source.variance !== 'default' && (
+                        <span className='ml-1 text-xs text-gray-600'>
+                          ({source.variance})
+                        </span>
+                      )}
                       {source.isOfficial && (
                         <span className='ml-1 text-xs text-blue-600'>
                           (Official)

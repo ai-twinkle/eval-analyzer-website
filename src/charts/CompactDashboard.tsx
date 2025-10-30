@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import type { DataSource } from '../features/types';
-import { flattenDatasetResults, groupByCategory } from '../features/transform';
+import {
+  flattenDatasetResults,
+  groupByCategory,
+  getSourceIdentifier,
+} from '../features/transform';
 import { formatValue } from '../features/transform';
 
 interface CompactDashboardProps {
@@ -158,12 +162,15 @@ function drawRadarChart(
 
   // Prepare data for each source
   const radarData = sources.map((source) => {
+    const sourceId = getSourceIdentifier(source);
     const results = flattenDatasetResults(source.rawData);
     const grouped = groupByCategory(results);
 
     return {
-      source: source.modelName,
+      source: sourceId,
       isOfficial: source.isOfficial,
+      modelName: source.modelName,
+      variance: source.variance,
       values: allAxis.map((axis) => {
         const categoryResults = grouped[axis] || [];
         const meanAccuracy =
@@ -219,11 +226,11 @@ function drawRadarChart(
         onModelClick(data.source);
       });
 
-    radarPath
-      .append('title')
-      .text(
-        `${data.source}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`,
-      );
+    radarPath.append('title').text(() => {
+      const varianceLabel =
+        data.variance !== 'default' ? ` (${data.variance})` : '';
+      return `${data.modelName}${varianceLabel}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`;
+    });
 
     // Radar circles (data points)
     g.selectAll(`.radar-circle-${idx}`)
@@ -261,7 +268,9 @@ function drawRadarChart(
           .attr('class', 'tooltip-radar')
           .attr('transform', `translate(${mouseX + 10}, ${mouseY - 10})`);
 
-        const text = `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}`;
+        const varianceLabel =
+          data.variance !== 'default' ? ` (${data.variance})` : '';
+        const text = `${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}`;
         const lines = text.split('\n');
 
         tooltip
@@ -305,10 +314,11 @@ function drawRadarChart(
         onModelClick(data.source);
       })
       .append('title')
-      .text(
-        (d) =>
-          `${data.source}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`,
-      );
+      .text((d) => {
+        const varianceLabel =
+          data.variance !== 'default' ? ` (${data.variance})` : '';
+        return `${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`;
+      });
   });
 
   // Add title
@@ -354,11 +364,11 @@ function drawRadarChart(
     .text('(click to highlight)');
 
   sources.forEach((source, i) => {
+    const sourceId = getSourceIdentifier(source);
     const yPos = 25 + i * 30;
     const color = colorScale(i.toString());
-    const isHighlighted =
-      !highlightedModel || highlightedModel === source.modelName;
-    const isSelected = highlightedModel === source.modelName;
+    const isHighlighted = !highlightedModel || highlightedModel === sourceId;
+    const isSelected = highlightedModel === sourceId;
 
     const legendItem = legendG
       .append('g')
@@ -366,7 +376,7 @@ function drawRadarChart(
       .attr('class', 'legend-item')
       .style('cursor', 'pointer')
       .style('opacity', isHighlighted ? 1 : 0.4)
-      .on('click', () => onModelClick(source.modelName))
+      .on('click', () => onModelClick(sourceId))
       .on('mouseenter', function () {
         d3.select(this).style('opacity', 1);
       })
@@ -395,10 +405,13 @@ function drawRadarChart(
       .attr('stroke-width', 2);
 
     // Model name
+    const varianceLabel =
+      source.variance !== 'default' ? ` (${source.variance})` : '';
+    const fullModelName = `${source.modelName}${varianceLabel}`;
     const modelLabel =
-      source.modelName.length > 22
-        ? source.modelName.substring(0, 19) + '...'
-        : source.modelName;
+      fullModelName.length > 22
+        ? fullModelName.substring(0, 19) + '...'
+        : fullModelName;
 
     legendItem
       .append('text')
@@ -412,7 +425,7 @@ function drawRadarChart(
 
     legendItem
       .append('title')
-      .text(source.modelName + (source.isOfficial ? ' (Official)' : ''));
+      .text(fullModelName + (source.isOfficial ? ' (Official)' : ''));
   });
 }
 

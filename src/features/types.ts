@@ -29,6 +29,7 @@ export interface DataSource {
   id: string;
   label: string;
   modelName: string;
+  variance: string;
   timestamp: string;
   isOfficial: boolean;
   data: unknown;

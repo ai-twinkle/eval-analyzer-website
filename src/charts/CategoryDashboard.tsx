@@ -10,7 +10,11 @@ import {
   RadarChartOutlined,
 } from '@ant-design/icons';
 import type { DataSource } from '../features/types';
-import { flattenDatasetResults, groupByCategory } from '../features/transform';
+import {
+  flattenDatasetResults,
+  groupByCategory,
+  getSourceIdentifier,
+} from '../features/transform';
 import { formatValue } from '../features/transform';
 import { CompactDashboard } from './CompactDashboard';
 
@@ -26,11 +30,11 @@ interface CategoryStats {
     testName: string;
     fullPath: string;
     dataset: string; // e.g., "mmlu", "tmmluplus"
-    values: Map<string, { avg: number; min: number; max: number }>; // modelName -> accuracy stats
+    values: Map<string, { avg: number; min: number; max: number }>; // sourceIdentifier -> accuracy stats
   }>;
-  avgPerModel: Map<string, number>;
-  minPerModel: Map<string, number>;
-  maxPerModel: Map<string, number>;
+  avgPerModel: Map<string, number>; // sourceIdentifier -> avg
+  minPerModel: Map<string, number>; // sourceIdentifier -> min
+  maxPerModel: Map<string, number>; // sourceIdentifier -> max
   overallAvg: number;
   overallMin: number;
   overallMax: number;
@@ -54,6 +58,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     const categories = new Map<string, CategoryStats>();
 
     sources.forEach((source) => {
+      const sourceId = getSourceIdentifier(source);
       const results = flattenDatasetResults(source.rawData);
       const grouped = groupByCategory(results);
 
@@ -137,7 +142,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             }
           }
 
-          testEntry.values.set(source.modelName, {
+          testEntry.values.set(sourceId, {
             avg: result.accuracy_mean,
             min,
             max,
@@ -151,9 +156,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       catData.testCount = catData.tests.length;
 
       sources.forEach((source) => {
+        const sourceId = getSourceIdentifier(source);
         const accuracies: number[] = [];
         catData.tests.forEach((test) => {
-          const val = test.values.get(source.modelName);
+          const val = test.values.get(sourceId);
           if (val !== undefined) accuracies.push(val.avg);
         });
 
@@ -161,9 +167,9 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           const avg = d3.mean(accuracies)!;
           const min = d3.min(accuracies)!;
           const max = d3.max(accuracies)!;
-          catData.avgPerModel.set(source.modelName, avg);
-          catData.minPerModel.set(source.modelName, min);
-          catData.maxPerModel.set(source.modelName, max);
+          catData.avgPerModel.set(sourceId, avg);
+          catData.minPerModel.set(sourceId, min);
+          catData.maxPerModel.set(sourceId, max);
         }
       });
 
@@ -190,7 +196,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     () =>
       d3
         .scaleOrdinal(d3.schemeCategory10)
-        .domain(sources.map((s) => s.modelName)),
+        .domain(sources.map((s) => getSourceIdentifier(s))),
     [sources],
   );
 
@@ -289,7 +295,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     // Create a sub-band scale for models within each test
     const modelScale = d3
       .scaleBand()
-      .domain(sources.map((s) => s.modelName))
+      .domain(sources.map((s) => getSourceIdentifier(s)))
       .range([0, yScale.bandwidth()])
       .padding(0.1);
 
@@ -367,13 +373,14 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       const testY = yScale(test.testName) || 0;
 
       sources.forEach((source) => {
-        const stats = test.values.get(source.modelName);
+        const sourceId = getSourceIdentifier(source);
+        const stats = test.values.get(sourceId);
         if (!stats) return;
 
         const isHighlighted =
-          !highlightedModel || highlightedModel === source.modelName;
-        const modelY = testY + (modelScale(source.modelName) || 0);
-        const color = colorScale(source.modelName) as string;
+          !highlightedModel || highlightedModel === sourceId;
+        const modelY = testY + (modelScale(sourceId) || 0);
+        const color = colorScale(sourceId) as string;
 
         // Color indicator bar (thin vertical bar on the left edge)
         g.append('rect')
@@ -396,15 +403,17 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('rx', 1)
           .style('cursor', 'pointer')
           .on('mouseenter', function () {
-            setHighlightedModel(source.modelName);
+            setHighlightedModel(sourceId);
           })
           .on('mouseleave', function () {
             setHighlightedModel(null);
           })
           .append('title')
-          .text(
-            `${source.modelName}\nMin: ${formatValue(stats.min, scale0100)}`,
-          );
+          .text(() => {
+            const varianceLabel =
+              source.variance !== 'default' ? ` (${source.variance})` : '';
+            return `${source.modelName}${varianceLabel}\nMin: ${formatValue(stats.min, scale0100)}`;
+          });
 
         // Avg bar (middle, medium opacity)
         g.append('rect')
@@ -417,9 +426,11 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('rx', 1)
           .style('cursor', 'pointer')
           .append('title')
-          .text(
-            `${source.modelName}\nAvg: ${formatValue(stats.avg, scale0100)}`,
-          );
+          .text(() => {
+            const varianceLabel =
+              source.variance !== 'default' ? ` (${source.variance})` : '';
+            return `${source.modelName}${varianceLabel}\nAvg: ${formatValue(stats.avg, scale0100)}`;
+          });
 
         // Max bar (bottom, darkest)
         g.append('rect')
@@ -432,15 +443,17 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('rx', 1)
           .style('cursor', 'pointer')
           .on('mouseenter', function () {
-            setHighlightedModel(source.modelName);
+            setHighlightedModel(sourceId);
           })
           .on('mouseleave', function () {
             setHighlightedModel(null);
           })
           .append('title')
-          .text(
-            `${source.modelName}\nMax: ${formatValue(stats.max, scale0100)}`,
-          );
+          .text(() => {
+            const varianceLabel =
+              source.variance !== 'default' ? ` (${source.variance})` : '';
+            return `${source.modelName}${varianceLabel}\nMax: ${formatValue(stats.max, scale0100)}`;
+          });
 
         // Label for avg bar (only if space allows)
         if (isHighlighted && xScale(stats.avg) > 50) {
@@ -495,18 +508,19 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .text('Models:');
 
     sources.forEach((source, i) => {
+      const sourceId = getSourceIdentifier(source);
       const legendRow = legend
         .append('g')
         .attr('transform', `translate(0, ${(i + 1) * 22})`)
         .style('cursor', 'pointer')
-        .on('mouseenter', () => setHighlightedModel(source.modelName))
+        .on('mouseenter', () => setHighlightedModel(sourceId))
         .on('mouseleave', () => setHighlightedModel(null));
 
       legendRow
         .append('rect')
         .attr('width', 14)
         .attr('height', 14)
-        .attr('fill', colorScale(source.modelName) as string)
+        .attr('fill', colorScale(sourceId) as string)
         .attr('opacity', 0.85)
         .attr('rx', 2);
 
@@ -515,15 +529,15 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('x', 18)
         .attr('y', 11)
         .style('font-size', '10px')
-        .style(
-          'font-weight',
-          highlightedModel === source.modelName ? 'bold' : 'normal',
-        )
-        .text(
-          source.modelName.length > 16
-            ? source.modelName.slice(0, 14) + '...'
-            : source.modelName,
-        );
+        .style('font-weight', highlightedModel === sourceId ? 'bold' : 'normal')
+        .text(() => {
+          const varianceLabel =
+            source.variance !== 'default' ? ` (${source.variance})` : '';
+          const fullName = `${source.modelName}${varianceLabel}`;
+          return fullName.length > 16
+            ? fullName.slice(0, 14) + '...'
+            : fullName;
+        });
     });
 
     // Legend for Benchmarks/Datasets

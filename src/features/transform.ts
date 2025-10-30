@@ -11,6 +11,15 @@ import type {
 export type { DeltaRow as DeltaResult } from './types';
 
 /**
+ * Get unique identifier for a source (model + variance)
+ */
+export function getSourceIdentifier(source: DataSource): string {
+  return source.variance !== 'default'
+    ? `${source.modelName}-${source.variance}`
+    : source.modelName;
+}
+
+/**
  * Normalize dataset key by stripping leading "datasets/"
  */
 function normalizeDatasetKey(key: string): string {
@@ -189,7 +198,9 @@ export function calculateCategoryStats(sources: DataSource[]): Array<{
   for (const source of sources) {
     const results = flattenDatasetResults(source.rawData);
     const grouped = groupByCategory(results);
-    const sourceLabel = `${source.modelName} @ ${source.timestamp}${source.isOfficial ? ' (Official)' : ''}`;
+    const varianceLabel =
+      source.variance !== 'default' ? ` (${source.variance})` : '';
+    const sourceLabel = `${source.modelName}${varianceLabel} @ ${source.timestamp}${source.isOfficial ? ' (Official)' : ''}`;
 
     for (const [category, categoryResults] of Object.entries(grouped)) {
       const accuracies = categoryResults.map((r) => r.accuracy_mean);
@@ -231,7 +242,9 @@ export function buildPivotTable(sources: DataSource[]): PivotRow[] {
 
   for (const source of sources) {
     const results = flattenDatasetResults(source.rawData);
-    const sourceLabel = `${source.modelName} @ ${source.timestamp}${source.isOfficial ? ' (Official)' : ''}`;
+    const varianceLabel =
+      source.variance !== 'default' ? ` (${source.variance})` : '';
+    const sourceLabel = `${source.modelName}${varianceLabel} @ ${source.timestamp}${source.isOfficial ? ' (Official)' : ''}`;
 
     for (const result of results) {
       let row = categoryMap.get(result.category);
