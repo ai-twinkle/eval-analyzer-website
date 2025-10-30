@@ -345,7 +345,7 @@ function drawRadarChart(
   // Legend (clickable)
   const legendG = svg
     .append('g')
-    .attr('transform', `translate(${width - 200}, 100)`);
+    .attr('transform', `translate(${width - 180}, 100)`);
 
   legendG
     .append('text')

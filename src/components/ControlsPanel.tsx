@@ -1,6 +1,6 @@
-import React from 'react';
-import { Switch, Checkbox, Divider, Button, List } from 'antd';
-import { SlidersOutlined, CheckSquareOutlined } from '@ant-design/icons';
+import React, { useState } from 'react';
+import { Switch, Checkbox, Divider, Button, List, Input } from 'antd';
+import { SlidersOutlined, CheckSquareOutlined, SearchOutlined } from '@ant-design/icons';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
 import type { DataSource, PivotRow } from '../features/types';
@@ -41,6 +41,17 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
     }
   };
 
+  const [searchText, setSearchText] = useState('');
+
+  const filteredSources = sources.filter((source) => {
+    const searchLower = searchText.toLowerCase();
+    return (
+      source.modelName.toLowerCase().includes(searchLower) ||
+      source.variance.toLowerCase().includes(searchLower) ||
+      source.timestamp.toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className='h-full overflow-y-auto p-4 bg-gray-50'>
       <h2 className='text-xl font-bold mb-4'>Controls</h2>
@@ -79,8 +90,16 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                 </Button>
               </div>
             </div>
-            <List className='space-y-2 max-h-80 overflow-y-auto'>
-              {sources.map((source) => (
+            <Input
+              placeholder='Search models...'
+              prefix={<SearchOutlined />}
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              allowClear
+              className='mb-2'
+            />
+            <List className='space-y-2 max-h-70 overflow-y-auto'>
+              {filteredSources.map((source) => (
                 <Item key={source.id} className='flex items-center'>
                   <Checkbox
                     checked={selectedSourceIds.includes(source.id)}
