@@ -31,7 +31,7 @@ export const Home: React.FC = () => {
 
   // Load config on mount
   useEffect(() => {
-    fetch('/config/benchmarks.config.json')
+    fetch(`${import.meta.env.BASE_URL}config/benchmarks.config.json`)
       .then((res) => res.json())
       .then((data) => {
         const result = BenchmarkConfigSchema.safeParse(data);
