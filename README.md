@@ -8,9 +8,8 @@ Serverless Official Benchmark Visualizer built with React, TypeScript, Ant Desig
 - **HuggingFace Integration**: Automatically discover and fetch timestamped result files from HuggingFace datasets
 - **Multi-File Upload**: Upload and compare multiple JSON/JSONL result files side-by-side
 - **Dynamic Schema Inference**: Schema is derived from data at runtime using Zod
-- **Interactive Visualizations**: Five D3-powered charts including grouped bars, heatmaps, slopegraphs, delta rankings, and beeswarm plots
-- **Delta Analysis**: Compare baseline vs candidates with threshold filtering and multiple sort modes
-- **CSV Export**: Export pivot tables, delta rankings, and candidate summaries
+- **Interactive Visualizations**: D3-powered charts for category-based analysis, including expandable dashboards with bar charts and radar plots
+- **CSV Export**: Export pivot tables and summaries
 - **Fully Static**: Deployable to GitHub Pages, Netlify, or Vercel without a backend
 
 ## Quick Start
@@ -125,13 +124,29 @@ JSONL format is also supported (one JSON object per line).
   /examples/results_example.json    # Example data
 /src
   /components                        # UI components
+    ControlsPanel.tsx
+    DownloadButtons.tsx
+    FileUploader.tsx
+    OfficialSelector.tsx
+    RunSelector.tsx
   /charts                           # D3 visualizations
+    CategoryDashboard.tsx
+    CompactDashboard.tsx
   /features                         # Core logic (parse, transform, schema, etc.)
+    csv.ts
+    discover.ts
+    parse.ts
+    schema.ts
+    transform.ts
+    types.ts
   /pages                            # Page components
+    Home.tsx
+  /types                            # Type definitions
+    ant-design-charts.d.ts
   App.tsx                           # Root component
   main.tsx                          # Entry point
 ```
 
 ## License
 
-MIT
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
