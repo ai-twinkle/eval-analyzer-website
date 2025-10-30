@@ -53,7 +53,6 @@ export const Home: React.FC = () => {
 
     const loadAllLatestResults = async () => {
       setLoading(true);
-      let successCount = 0;
       let errorCount = 0;
 
       // Load latest result from each benchmark in parallel
@@ -67,7 +66,7 @@ export const Home: React.FC = () => {
 
           if (files.length === 0) {
             console.warn(`No results found for ${benchmark.label}`);
-            return;
+            return null;
           }
 
           // Get the latest run (first one)
@@ -97,7 +96,7 @@ export const Home: React.FC = () => {
           const modelName = dataObj.config?.model?.name || benchmark.modelName;
           const timestamp = latestRun.displayTimestamp;
 
-          // Add to sources
+          // Create new source
           const newSource: DataSource = {
             id: `official-${benchmark.id}-${latestRun.timestamp}`,
             label: benchmark.label,
@@ -109,25 +108,30 @@ export const Home: React.FC = () => {
             rawData: data,
           };
 
-          // Add to sources using functional update
-          setSources((prev) => {
-            // Check if already exists
-            if (prev.some((s) => s.id === newSource.id)) {
-              return prev;
-            }
-            return [...prev, newSource];
-          });
-
-          successCount++;
+          return newSource;
         } catch (err) {
           errorCount++;
           console.error(`Failed to load ${benchmark.label}:`, err);
+          return null;
         }
       });
 
-      await Promise.all(loadPromises);
+      const results = await Promise.all(loadPromises);
+      
+      // Filter out nulls and sort alphabetically by label
+      const validSources = results.filter((s): s is DataSource => s !== null);
+      validSources.sort((a, b) => a.label.localeCompare(b.label));
+      
+      // Add all sources at once
+      setSources((prev) => {
+        const existingIds = new Set(prev.map(s => s.id));
+        const newSources = validSources.filter(s => !existingIds.has(s.id));
+        return [...prev, ...newSources];
+      });
 
       setLoading(false);
+
+      const successCount = validSources.length;
 
       // Only show notification if there were errors
       if (errorCount > 0) {
