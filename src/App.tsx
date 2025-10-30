@@ -1,7 +1,19 @@
+import { ConfigProvider, App as AntApp } from 'antd';
+import { Home } from './pages/Home';
+
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50">
-    </div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: '#1890ff',
+        },
+      }}
+    >
+      <AntApp>
+        <Home />
+      </AntApp>
+    </ConfigProvider>
   );
 }
 

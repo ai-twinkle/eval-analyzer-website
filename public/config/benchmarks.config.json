@@ -1,0 +1,32 @@
+{
+  "official": [
+    {
+      "id": "llama-4-maverick-128k-twinkle-eval-v1",
+      "label": "Llama 4 Maverick 128k — Twinkle Eval V1",
+      "provider": "Meta",
+      "modelName": "llama-4-maverick-128k",
+      "variance": "default",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/llama-4-eval-logs-and-scores/tree/main/results/maverick"
+    },
+    {
+      "id": "llama-4-scout-128k-twinkle-eval-v1",
+      "label": "Llama 4 Scout 128k — Twinkle Eval V1",
+      "provider": "Meta",
+      "modelName": "llama-4-scout-128k",
+      "variance": "default",
+      "openSource": true,
+      "hfFolderUrl": "https://huggingface.co/datasets/twinkle-ai/llama-4-eval-logs-and-scores/tree/main/results/scout"
+    }
+  ],
+  "ui": {
+    "defaultScale0100": false,
+    "pageSizes": [10, 20, 30, 50, 100]
+  },
+  "security": {
+    "allowOrigins": [
+      "https://huggingface.co",
+      "https://raw.githubusercontent.com"
+    ]
+  }
+}
