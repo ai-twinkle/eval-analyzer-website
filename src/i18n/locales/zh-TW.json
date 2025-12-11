@@ -72,7 +72,21 @@
     "models": "個模型",
     "tests": "個測試",
     "avg": "平均",
-    "totalModels": "共 {{total}} 個模型"
+    "totalModels": "共 {{total}} 個模型",
+    "radarTitle": "效能雷達圖 - 類別總覽",
+    "radarSubtitle": "將滑鼠懸停在線條/點上可查看詳細資訊 • 點擊類別標籤或模型圖例以突出顯示",
+    "legendModels": "模型",
+    "legendClickToHighlight": "（點擊以突出顯示）",
+    "legendBenchmarks": "基準測試：",
+    "noDataAvailable": "無可用資料。請載入基準測試或上傳檔案。",
+    "clickToToggleHighlight": "點擊以切換突出顯示",
+    "clickToFocus": "點擊以聚焦",
+    "min": "最小值",
+    "max": "最大值",
+    "benchmarkLabel": "基準測試",
+    "accuracyScore": "準確率分數",
+    "officialTag": "官方",
+    "testsCount": "{{count}} 個測試"
   },
   "categories": {
     "computerScience": "電腦科學",

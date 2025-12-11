@@ -169,7 +169,7 @@ function drawRadarChart(
       const translatedName = t(
         `categories.${d}` as `categories.${CategoryKey}`,
       );
-      return `${translatedName}\n${categoryInfo?.count || 0} tests\nClick to focus`;
+      return `${translatedName}\n${t('chart.testsCount', { count: categoryInfo?.count || 0 })}\n${t('chart.clickToFocus')}`;
     });
 
   // Prepare data for each source
@@ -241,7 +241,7 @@ function drawRadarChart(
     radarPath.append('title').text(() => {
       const varianceLabel =
         data.variance !== 'default' ? ` (${data.variance})` : '';
-      return `${data.modelName}${varianceLabel}${data.isOfficial ? ' (Official)' : ''}\nClick to toggle highlight`;
+      return `${data.modelName}${varianceLabel}${data.isOfficial ? ` (${t('chart.officialTag')})` : ''}\n${t('chart.clickToToggleHighlight')}`;
     });
 
     // Radar circles (data points)
@@ -329,7 +329,7 @@ function drawRadarChart(
       .text((d) => {
         const varianceLabel =
           data.variance !== 'default' ? ` (${data.variance})` : '';
-        return `${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}\nClick to toggle model highlight`;
+        return `${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}\n${t('chart.clickToToggleHighlight')}`;
       });
   });
 
@@ -341,7 +341,7 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .style('font-size', '18px')
     .style('font-weight', 'bold')
-    .text('Performance Radar - Category Overview');
+    .text(t('chart.radarTitle'));
 
   svg
     .append('text')
@@ -350,9 +350,7 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .style('font-size', '12px')
     .style('fill', '#666')
-    .text(
-      'Hover over lines/dots to see details • Click category labels or model legend to highlight',
-    );
+    .text(t('chart.radarSubtitle'));
 
   // Legend (clickable)
   const legendG = svg
@@ -365,7 +363,7 @@ function drawRadarChart(
     .attr('y', -10)
     .style('font-size', '13px')
     .style('font-weight', 'bold')
-    .text('Models');
+    .text(t('chart.legendModels'));
 
   legendG
     .append('text')
@@ -373,7 +371,7 @@ function drawRadarChart(
     .attr('y', 5)
     .style('font-size', '10px')
     .style('fill', '#666')
-    .text('(click to highlight)');
+    .text(t('chart.legendClickToHighlight'));
 
   sources.forEach((source, i) => {
     const sourceId = getSourceIdentifier(source);
@@ -437,7 +435,10 @@ function drawRadarChart(
 
     legendItem
       .append('title')
-      .text(fullModelName + (source.isOfficial ? ' (Official)' : ''));
+      .text(
+        fullModelName +
+          (source.isOfficial ? ` (${t('chart.officialTag')})` : ''),
+      );
   });
 }
 
@@ -576,7 +577,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
   if (sources.length === 0) {
     return (
       <div className='text-gray-500 text-center py-8'>
-        No data available. Please load a benchmark or upload files.
+        {t('chart.noDataAvailable')}
       </div>
     );
   }

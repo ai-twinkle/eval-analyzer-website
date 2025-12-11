@@ -334,7 +334,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('rx', 3)
         .style('cursor', 'help')
         .append('title')
-        .text(`Benchmark: ${test.dataset}`);
+        .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
 
       // Dataset badge text
       g.append('text')
@@ -348,7 +348,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .style('cursor', 'help')
         .text(datasetText)
         .append('title')
-        .text(`Benchmark: ${test.dataset}`);
+        .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
 
       // Test name
       g.append('text')
@@ -414,7 +414,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .text(() => {
             const varianceLabel =
               source.variance !== 'default' ? ` (${source.variance})` : '';
-            return `${source.modelName}${varianceLabel}\nMin: ${formatValue(stats.min, scale0100)}`;
+            return `${source.modelName}${varianceLabel}\n${t('chart.min')}: ${formatValue(stats.min, scale0100)}`;
           });
 
         // Avg bar (middle, medium opacity)
@@ -431,7 +431,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .text(() => {
             const varianceLabel =
               source.variance !== 'default' ? ` (${source.variance})` : '';
-            return `${source.modelName}${varianceLabel}\nAvg: ${formatValue(stats.avg, scale0100)}`;
+            return `${source.modelName}${varianceLabel}\n${t('chart.average')}: ${formatValue(stats.avg, scale0100)}`;
           });
 
         // Max bar (bottom, darkest)
@@ -454,7 +454,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .text(() => {
             const varianceLabel =
               source.variance !== 'default' ? ` (${source.variance})` : '';
-            return `${source.modelName}${varianceLabel}\nMax: ${formatValue(stats.max, scale0100)}`;
+            return `${source.modelName}${varianceLabel}\n${t('chart.max')}: ${formatValue(stats.max, scale0100)}`;
           });
 
         // Label for avg bar (only if space allows)
@@ -491,9 +491,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('text-anchor', 'middle')
       .style('font-size', '13px')
       .style('font-weight', 'bold')
-      .text('Accuracy Score');
-
-    // Legend for Models
+      .text(t('chart.accuracyScore')); // Legend for Models
     const legend = svg
       .append('g')
       .attr(
@@ -507,8 +505,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('y', 0)
       .style('font-size', '12px')
       .style('font-weight', 'bold')
-      .text('Models:');
-
+      .text(`${t('chart.legendModels')}:`);
     sources.forEach((source, i) => {
       const sourceId = getSourceIdentifier(source);
       const legendRow = legend
@@ -556,8 +553,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('y', 0)
       .style('font-size', '12px')
       .style('font-weight', 'bold')
-      .text('Benchmarks:');
-
+      .text(t('chart.legendBenchmarks'));
     uniqueDatasets.forEach((dataset, i) => {
       const datasetRow = datasetLegend
         .append('g')
@@ -580,6 +576,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .append('title')
         .text(dataset);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     expandedCategory,
     categoryStats,
@@ -597,7 +594,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         title={
           <span>
             <RadarChartOutlined style={{ marginRight: 8 }} />
-            Performance Radar - Category Overview
+            {t('chart.radarTitle')}
           </span>
         }
         className={'!mb-5'}

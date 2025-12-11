@@ -72,7 +72,21 @@
     "models": "models",
     "tests": "tests",
     "avg": "avg",
-    "totalModels": "Total {{total}} models"
+    "totalModels": "Total {{total}} models",
+    "radarTitle": "Performance Radar - Category Overview",
+    "radarSubtitle": "Hover over lines/dots to see details • Click category labels or model legend to highlight",
+    "legendModels": "Models",
+    "legendClickToHighlight": "(click to highlight)",
+    "legendBenchmarks": "Benchmarks:",
+    "noDataAvailable": "No data available. Please load a benchmark or upload files.",
+    "clickToToggleHighlight": "Click to toggle highlight",
+    "clickToFocus": "Click to focus",
+    "min": "Min",
+    "max": "Max",
+    "benchmarkLabel": "Benchmark",
+    "accuracyScore": "Accuracy Score",
+    "officialTag": "Official",
+    "testsCount": "{{count}} tests"
   },
   "categories": {
     "computerScience": "Computer Science",
