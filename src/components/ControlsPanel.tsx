@@ -52,11 +52,25 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   const filteredSources = sources.filter((source) => {
     const searchLower = searchText.toLowerCase();
     return (
+      source.provider.toLowerCase().includes(searchLower) ||
       source.modelName.toLowerCase().includes(searchLower) ||
       source.variance.toLowerCase().includes(searchLower) ||
       source.timestamp.toLowerCase().includes(searchLower)
     );
   });
+
+  // Group filtered sources by provider
+  const groupedByProvider = filteredSources.reduce(
+    (acc, source) => {
+      const provider = source.provider;
+      if (!acc[provider]) {
+        acc[provider] = [];
+      }
+      acc[provider].push(source);
+      return acc;
+    },
+    {} as Record<string, DataSource[]>,
+  );
 
   return (
     <div className='h-full overflow-y-auto p-4 bg-gray-50'>
@@ -105,33 +119,49 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               className='mb-2'
             />
             <List className='space-y-2 max-h-70 overflow-y-auto'>
-              {filteredSources.map((source) => (
-                <Item key={source.id} className='flex items-center'>
-                  <Checkbox
-                    checked={selectedSourceIds.includes(source.id)}
-                    onChange={(e) =>
-                      handleToggleSource(source.id, e.target.checked)
-                    }
-                  >
-                    <span className='text-sm'>
-                      {source.modelName}
-                      {source.variance !== 'default' && (
-                        <span className='ml-1 text-xs text-gray-600'>
-                          ({source.variance})
-                        </span>
-                      )}
-                      {source.isOfficial && (
-                        <span className='ml-1 text-xs text-blue-600'>
-                          ({t('controls.official')})
-                        </span>
-                      )}
-                      <div className='text-xs text-gray-500'>
-                        {source.timestamp}
-                      </div>
-                    </span>
-                  </Checkbox>
-                </Item>
-              ))}
+              {Object.entries(groupedByProvider).map(
+                ([provider, providerSources]) => (
+                  <div key={provider} className='mb-3'>
+                    {/* Provider Header */}
+                    <div className='text-xs font-bold text-gray-600 mb-1'>
+                      {provider}
+                    </div>
+                    {/* Models in this provider group */}
+                    {providerSources.map((source) => (
+                      <Item key={source.id} className='flex items-center pl-2'>
+                        <Checkbox
+                          checked={selectedSourceIds.includes(source.id)}
+                          onChange={(e) =>
+                            handleToggleSource(source.id, e.target.checked)
+                          }
+                        >
+                          <span className='text-sm'>
+                            {source.modelName}
+                            {source.variance !== 'default' && (
+                              <span className='ml-1 text-xs text-gray-600'>
+                                ({source.variance})
+                              </span>
+                            )}
+                            {source.openSource && (
+                              <span className='ml-1 text-xs text-green-600'>
+                                (OSS)
+                              </span>
+                            )}
+                            {source.isOfficial && (
+                              <span className='ml-1 text-xs text-blue-600'>
+                                ({t('controls.official')})
+                              </span>
+                            )}
+                            <div className='text-xs text-gray-500'>
+                              {source.timestamp}
+                            </div>
+                          </span>
+                        </Checkbox>
+                      </Item>
+                    ))}
+                  </div>
+                ),
+              )}
             </List>
           </div>
         </>

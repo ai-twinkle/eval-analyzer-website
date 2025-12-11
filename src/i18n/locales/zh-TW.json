@@ -38,6 +38,7 @@
   "chart": {
     "category": "類別",
     "accuracy": "準確率",
+    "provider": "提供者",
     "model": "模型",
     "test": "測試",
     "benchmark": "基準測試",

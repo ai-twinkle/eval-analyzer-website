@@ -115,8 +115,10 @@ export const Home: React.FC = () => {
           const newSource: DataSource = {
             id: `official-${benchmark.id}-${latestRun.timestamp}`,
             label: benchmark.label,
+            provider: benchmark.provider,
             modelName,
             variance: benchmark.variance,
+            openSource: benchmark.openSource,
             timestamp,
             isOfficial: true,
             data: validation.data || data,
@@ -203,8 +205,10 @@ export const Home: React.FC = () => {
         const newSource: DataSource = {
           id: `upload-${Date.now()}-${Math.random()}`,
           label: file.name,
+          provider: 'User Upload',
           modelName,
           variance: 'default',
+          openSource: false,
           timestamp,
           isOfficial: false,
           data,

@@ -45,8 +45,10 @@ export type BenchmarkConfig = z.infer<typeof BenchmarkConfigSchema>;
 export interface DataSource {
   id: string;
   label: string;
+  provider: string;
   modelName: string;
   variance: string;
+  openSource: boolean;
   timestamp: string;
   isOfficial: boolean;
   data: unknown;

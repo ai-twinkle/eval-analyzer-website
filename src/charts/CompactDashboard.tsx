@@ -241,7 +241,7 @@ function drawRadarChart(
     radarPath.append('title').text(() => {
       const varianceLabel =
         data.variance !== 'default' ? ` (${data.variance})` : '';
-      return `${data.modelName}${varianceLabel}${data.isOfficial ? ` (${t('chart.officialTag')})` : ''}\n${t('chart.clickToToggleHighlight')}`;
+      return `${radarData.find((d) => d.source === data.source)?.source ? sources.find((s) => getSourceIdentifier(s) === data.source)?.provider + ' — ' : ''}${data.modelName}${varianceLabel}${data.isOfficial ? ` (${t('chart.officialTag')})` : ''}${sources.find((s) => getSourceIdentifier(s) === data.source)?.openSource ? ' (OSS)' : ''}\n${t('chart.clickToToggleHighlight')}`;
     });
 
     // Radar circles (data points)
@@ -282,7 +282,13 @@ function drawRadarChart(
 
         const varianceLabel =
           data.variance !== 'default' ? ` (${data.variance})` : '';
-        const text = `${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}`;
+        const sourceData = sources.find(
+          (s) => getSourceIdentifier(s) === data.source,
+        );
+        const providerLabel = sourceData?.provider
+          ? `${sourceData.provider} — `
+          : '';
+        const text = `${providerLabel}${data.modelName}${varianceLabel}\n${d.axis}: ${formatValue(d.value, scale0100)}`;
         const lines = text.split('\n');
 
         tooltip
@@ -352,10 +358,10 @@ function drawRadarChart(
     .style('fill', '#666')
     .text(t('chart.radarSubtitle'));
 
-  // Legend (clickable)
+  // Legend (clickable) - Grouped by provider
   const legendG = svg
     .append('g')
-    .attr('transform', `translate(${width - 180}, 100)`);
+    .attr('transform', `translate(${width - 200}, 100)`);
 
   legendG
     .append('text')
@@ -373,72 +379,111 @@ function drawRadarChart(
     .style('fill', '#666')
     .text(t('chart.legendClickToHighlight'));
 
-  sources.forEach((source, i) => {
-    const sourceId = getSourceIdentifier(source);
-    const yPos = 25 + i * 30;
-    const color = colorScale(i.toString());
-    const isHighlighted = !highlightedModel || highlightedModel === sourceId;
-    const isSelected = highlightedModel === sourceId;
+  // Group sources by provider
+  const groupedByProvider = sources.reduce(
+    (acc, source, idx) => {
+      const provider = source.provider;
+      if (!acc[provider]) {
+        acc[provider] = [];
+      }
+      acc[provider].push({ source, index: idx });
+      return acc;
+    },
+    {} as Record<string, Array<{ source: DataSource; index: number }>>,
+  );
 
-    const legendItem = legendG
-      .append('g')
-      .attr('transform', `translate(0, ${yPos})`)
-      .attr('class', 'legend-item')
-      .style('cursor', 'pointer')
-      .style('opacity', isHighlighted ? 1 : 0.4)
-      .on('click', () => onModelClick(sourceId))
-      .on('mouseenter', function () {
-        d3.select(this).style('opacity', 1);
-      })
-      .on('mouseleave', function () {
-        d3.select(this).style('opacity', isHighlighted ? 1 : 0.4);
-      });
+  let currentY = 25;
 
-    // Line sample
-    legendItem
-      .append('line')
-      .attr('x1', 0)
-      .attr('x2', 30)
-      .attr('y1', 0)
-      .attr('y2', 0)
-      .attr('stroke', color)
-      .attr('stroke-width', isSelected ? 3 : 2);
-
-    // Circle sample
-    legendItem
-      .append('circle')
-      .attr('cx', 15)
-      .attr('cy', 0)
-      .attr('r', isSelected ? 5 : 4)
-      .attr('fill', color)
-      .attr('stroke', 'white')
-      .attr('stroke-width', 2);
-
-    // Model name
-    const varianceLabel =
-      source.variance !== 'default' ? ` (${source.variance})` : '';
-    const fullModelName = `${source.modelName}${varianceLabel}`;
-    const modelLabel =
-      fullModelName.length > 22
-        ? fullModelName.substring(0, 19) + '...'
-        : fullModelName;
-
-    legendItem
+  // Render each provider group
+  Object.entries(groupedByProvider).forEach(([provider, items]) => {
+    // Provider header
+    legendG
       .append('text')
-      .attr('x', 38)
-      .attr('y', 0)
-      .attr('dy', '0.35em')
-      .style('font-size', '11px')
-      .style('font-weight', isSelected ? 'bold' : 'normal')
-      .style('fill', isSelected ? '#1890ff' : '#333')
-      .text(modelLabel + (source.isOfficial ? ' ⭐' : ''));
+      .attr('x', 0)
+      .attr('y', currentY)
+      .style('font-size', '12px')
+      .style('font-weight', 'bold')
+      .style('fill', '#555')
+      .text(provider);
 
-    legendItem
-      .append('title')
-      .text(
-        fullModelName +
-          (source.isOfficial ? ` (${t('chart.officialTag')})` : ''),
-      );
+    currentY += 20;
+
+    // Render each model in the group
+    items.forEach(({ source, index: i }) => {
+      const sourceId = getSourceIdentifier(source);
+      const color = colorScale(i.toString());
+      const isHighlighted = !highlightedModel || highlightedModel === sourceId;
+      const isSelected = highlightedModel === sourceId;
+
+      const legendItem = legendG
+        .append('g')
+        .attr('transform', `translate(10, ${currentY})`)
+        .attr('class', 'legend-item')
+        .style('cursor', 'pointer')
+        .style('opacity', isHighlighted ? 1 : 0.4)
+        .on('click', () => onModelClick(sourceId))
+        .on('mouseenter', function () {
+          d3.select(this).style('opacity', 1);
+        })
+        .on('mouseleave', function () {
+          d3.select(this).style('opacity', isHighlighted ? 1 : 0.4);
+        });
+
+      // Line sample
+      legendItem
+        .append('line')
+        .attr('x1', 0)
+        .attr('x2', 25)
+        .attr('y1', 0)
+        .attr('y2', 0)
+        .attr('stroke', color)
+        .attr('stroke-width', isSelected ? 3 : 2);
+
+      // Circle sample
+      legendItem
+        .append('circle')
+        .attr('cx', 12.5)
+        .attr('cy', 0)
+        .attr('r', isSelected ? 5 : 4)
+        .attr('fill', color)
+        .attr('stroke', 'white')
+        .attr('stroke-width', 2);
+
+      // Model name without provider
+      const varianceLabel =
+        source.variance !== 'default' ? ` (${source.variance})` : '';
+      const fullModelName = `${source.modelName}${varianceLabel}`;
+      const modelLabel =
+        fullModelName.length > 20
+          ? fullModelName.substring(0, 17) + '...'
+          : fullModelName;
+
+      legendItem
+        .append('text')
+        .attr('x', 33)
+        .attr('y', 0)
+        .attr('dy', '0.35em')
+        .style('font-size', '10px')
+        .style('font-weight', isSelected ? 'bold' : 'normal')
+        .style('fill', isSelected ? '#1890ff' : '#333')
+        .text(
+          modelLabel +
+            (source.isOfficial ? ' ⭐' : '') +
+            (source.openSource ? ' 🟢' : ''),
+        );
+
+      legendItem
+        .append('title')
+        .text(
+          fullModelName +
+            (source.isOfficial ? ` (${t('chart.officialTag')})` : '') +
+            (source.openSource ? ' (OSS)' : ''),
+        );
+
+      currentY += 25;
+    });
+
+    currentY += 10; // Extra spacing between provider groups
   });
 }
 

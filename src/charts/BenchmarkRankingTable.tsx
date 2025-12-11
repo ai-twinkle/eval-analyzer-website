@@ -22,8 +22,10 @@ interface BenchmarkData {
 
 interface ModelRankingRow {
   key: string;
+  provider: string;
   modelName: string;
   displayName: string;
+  openSource: boolean;
   isOfficial: boolean;
   timestamp: string;
   average: number;
@@ -100,8 +102,10 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
 
         const row: ModelRankingRow = {
           key: `${benchmarkName}-${source.id}`,
+          provider: source.provider,
           modelName: source.modelName,
           displayName,
+          openSource: source.openSource,
           isOfficial: source.isOfficial,
           timestamp: source.timestamp,
           average: 0,
@@ -140,25 +144,45 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
   ): ColumnsType<ModelRankingRow> => {
     const baseColumns: ColumnsType<ModelRankingRow> = [
       {
+        title: t('chart.provider'),
+        dataIndex: 'provider',
+        key: 'provider',
+        fixed: 'left',
+        width: 120,
+        sorter: (a, b) => a.provider.localeCompare(b.provider),
+        render: (text: string) => (
+          <Text strong style={{ fontSize: '12px' }}>
+            {text}
+          </Text>
+        ),
+      },
+      {
         title: t('chart.model'),
         dataIndex: 'displayName',
         key: 'displayName',
         fixed: 'left',
-        width: 250,
+        width: 200,
         sorter: (a, b) => a.displayName.localeCompare(b.displayName),
         render: (text: string, record: ModelRankingRow) => (
           <div>
             <Text strong style={{ fontSize: '13px' }}>
               {text}
             </Text>
-            {record.isOfficial && (
-              <Text
-                type='secondary'
-                style={{ fontSize: '11px', display: 'block' }}
-              >
-                ({t('controls.official')})
-              </Text>
-            )}
+            <div>
+              {record.openSource && (
+                <Text
+                  type='success'
+                  style={{ fontSize: '11px', marginRight: '8px' }}
+                >
+                  (OSS)
+                </Text>
+              )}
+              {record.isOfficial && (
+                <Text type='secondary' style={{ fontSize: '11px' }}>
+                  ({t('controls.official')})
+                </Text>
+              )}
+            </div>
             <Text
               type='secondary'
               style={{ fontSize: '11px', display: 'block' }}

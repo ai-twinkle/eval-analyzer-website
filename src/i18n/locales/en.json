@@ -38,6 +38,7 @@
   "chart": {
     "category": "Category",
     "accuracy": "Accuracy",
+    "provider": "Provider",
     "model": "Model",
     "test": "Test",
     "benchmark": "Benchmark",
