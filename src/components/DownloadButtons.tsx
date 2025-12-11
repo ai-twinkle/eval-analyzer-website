@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button, Space } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { downloadCSV, pivotToCSV } from '../features/csv';
-import type { PivotRow } from '../features/types';
+import type { PivotRow } from '../types';
 
 interface DownloadButtonsProps {
   pivotData: PivotRow[];
@@ -13,6 +14,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   pivotData,
   scale0100,
 }) => {
+  const { t } = useTranslation();
   const handleDownloadPivot = () => {
     const csv = pivotToCSV(pivotData, scale0100);
     downloadCSV(csv, 'pivot_data.csv');
@@ -20,7 +22,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
 
   return (
     <div className='mb-4'>
-      <div className='font-medium mb-2'>Export CSV</div>
+      <div className='font-medium mb-2'>{t('controls.exportCSV')}</div>
       <Space direction='vertical' style={{ width: '100%' }}>
         <Button
           icon={<DownloadOutlined />}
@@ -29,7 +31,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
           size='small'
           block
         >
-          Pivot Table
+          {t('controls.pivotTable')}
         </Button>
       </Space>
     </div>

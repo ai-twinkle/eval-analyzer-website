@@ -6,4 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   base: '/eval-analyzer-website/',
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.d.ts'],
+  },
 });

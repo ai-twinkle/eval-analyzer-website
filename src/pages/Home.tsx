@@ -5,11 +5,16 @@ import {
   TableOutlined,
   GithubOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { ControlsPanel } from '../components/ControlsPanel';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { CategoryDashboard } from '../charts/CategoryDashboard';
 import { BenchmarkRankingTable } from '../charts/BenchmarkRankingTable';
-import type { BenchmarkConfig, DataSource } from '../features/types';
-import { BenchmarkConfigSchema } from '../features/types';
+import {
+  type BenchmarkConfig,
+  BenchmarkConfigSchema,
+  type DataSource,
+} from '../types';
 import { discoverResultFiles, fetchResultFile } from '../features/discover';
 import { deriveSchema, mergeSchemas, validateData } from '../features/schema';
 import { parseJSONFile } from '../features/parse';
@@ -20,6 +25,7 @@ type ViewMode = 'dashboard' | 'table';
 
 export const Home: React.FC = () => {
   const { message } = App.useApp();
+  const { t } = useTranslation();
   const [config, setConfig] = useState<BenchmarkConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<DataSource[]>([]);
@@ -48,11 +54,11 @@ export const Home: React.FC = () => {
           setConfig(result.data);
           setScale0100(result.data.ui.defaultScale0100);
         } else {
-          void message.error('Invalid config file');
+          void message.error(t('messages.invalidConfig'));
         }
       })
       .catch(() => {
-        void message.error('Failed to load config');
+        void message.error(t('messages.failedLoadConfig'));
       });
   }, [message]);
 
@@ -145,12 +151,14 @@ export const Home: React.FC = () => {
       // Only show notification if there were errors
       if (errorCount > 0) {
         message.error(
-          `Loaded ${successCount} of ${config.official.length} benchmarks (${errorCount} failed)`,
+          t('messages.loadedPartial', {
+            success: successCount,
+            total: config.official.length,
+            failed: errorCount,
+          }),
         );
       } else {
-        message.success(
-          `Loaded latest results from all ${successCount} benchmarks`,
-        );
+        message.success(t('messages.loadedResults', { count: successCount }));
       }
     };
 
@@ -168,7 +176,10 @@ export const Home: React.FC = () => {
           const validation = validateData(data, dataSchema);
           if (!validation.success) {
             message.warning(
-              `${file.name}: Schema mismatch - ${validation.error}`,
+              t('messages.schemaMismatch', {
+                filename: file.name,
+                error: validation.error,
+              }),
             );
             // Still try to merge schemas
             const newSchema = deriveSchema(data);
@@ -201,9 +212,14 @@ export const Home: React.FC = () => {
         };
 
         setSources((prev) => [...prev, newSource]);
-        message.success(`Loaded ${file.name}`);
+        message.success(t('messages.loadedFile', { filename: file.name }));
       } catch (err) {
-        message.error(`Failed to parse ${file.name}: ${err}`);
+        message.error(
+          t('messages.failedParse', {
+            filename: file.name,
+            error: String(err),
+          }),
+        );
       }
     }
   };
@@ -242,10 +258,9 @@ export const Home: React.FC = () => {
         {/* Header with title and view toggle - Sticky and half opacity*/}
         <div className='sticky top-0 z-10 bg-white pt-6 pb-4 mb-2 border-b border-gray-200'>
           <Flex justify='space-between' align='center'>
-            <h1 className='text-2xl font-bold !mb-0'>
-              Twinkle Eval Visualizer
-            </h1>
+            <h1 className='text-2xl font-bold !mb-0'>{t('app.title')}</h1>
             <Space size={'small'}>
+              <LanguageSwitcher />
               {/* View Mode Toggle */}
               <Radio.Group
                 value={viewMode}
@@ -254,10 +269,10 @@ export const Home: React.FC = () => {
                 size={'middle'}
               >
                 <Radio.Button value='dashboard'>
-                  <BarChartOutlined /> Dashboard
+                  <BarChartOutlined /> {t('view.dashboard')}
                 </Radio.Button>
                 <Radio.Button value='table'>
-                  <TableOutlined /> Ranking Table
+                  <TableOutlined /> {t('view.table')}
                 </Radio.Button>
               </Radio.Group>
               <Button
@@ -276,22 +291,18 @@ export const Home: React.FC = () => {
 
         {loading ? (
           <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>
-              Loading latest results from all benchmarks...
-            </p>
-            <p className='mt-2 text-sm'>This may take a moment.</p>
+            <p className='text-lg'>{t('app.loading')}</p>
+            <p className='mt-2 text-sm'>{t('app.loadingNote')}</p>
           </div>
         ) : sources.length === 0 ? (
           <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>No data loaded yet.</p>
-            <p className='mt-2'>Upload files to get started.</p>
+            <p className='text-lg'>{t('app.noData')}</p>
+            <p className='mt-2'>{t('app.noDataHint')}</p>
           </div>
         ) : selectedSourceIds.length === 0 ? (
           <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>No models selected.</p>
-            <p className='mt-2'>
-              Select one or more models from the sidebar to compare.
-            </p>
+            <p className='text-lg'>{t('app.noSelection')}</p>
+            <p className='mt-2'>{t('app.noSelectionHint')}</p>
           </div>
         ) : viewMode === 'dashboard' ? (
           <CategoryDashboard sources={selectedSources} scale0100={scale0100} />

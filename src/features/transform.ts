@@ -1,4 +1,9 @@
-import type { CategoryResult, DataSource, PivotRow } from './types';
+import type {
+  CategoryResult,
+  DataSource,
+  PivotRow,
+  CategoryKey,
+} from '../types';
 
 /**
  * Get unique identifier for a source (model + variance)
@@ -31,7 +36,7 @@ function extractCategory(filename: string): string {
 /**
  * Categorize test by subject area
  */
-function categorizeTest(filename: string): string {
+export function categorizeTest(filename: string): CategoryKey {
   const name = filename.toLowerCase();
 
   // Computer Science
@@ -40,7 +45,7 @@ function categorizeTest(filename: string): string {
     name.includes('machine_learning') ||
     name.includes('security')
   ) {
-    return 'Computer Science';
+    return 'computerScience';
   }
   // Mathematics
   else if (
@@ -51,7 +56,7 @@ function categorizeTest(filename: string): string {
     name.includes('statistics') ||
     name.includes('trigonometry')
   ) {
-    return 'Mathematics';
+    return 'mathematics';
   }
   // Medicine & Health
   else if (
@@ -72,7 +77,7 @@ function categorizeTest(filename: string): string {
     name.includes('pathology') ||
     name.includes('medical')
   ) {
-    return 'Medicine & Health';
+    return 'medicineHealth';
   }
   // Science
   else if (
@@ -83,7 +88,7 @@ function categorizeTest(filename: string): string {
     name.includes('science') ||
     name.includes('medical')
   ) {
-    return 'Science';
+    return 'science';
   }
   // Law & Government
   else if (
@@ -98,7 +103,7 @@ function categorizeTest(filename: string): string {
     name.includes('national') ||
     name.includes('protection')
   ) {
-    return 'Law & Government';
+    return 'lawGovernment';
   }
   // Humanities & Philosophy
   else if (
@@ -113,7 +118,7 @@ function categorizeTest(filename: string): string {
     name.includes('principles') ||
     name.includes('moral')
   ) {
-    return 'Humanities & Philosophy';
+    return 'humanitiesPhilosophy';
   }
   // Business & Economics
   else if (
@@ -139,7 +144,7 @@ function categorizeTest(filename: string): string {
     name.includes('econometrics') ||
     name.includes('humanities')
   ) {
-    return 'Business & Economics';
+    return 'businessEconomics';
   }
   // Social Sciences
   else if (
@@ -151,11 +156,11 @@ function categorizeTest(filename: string): string {
     name.includes('social') ||
     name.includes('studies')
   ) {
-    return 'Social Sciences';
+    return 'socialSciences';
   }
   // Education
   else if (name.includes('education') || name.includes('profession')) {
-    return 'Education';
+    return 'education';
   }
   // Engineering & Technical
   else if (
@@ -164,7 +169,7 @@ function categorizeTest(filename: string): string {
     name.includes('electrical') ||
     name.includes('engineering')
   ) {
-    return 'Engineering & Technical';
+    return 'engineeringTechnical';
   }
   // Vocational & Arts
   else if (
@@ -175,7 +180,7 @@ function categorizeTest(filename: string): string {
     name.includes('agriculture') ||
     name.includes('fire')
   ) {
-    return 'Vocational & Arts';
+    return 'vocationalArts';
   }
   // Languages & Literature
   else if (
@@ -185,7 +190,7 @@ function categorizeTest(filename: string): string {
     name.includes('taiwanese') ||
     name.includes('hokkien')
   ) {
-    return 'Languages & Literature';
+    return 'languagesLiterature';
   }
   // Miscellaneous
   else if (
@@ -194,10 +199,10 @@ function categorizeTest(filename: string): string {
     name.includes('global') ||
     name.includes('facts')
   ) {
-    return 'Miscellaneous';
+    return 'miscellaneous';
   }
 
-  return 'Other';
+  return 'other';
 }
 
 /**
@@ -260,7 +265,7 @@ export function flattenDatasetResults(rawData: unknown): CategoryResult[] {
  */
 export function groupByCategory(
   results: CategoryResult[],
-): Record<string, CategoryResult[]> {
+): Record<CategoryKey, CategoryResult[]> {
   const grouped: Record<string, CategoryResult[]> = {};
 
   for (const result of results) {

@@ -5,9 +5,10 @@ import {
   CheckSquareOutlined,
   SearchOutlined,
 } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
-import type { DataSource, PivotRow } from '../features/types';
+import type { DataSource, PivotRow } from '../types';
 import Item from 'antd/es/list/Item';
 
 interface ControlsPanelProps {
@@ -29,6 +30,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onScaleToggle,
   pivotData,
 }) => {
+  const { t } = useTranslation();
   const handleSelectAll = () => {
     onSourceSelectionChange(sources.map((s) => s.id));
   };
@@ -58,7 +60,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 
   return (
     <div className='h-full overflow-y-auto p-4 bg-gray-50'>
-      <h2 className='text-xl font-bold mb-4'>Controls</h2>
+      <h2 className='text-xl font-bold mb-4'>{t('controls.title')}</h2>
 
       {/* File Upload */}
       <FileUploader onFilesSelected={onFilesUpload} />
@@ -72,7 +74,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             <div className='font-medium mb-2 flex items-center justify-between'>
               <span className='flex items-center'>
                 <CheckSquareOutlined className='mr-2' />
-                Select Models to Compare
+                {t('controls.selectModels')}
               </span>
               <div className='space-x-2'>
                 <Button
@@ -81,7 +83,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                   onClick={handleSelectAll}
                   style={{ padding: 0, height: 'auto' }}
                 >
-                  All
+                  {t('controls.all')}
                 </Button>
                 <span className='text-gray-400'>|</span>
                 <Button
@@ -90,12 +92,12 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                   onClick={handleClearAll}
                   style={{ padding: 0, height: 'auto' }}
                 >
-                  None
+                  {t('controls.none')}
                 </Button>
               </div>
             </div>
             <Input
-              placeholder='Search models...'
+              placeholder={t('controls.searchPlaceholder')}
               prefix={<SearchOutlined />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
@@ -120,7 +122,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
                       )}
                       {source.isOfficial && (
                         <span className='ml-1 text-xs text-blue-600'>
-                          (Official)
+                          ({t('controls.official')})
                         </span>
                       )}
                       <div className='text-xs text-gray-500'>
@@ -142,7 +144,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <div className='flex items-center justify-between mb-2'>
           <span className='font-medium flex items-center'>
             <SlidersOutlined className='mr-2' />
-            Scale
+            {t('controls.scale')}
           </span>
           <Switch
             checked={scale0100}

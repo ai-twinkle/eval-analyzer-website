@@ -1,5 +1,22 @@
 import { z } from 'zod';
 
+// Category types for i18n
+export type CategoryKey =
+  | 'computerScience'
+  | 'mathematics'
+  | 'medicineHealth'
+  | 'science'
+  | 'lawGovernment'
+  | 'humanitiesPhilosophy'
+  | 'businessEconomics'
+  | 'socialSciences'
+  | 'education'
+  | 'engineeringTechnical'
+  | 'vocationalArts'
+  | 'languagesLiterature'
+  | 'miscellaneous'
+  | 'other';
+
 // Config types
 export const BenchmarkConfigSchema = z.object({
   official: z.array(

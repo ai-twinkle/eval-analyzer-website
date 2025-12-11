@@ -1,4 +1,4 @@
-import type { PivotRow } from './types';
+import type { PivotRow } from '../types';
 import { formatValue } from './transform';
 
 /**

@@ -9,7 +9,8 @@ import {
   SortDescendingOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons';
-import type { DataSource } from '../features/types';
+import { useTranslation } from 'react-i18next';
+import type { DataSource } from '../types';
 import {
   flattenDatasetResults,
   groupByCategory,
@@ -45,6 +46,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
   sources,
   scale0100,
 }) => {
+  const { t } = useTranslation();
   const detailChartRef = useRef<HTMLDivElement>(null);
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -263,7 +265,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('text-anchor', 'middle')
       .style('font-size', '18px')
       .style('font-weight', 'bold')
-      .text(`${expandedCategory} - Detailed Test Results`);
+      .text(`${expandedCategory} - ${t('chart.detailedResults')}`);
 
     svg
       .append('text')
@@ -273,7 +275,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .style('font-size', '12px')
       .style('fill', '#666')
       .text(
-        `${categoryInfo.testCount} tests • Benchmarks shown with colored badges • Models side-by-side: Min (light), Avg (medium), Max (dark)`,
+        `${t('chart.testCount', { count: categoryInfo.testCount })} • ${t('chart.benchmarksShown')} • ${t('chart.modelsSideBySide')}`,
       );
 
     const g = svg
@@ -601,8 +603,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         className={'!mb-5'}
       >
         <div className='mb-3 text-sm text-gray-600 bg-blue-50 p-3 rounded border border-blue-200'>
-          <strong>💡 Tip:</strong> Click on a category label in the radar chart
-          to view detailed test results below
+          <strong>💡 {t('chart.tipLabel')}</strong> {t('chart.tipText')}
         </div>
         <CompactDashboard
           sources={sources}
@@ -623,10 +624,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       {/* Expanded Detail Chart */}
       {expandedCategory && (
         <>
-          <Card size='small' title='Test View Controls'>
+          <Card size='small' title={t('chart.testViewControls')}>
             <Space direction='horizontal' size='middle'>
               <Space size='small'>
-                <span style={{ fontWeight: 600 }}>Sort Tests:</span>
+                <span style={{ fontWeight: 600 }}>{t('chart.sortTests')}</span>
                 <Radio.Group
                   value={testSortMode}
                   onChange={(e) => setTestSortMode(e.target.value)}
@@ -634,10 +635,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
                   size='small'
                 >
                   <Radio.Button value='accuracy'>
-                    <SortDescendingOutlined /> Accuracy
+                    <SortDescendingOutlined /> {t('chart.accuracy')}
                   </Radio.Button>
                   <Radio.Button value='benchmark'>
-                    <AppstoreOutlined /> By Benchmark
+                    <AppstoreOutlined /> {t('chart.byBenchmark')}
                   </Radio.Button>
                   <Radio.Button value='name'>
                     <SortAscendingOutlined /> A-Z
@@ -649,7 +650,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
                 icon={<UpOutlined />}
                 onClick={() => setExpandedCategory(null)}
               >
-                Collapse
+                {t('chart.collapse')}
               </Button>
             </Space>
           </Card>
@@ -657,7 +658,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             title={
               <span>
                 <BarChartOutlined style={{ marginRight: 8 }} />
-                Detailed Test Results: {expandedCategory}
+                {t('chart.detailedResults')}: {expandedCategory}
               </span>
             }
           >

@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Table, Card, Select, Space, Typography } from 'antd';
 import { TableOutlined, SortAscendingOutlined } from '@ant-design/icons';
+import { useTranslation } from 'react-i18next';
 import type { ColumnsType } from 'antd/es/table';
-import type { DataSource } from '../features/types';
+import type { DataSource } from '../types';
 import { flattenDatasetResults, formatValue } from '../features/transform';
 
 const { Title, Text } = Typography;
@@ -43,6 +44,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
   sources,
   scale0100,
 }) => {
+  const { t } = useTranslation();
   const [sortBy, setSortBy] = useState<string>('average');
 
   const benchmarkData = useMemo((): BenchmarkData[] => {
@@ -138,7 +140,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
   ): ColumnsType<ModelRankingRow> => {
     const baseColumns: ColumnsType<ModelRankingRow> = [
       {
-        title: 'Model',
+        title: t('chart.model'),
         dataIndex: 'displayName',
         key: 'displayName',
         fixed: 'left',
@@ -154,7 +156,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
                 type='secondary'
                 style={{ fontSize: '11px', display: 'block' }}
               >
-                (Official)
+                ({t('controls.official')})
               </Text>
             )}
             <Text
@@ -167,7 +169,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         ),
       },
       {
-        title: 'Average',
+        title: t('chart.average'),
         dataIndex: 'average',
         key: 'average',
         width: 120,
@@ -240,7 +242,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
       <Card>
         <div className='text-center text-gray-500 py-8'>
           <TableOutlined style={{ fontSize: 48, marginBottom: 16 }} />
-          <div>No data available</div>
+          <div>{t('chart.noData')}</div>
         </div>
       </Card>
     );
@@ -252,32 +254,30 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         <Space>
           <TableOutlined style={{ fontSize: 12 }} />
           <Title level={5} style={{ margin: 0 }}>
-            Ranking Tables
+            {t('chart.rankingTables')}
           </Title>
         </Space>
         <Space>
           <SortAscendingOutlined />
-          <Text>Sort by:</Text>
+          <Text>{t('chart.sortBy')}</Text>
           <Select
             value={sortBy}
             onChange={setSortBy}
             style={{ width: 225 }}
             size={'middle'}
           >
-            <Option value='modelName'>Model Name (A-Z)</Option>
-            <Option value='average'>Average Score (High to Low)</Option>
+            <Option value='modelName'>{t('chart.modelNameAZ')}</Option>
+            <Option value='average'>{t('chart.averageScore')}</Option>
           </Select>
         </Space>
       </div>
 
       <Card size='small' className='bg-blue-50 border-blue-200 !mb-5'>
         <Text>
-          <strong>Note:</strong> Each table shows results for one benchmark.
-          Rows represent models, columns represent tests. Click column headers
-          to sort.
+          <strong>{t('chart.noteLabel')}</strong> {t('chart.noteText')}
           {scale0100
-            ? ' Scores are shown as percentages (0-100).'
-            : ' Scores are shown as decimals (0-1).'}
+            ? ` ${t('chart.scoresPercentage')}`
+            : ` ${t('chart.scoresDecimal')}`}
         </Text>
       </Card>
 
@@ -306,8 +306,9 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
                   {benchmark.benchmarkName}
                 </Text>
                 <Text type='secondary' style={{ fontSize: 14 }}>
-                  ({sortedModels.length} models, {benchmark.allTests.length}{' '}
-                  tests, avg: {formatValue(avgScore, scale0100)}
+                  ({sortedModels.length} {t('chart.models')},{' '}
+                  {benchmark.allTests.length} {t('chart.tests')},{' '}
+                  {t('chart.avg')}: {formatValue(avgScore, scale0100)}
                   {scale0100 ? '%' : ''})
                 </Text>
               </Space>
@@ -321,7 +322,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
                 defaultPageSize: 20,
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '20', '30', '50', '100'],
-                showTotal: (total) => `Total ${total} models`,
+                showTotal: (total) => t('chart.totalModels', { total }),
               }}
               scroll={{ x: 'max-content' }}
               size='small'

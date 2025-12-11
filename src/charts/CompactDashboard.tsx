@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
-import type { DataSource } from '../features/types';
+import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
+import type { DataSource, CategoryKey } from '../types';
 import {
   flattenDatasetResults,
   groupByCategory,
@@ -18,7 +20,7 @@ interface CompactDashboardProps {
 }
 
 interface CategoryData {
-  category: string;
+  category: CategoryKey;
   mean: number;
   count: number;
 }
@@ -40,6 +42,7 @@ function drawRadarChart(
   selectedCategory: string | null,
   onCategoryClick: (category: string) => void,
   onModelClick: (model: string) => void,
+  t: TFunction,
 ) {
   const margin = { top: 100, right: 220, bottom: 80, left: 220 };
   const radius =
@@ -124,7 +127,13 @@ function drawRadarChart(
     })
     .text((d) => {
       const categoryInfo = topCategories.find((c) => c.category === d);
-      const shortName = d.length > 18 ? d.substring(0, 15) + '...' : d;
+      const translatedName = t(
+        `categories.${d}` as `categories.${CategoryKey}`,
+      );
+      const shortName =
+        translatedName.length > 18
+          ? translatedName.substring(0, 15) + '...'
+          : translatedName;
       return categoryInfo ? `${shortName} (${categoryInfo.count})` : shortName;
     })
     .style('font-size', '11px')
@@ -157,7 +166,10 @@ function drawRadarChart(
     .append('title')
     .text((d) => {
       const categoryInfo = topCategories.find((c) => c.category === d);
-      return `${d}\n${categoryInfo?.count || 0} tests\nClick to focus`;
+      const translatedName = t(
+        `categories.${d}` as `categories.${CategoryKey}`,
+      );
+      return `${translatedName}\n${categoryInfo?.count || 0} tests\nClick to focus`;
     });
 
   // Prepare data for each source
@@ -437,6 +449,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
   highlightedModel: externalHighlightedModel,
   onModelHighlight,
 }) => {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
   const [internalSelectedCategory, setInternalSelectedCategory] = useState<
     string | null
@@ -503,7 +516,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
         const tests = categoryStats.get(cat) || [];
         const accuracies = tests.map((t) => t.accuracy);
         return {
-          category: cat,
+          category: cat as CategoryKey,
           mean: d3.mean(accuracies) || 0,
           count: tests.length,
         };
@@ -544,7 +557,9 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
           onModelHighlight(highlightedModel === model ? null : model);
         }
       },
+      t,
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     sources,
     scale0100,
