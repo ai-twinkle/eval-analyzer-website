@@ -100,7 +100,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         <FileUploader onFilesSelected={onFilesUpload} />
       </div>
 
-      <Divider className='!my-4' />
+      <Divider className='!my-3' />
 
       {/* Model Selection for Comparison */}
       {sources.length > 0 && (
@@ -142,7 +142,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               size='small'
             />
 
-            <div className='max-h-64 overflow-y-auto space-y-3 pr-1'>
+            <div className='max-h-62 overflow-y-auto space-y-3 pr-1'>
               {Object.entries(groupedByProvider).map(
                 ([provider, providerSources]) => (
                   <div key={provider}>
@@ -205,7 +205,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         </>
       )}
 
-      <Divider className='!my-4' />
+      <Divider className='!my-3' />
 
       {/* Scale Toggle */}
       <div className='mb-5'>
@@ -224,7 +224,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
         </div>
       </div>
 
-      <Divider className='!my-4' />
+      <Divider size={'small'} />
 
       {/* Download Buttons */}
       <div>
