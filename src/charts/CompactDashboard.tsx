@@ -530,7 +530,9 @@ function drawRadarChart(
       const varianceLabel =
         source.variance !== 'default' ? ` (${source.variance})` : '';
       const fullLabel = `${source.modelName}${varianceLabel}`;
-      const itemWidth = fullLabel.length * 5.5 + 25;
+      // Add space for icons
+      const iconSpace = (source.isOfficial ? 12 : 0) + (source.openSource ? 12 : 0);
+      const itemWidth = fullLabel.length * 5.5 + 25 + iconSpace;
 
       // Check if item fits on current row
       if (currentX + itemWidth > maxWidth && currentX > 0) {
@@ -567,9 +569,19 @@ function drawRadarChart(
         .attr('y', 0)
         .attr('dy', '0.35em')
         .style('font-size', '8px')
-        .text(fullLabel + (source.isOfficial ? ' ⭐' : ''));
+        .text(
+          fullLabel +
+            (source.isOfficial ? ' ⭐' : '') +
+            (source.openSource ? ' 🟢' : ''),
+        );
 
-      legendItem.append('title').text(fullLabel);
+      legendItem
+        .append('title')
+        .text(
+          fullLabel +
+            (source.isOfficial ? ` (${t('chart.officialTag')})` : '') +
+            (source.openSource ? ' (OSS)' : ''),
+        );
 
       currentX += itemWidth;
     });

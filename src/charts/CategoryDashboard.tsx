@@ -252,7 +252,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     if (isMobile) {
       const maxWidth = width - 20;
       let currentX = 0;
-      let rowY = 0;
+      let rowY = 16;
       sources.forEach((source) => {
         const varianceLabel =
           source.variance !== 'default' ? ` (${source.variance})` : '';
@@ -265,7 +265,21 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         }
         currentX += itemWidth;
       });
-      mobileLegendHeight = rowY + 30; // Base height + rows
+
+      // Add space for Benchmarks title
+      rowY += 30;
+      currentX = 0;
+
+      // Calculate Benchmark rows
+      uniqueDatasets.forEach((dataset) => {
+        const itemWidth = dataset.length * 5.5 + 20;
+        if (currentX + itemWidth > maxWidth && currentX > 0) {
+          currentX = 0;
+          rowY += 16;
+        }
+        currentX += itemWidth;
+      });
+      mobileLegendHeight = rowY;
     }
 
     const margin = {
@@ -356,7 +370,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('dominant-baseline', 'auto')
           .style('font-size', '9px')
           .style('font-weight', 'bold')
-          .style('fill', '#262626')
+          .style('fill', datasetColor)
           .text(`#${rank} ${test.testName}`)
           .append('title')
           .text(`${test.dataset}/${test.testName}`);
@@ -557,8 +571,16 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('transform', `translate(10, 30)`);
 
       let currentX = 0;
-      let rowY = 0;
+      let rowY = 16;
       const maxWidth = width - 20;
+
+      mobileLegend
+        .append('text')
+        .attr('x', 0)
+        .attr('y', 8)
+        .style('font-size', '9px')
+        .style('font-weight', 'bold')
+        .text(t('chart.legendModels'));
 
       sources.forEach((source) => {
         const color = colorScale(getSourceIdentifier(source)) as string;
@@ -589,6 +611,48 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('y', 8)
           .style('font-size', '8px')
           .text(fullName);
+
+        currentX += itemWidth;
+      });
+
+      // Benchmark Legend (Datasets)
+      rowY += 30;
+      currentX = 0;
+
+      mobileLegend
+        .append('text')
+        .attr('x', 0)
+        .attr('y', rowY - 8)
+        .style('font-size', '9px')
+        .style('font-weight', 'bold')
+        .text(t('chart.legendBenchmarks'));
+
+      uniqueDatasets.forEach((dataset) => {
+        const itemWidth = dataset.length * 5.5 + 20;
+
+        if (currentX + itemWidth > maxWidth && currentX > 0) {
+          currentX = 0;
+          rowY += 16;
+        }
+
+        const item = mobileLegend
+          .append('g')
+          .attr('transform', `translate(${currentX}, ${rowY})`);
+
+        item
+          .append('rect')
+          .attr('width', 10)
+          .attr('height', 10)
+          .attr('fill', datasetColorScale(dataset) as string)
+          .attr('opacity', 0.6)
+          .attr('rx', 2);
+
+        item
+          .append('text')
+          .attr('x', 14)
+          .attr('y', 8)
+          .style('font-size', '8px')
+          .text(dataset);
 
         currentX += itemWidth;
       });
