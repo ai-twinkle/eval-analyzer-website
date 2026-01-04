@@ -54,6 +54,14 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
   const [testSortMode, setTestSortMode] = useState<
     'accuracy' | 'benchmark' | 'name'
   >('accuracy');
+  const [selectedBenchmark, setSelectedBenchmark] = useState<string | null>(
+    null,
+  );
+
+  // Reset selected benchmark when category changes
+  useEffect(() => {
+    setSelectedBenchmark(null);
+  }, [expandedCategory]);
 
   // Process data hierarchically by category
   const categoryStats = useMemo(() => {
@@ -207,6 +215,9 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     if (!detailChartRef.current || !expandedCategory) return;
 
     const container = detailChartRef.current;
+
+    // NOTE: We do NOT clear the chart if only highlightedModel changes because we handle that in a separate effect.
+    // But since this effect depends on other things, we clear it here.
     d3.select(container).selectAll('*').remove();
 
     const categoryInfo = categoryStats.find((c) => c.name === expandedCategory);
@@ -220,8 +231,13 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .scaleOrdinal(d3.schemePaired)
       .domain(uniqueDatasets);
 
+    // Filter tests based on selected benchmark
+    const filteredTests = selectedBenchmark
+      ? categoryInfo.tests.filter((t) => t.dataset === selectedBenchmark)
+      : categoryInfo.tests;
+
     // Sort tests
-    const sortedTests = [...categoryInfo.tests].sort((a, b) => {
+    const sortedTests = [...filteredTests].sort((a, b) => {
       if (testSortMode === 'accuracy') {
         const avgA =
           d3.mean(Array.from(a.values.values()).map((v) => v.avg)) || 0;
@@ -456,19 +472,34 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
         // Color indicator bar (thin vertical bar on the left edge)
         g.append('rect')
+          .attr('class', 'model-indicator')
+          .attr('data-source-id', sourceId)
           .attr('x', -3)
           .attr('y', modelY)
           .attr('width', 2)
           .attr('height', barGroupHeight * 0.9)
           .attr('fill', color)
           .attr('opacity', isHighlighted ? 0.8 : 0.3)
-          .attr('rx', 1);
+          .attr('rx', 1)
+          .style('cursor', 'pointer')
+          .on('mouseenter', function () {
+            setHighlightedModel(sourceId);
+          })
+          .on('mouseleave', function () {
+            setHighlightedModel(null);
+          });
 
         // Min bar (top, lightest)
         g.append('rect')
+          .attr('class', 'model-min')
+          .attr('data-source-id', sourceId)
           .attr('x', 0)
           .attr('y', modelY)
+          .attr('width', 0) // Start with 0 width for animation
+          .transition()
+          .duration(500)
           .attr('width', xScale(stats.min))
+          .selection() // Go back to selection to apply other attributes
           .attr('height', barHeight * 0.9)
           .attr('fill', color)
           .attr('opacity', isHighlighted ? 0.35 : 0.12)
@@ -489,14 +520,26 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
         // Avg bar (middle, medium opacity)
         g.append('rect')
+          .attr('class', 'model-avg')
+          .attr('data-source-id', sourceId)
           .attr('x', 0)
           .attr('y', modelY + barHeight)
+          .attr('width', 0)
+          .transition()
+          .duration(500)
           .attr('width', xScale(stats.avg))
+          .selection()
           .attr('height', barHeight * 0.9)
           .attr('fill', color)
           .attr('opacity', isHighlighted ? 0.75 : 0.22)
           .attr('rx', 1)
           .style('cursor', 'pointer')
+          .on('mouseenter', function () {
+            setHighlightedModel(sourceId);
+          })
+          .on('mouseleave', function () {
+            setHighlightedModel(null);
+          })
           .append('title')
           .text(() => {
             const varianceLabel =
@@ -506,9 +549,15 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
         // Max bar (bottom, darkest)
         g.append('rect')
+          .attr('class', 'model-max')
+          .attr('data-source-id', sourceId)
           .attr('x', 0)
           .attr('y', modelY + 2 * barHeight)
+          .attr('width', 0)
+          .transition()
+          .duration(500)
           .attr('width', xScale(stats.max))
+          .selection()
           .attr('height', barHeight * 0.9)
           .attr('fill', color)
           .attr('opacity', isHighlighted ? 1.0 : 0.32)
@@ -528,8 +577,11 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           });
 
         // Label for avg bar (only if space allows)
-        if (isHighlighted && xScale(stats.avg) > 50) {
+        // Label for avg bar (always append, control visibility via update)
+        if (xScale(stats.avg) > 50) {
           g.append('text')
+            .attr('class', 'model-avg-label')
+            .attr('data-source-id', sourceId)
             .attr('x', xScale(stats.avg) - 3)
             .attr('y', modelY + barHeight + barHeight / 2)
             .attr('text-anchor', 'end')
@@ -538,6 +590,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
             .style('font-weight', 'bold')
             .style('fill', 'white')
             .style('pointer-events', 'none')
+            .attr('opacity', isHighlighted ? 1 : 0) // Hide by default if not highlighted
             .text(formatValue(stats.avg, scale0100));
         }
       });
@@ -635,23 +688,40 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           rowY += 16;
         }
 
+        const isSelected = selectedBenchmark === dataset;
+        const isDimmed = selectedBenchmark && !isSelected;
+
         const item = mobileLegend
           .append('g')
-          .attr('transform', `translate(${currentX}, ${rowY})`);
+          .attr('transform', `translate(${currentX}, ${rowY})`)
+          .style('cursor', 'pointer')
+          .on('click', () => {
+            setSelectedBenchmark(isSelected ? null : dataset);
+          });
 
         item
           .append('rect')
           .attr('width', 10)
           .attr('height', 10)
           .attr('fill', datasetColorScale(dataset) as string)
-          .attr('opacity', 0.6)
+          .attr('opacity', isSelected ? 1 : isDimmed ? 0.2 : 0.6)
           .attr('rx', 2);
+
+        if (isSelected) {
+          item
+            .append('circle')
+            .attr('cx', 5)
+            .attr('cy', 5)
+            .attr('r', 2)
+            .attr('fill', 'white');
+        }
 
         item
           .append('text')
           .attr('x', 14)
           .attr('y', 8)
           .style('font-size', '8px')
+          .attr('opacity', isDimmed ? 0.4 : 1)
           .text(dataset);
 
         currentX += itemWidth;
@@ -691,6 +761,8 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
         legendRow
           .append('text')
+          .attr('class', 'model-legend-text') // Class for easy selection
+          .attr('data-source-id', sourceId)
           .attr('x', 18)
           .attr('y', 11)
           .style('font-size', '10px')
@@ -724,20 +796,37 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .style('font-weight', 'bold')
         .text(t('chart.legendBenchmarks'));
       uniqueDatasets.forEach((dataset, i) => {
+        const isSelected = selectedBenchmark === dataset;
+        const isDimmed = selectedBenchmark && !isSelected;
+
         const datasetRow = datasetLegend
           .append('g')
-          .attr('transform', `translate(0, ${(i + 1) * 22})`);
+          .attr('transform', `translate(0, ${(i + 1) * 22})`)
+          .style('cursor', 'pointer')
+          .on('click', () => {
+            setSelectedBenchmark(isSelected ? null : dataset);
+          });
 
         datasetRow
           .append('rect')
           .attr('width', 14)
           .attr('height', 14)
           .attr('fill', datasetColorScale(dataset) as string)
-          .attr('opacity', 0.3)
+          .attr('opacity', isSelected ? 1 : isDimmed ? 0.2 : 0.3)
           .attr('rx', 2);
+
+        if (isSelected) {
+          datasetRow
+            .append('circle')
+            .attr('cx', 7)
+            .attr('cy', 7)
+            .attr('r', 3)
+            .attr('fill', 'white');
+        }
 
         datasetRow
           .append('text')
+          .attr('opacity', isDimmed ? 0.4 : 1)
           .attr('x', 18)
           .attr('y', 11)
           .style('font-size', '10px')
@@ -752,10 +841,62 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     categoryStats,
     sources,
     scale0100,
-    highlightedModel,
     testSortMode,
+    selectedBenchmark,
     colorScale,
   ]);
+
+  // Separate effect for model highlighting to avoid full re-render (and re-animation)
+  useEffect(() => {
+    if (!detailChartRef.current) return;
+    const container = d3.select(detailChartRef.current);
+
+    sources.forEach((source) => {
+      const sourceId = getSourceIdentifier(source);
+      const isHighlighted = !highlightedModel || highlightedModel === sourceId;
+      const duration = 200;
+
+      // Update bars opacity
+      container
+        .selectAll(`.model-indicator[data-source-id="${sourceId}"]`)
+        .transition()
+        .duration(duration)
+        .attr('opacity', isHighlighted ? 0.8 : 0.3);
+
+      container
+        .selectAll(`.model-min[data-source-id="${sourceId}"]`)
+        .transition()
+        .duration(duration)
+        .attr('opacity', isHighlighted ? 0.35 : 0.12);
+
+      container
+        .selectAll(`.model-avg[data-source-id="${sourceId}"]`)
+        .transition()
+        .duration(duration)
+        .attr('opacity', isHighlighted ? 0.75 : 0.22);
+
+      container
+        .selectAll(`.model-max[data-source-id="${sourceId}"]`)
+        .transition()
+        .duration(duration)
+        .attr('opacity', isHighlighted ? 1.0 : 0.32);
+
+      // Update avg label visibility
+      container
+        .selectAll(`.model-avg-label[data-source-id="${sourceId}"]`)
+        .transition()
+        .duration(duration)
+        .attr('opacity', isHighlighted ? 1 : 0);
+
+      // Update Legend Text Weight
+      container
+        .selectAll(`.model-legend-text[data-source-id="${sourceId}"]`)
+        .style(
+          'font-weight',
+          highlightedModel === sourceId ? 'bold' : 'normal',
+        );
+    });
+  }, [highlightedModel, sources]);
 
   return (
     <div className='space-y-4'>
