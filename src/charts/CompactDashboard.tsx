@@ -531,7 +531,8 @@ function drawRadarChart(
         source.variance !== 'default' ? ` (${source.variance})` : '';
       const fullLabel = `${source.modelName}${varianceLabel}`;
       // Add space for icons
-      const iconSpace = (source.isOfficial ? 12 : 0) + (source.openSource ? 12 : 0);
+      const iconSpace =
+        (source.isOfficial ? 12 : 0) + (source.openSource ? 12 : 0);
       const itemWidth = fullLabel.length * 5.5 + 25 + iconSpace;
 
       // Check if item fits on current row
