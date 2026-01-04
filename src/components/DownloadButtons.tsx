@@ -22,7 +22,6 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
 
   return (
     <div className='mb-4'>
-      <div className='font-medium mb-2'>{t('controls.exportCSV')}</div>
       <Space direction='vertical' style={{ width: '100%' }}>
         <Button
           icon={<DownloadOutlined />}
