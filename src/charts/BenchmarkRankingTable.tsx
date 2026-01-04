@@ -147,8 +147,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         title: t('chart.provider'),
         dataIndex: 'provider',
         key: 'provider',
-        fixed: 'left',
-        width: 120,
+        width: 100,
         sorter: (a, b) => a.provider.localeCompare(b.provider),
         render: (text: string) => (
           <Text strong style={{ fontSize: '12px' }}>
@@ -160,8 +159,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         title: t('chart.model'),
         dataIndex: 'displayName',
         key: 'displayName',
-        fixed: 'left',
-        width: 200,
+        width: 180,
         sorter: (a, b) => a.displayName.localeCompare(b.displayName),
         render: (text: string, record: ModelRankingRow) => (
           <div>
@@ -196,9 +194,8 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         title: t('chart.average'),
         dataIndex: 'average',
         key: 'average',
-        width: 120,
+        width: 100,
         align: 'center',
-        fixed: 'left',
         sorter: (a, b) => a.average - b.average,
         defaultSortOrder: 'descend',
         render: (value: number) => {
@@ -274,26 +271,27 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
 
   return (
     <div className='space-y-6'>
-      <div className='flex items-center justify-between'>
+      {/* Header - responsive layout */}
+      <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
         <Space>
           <TableOutlined style={{ fontSize: 12 }} />
           <Title level={5} style={{ margin: 0 }}>
             {t('chart.rankingTables')}
           </Title>
         </Space>
-        <Space>
+        <div className='flex items-center gap-2 flex-wrap'>
           <SortAscendingOutlined />
-          <Text>{t('chart.sortBy')}</Text>
+          <Text className='text-sm'>{t('chart.sortBy')}</Text>
           <Select
             value={sortBy}
             onChange={setSortBy}
-            style={{ width: 225 }}
-            size={'middle'}
+            style={{ width: 180 }}
+            size={'small'}
           >
             <Option value='modelName'>{t('chart.modelNameAZ')}</Option>
             <Option value='average'>{t('chart.averageScore')}</Option>
           </Select>
-        </Space>
+        </div>
       </div>
 
       <Card size='small' className='bg-blue-50 border-blue-200 !mb-5'>

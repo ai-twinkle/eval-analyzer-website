@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import * as d3 from 'd3';
-import { Card, Space, Button, Radio } from 'antd';
+import { Card, Button, Radio } from 'antd';
 import {
   BarChartOutlined,
   AppstoreOutlined,
@@ -244,8 +244,41 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     });
 
     const width = container.clientWidth;
-    const margin = { top: 70, right: 160, bottom: 50, left: 300 };
-    const testHeight = Math.max(50, 15 * sources.length); // Dynamic height based on number of models
+    // Responsive margins - smaller on mobile (labels above bars, not on left)
+    const isMobile = width < 940;
+
+    // Calculate mobile legend height dynamically
+    let mobileLegendHeight = 0;
+    if (isMobile) {
+      const maxWidth = width - 20;
+      let currentX = 0;
+      let rowY = 0;
+      sources.forEach((source) => {
+        const varianceLabel =
+          source.variance !== 'default' ? ` (${source.variance})` : '';
+        const fullName = `${source.modelName}${varianceLabel}`;
+        const itemWidth = fullName.length * 5.5 + 18;
+
+        if (currentX + itemWidth > maxWidth && currentX > 0) {
+          currentX = 0;
+          rowY += 16;
+        }
+        currentX += itemWidth;
+      });
+      mobileLegendHeight = rowY + 30; // Base height + rows
+    }
+
+    const margin = {
+      top: isMobile ? Math.max(80, mobileLegendHeight + 50) : 70,
+      right: isMobile ? 10 : 160,
+      bottom: 50,
+      left: isMobile ? 10 : 300,
+    };
+    // Dynamic height - more space per test on mobile to fit label above bars
+    const testHeight = Math.max(
+      isMobile ? 60 : 50,
+      (isMobile ? 14 : 15) * sources.length,
+    );
     const height = Math.max(
       450,
       sortedTests.length * testHeight + margin.top + margin.bottom,
@@ -257,26 +290,31 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('width', width)
       .attr('height', height);
 
-    // Title
+    // Title - responsive for mobile
+    const titleText = isMobile
+      ? expandedCategory
+      : `${expandedCategory} - ${t('chart.detailedResults')}`;
     svg
       .append('text')
       .attr('x', width / 2)
-      .attr('y', 25)
+      .attr('y', isMobile ? 18 : 25)
       .attr('text-anchor', 'middle')
-      .style('font-size', '18px')
+      .style('font-size', isMobile ? '12px' : '18px')
       .style('font-weight', 'bold')
-      .text(`${expandedCategory} - ${t('chart.detailedResults')}`);
+      .text(titleText);
 
-    svg
-      .append('text')
-      .attr('x', width / 2)
-      .attr('y', 48)
-      .attr('text-anchor', 'middle')
-      .style('font-size', '12px')
-      .style('fill', '#666')
-      .text(
-        `${t('chart.testCount', { count: categoryInfo.testCount })} • ${t('chart.benchmarksShown')} • ${t('chart.modelsSideBySide')}`,
-      );
+    if (!isMobile) {
+      svg
+        .append('text')
+        .attr('x', width / 2)
+        .attr('y', 48)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '12px')
+        .style('fill', '#666')
+        .text(
+          `${t('chart.testCount', { count: categoryInfo.testCount })} • ${t('chart.benchmarksShown')} • ${t('chart.modelsSideBySide')}`,
+        );
+    }
 
     const g = svg
       .append('g')
@@ -305,66 +343,84 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     sortedTests.forEach((test, idx) => {
       const rank = idx + 1;
       const datasetColor = datasetColorScale(test.dataset) as string;
-
-      // Rank badge
-      g.append('text')
-        .attr('x', -margin.left + 10)
-        .attr('y', (yScale(test.testName) || 0) + yScale.bandwidth() / 2)
-        .attr('text-anchor', 'start')
-        .attr('dominant-baseline', 'middle')
-        .style('font-size', '10px')
-        .style('font-weight', 'bold')
-        .style('fill', rank <= 3 ? '#faad14' : '#bfbfbf')
-        .text(`#${rank}`);
-
-      // Color-coded dataset badge background
       const badgeY = (yScale(test.testName) || 0) + yScale.bandwidth() / 2;
-      const datasetText =
-        test.dataset.length > 10
-          ? test.dataset.slice(0, 8) + '..'
-          : test.dataset;
 
-      g.append('rect')
-        .attr('x', -margin.left + 40)
-        .attr('y', badgeY - 8)
-        .attr('width', datasetText.length * 6.5 + 8)
-        .attr('height', 16)
-        .attr('fill', datasetColor)
-        .attr('opacity', 0.2)
-        .attr('rx', 3)
-        .style('cursor', 'help')
-        .append('title')
-        .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
+      if (isMobile) {
+        // Mobile: Put test name ABOVE the bars with full text
+        // Rank and full test name at the top of each test's bar section
+        const testTop = yScale(test.testName) || 0;
+        g.append('text')
+          .attr('x', 0)
+          .attr('y', testTop - 3)
+          .attr('text-anchor', 'start')
+          .attr('dominant-baseline', 'auto')
+          .style('font-size', '9px')
+          .style('font-weight', 'bold')
+          .style('fill', '#262626')
+          .text(`#${rank} ${test.testName}`)
+          .append('title')
+          .text(`${test.dataset}/${test.testName}`);
+      } else {
+        // Desktop: Full layout with rank, dataset badge, and test name
+        // Rank badge
+        g.append('text')
+          .attr('x', -margin.left + 10)
+          .attr('y', badgeY)
+          .attr('text-anchor', 'start')
+          .attr('dominant-baseline', 'middle')
+          .style('font-size', '10px')
+          .style('font-weight', 'bold')
+          .style('fill', rank <= 3 ? '#faad14' : '#bfbfbf')
+          .text(`#${rank}`);
 
-      // Dataset badge text
-      g.append('text')
-        .attr('x', -margin.left + 44)
-        .attr('y', badgeY)
-        .attr('text-anchor', 'start')
-        .attr('dominant-baseline', 'middle')
-        .style('font-size', '9px')
-        .style('font-weight', 'bold')
-        .style('fill', datasetColor)
-        .style('cursor', 'help')
-        .text(datasetText)
-        .append('title')
-        .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
+        // Color-coded dataset badge background
+        const datasetText =
+          test.dataset.length > 10
+            ? test.dataset.slice(0, 8) + '..'
+            : test.dataset;
 
-      // Test name
-      g.append('text')
-        .attr('x', -15)
-        .attr('y', badgeY)
-        .attr('text-anchor', 'end')
-        .attr('dominant-baseline', 'middle')
-        .style('font-size', '11px')
-        .style('fill', '#262626')
-        .text(
-          test.testName.length > 42
-            ? test.testName.slice(0, 40) + '...'
-            : test.testName,
-        )
-        .append('title')
-        .text(`${test.dataset}/${test.testName}`);
+        g.append('rect')
+          .attr('x', -margin.left + 40)
+          .attr('y', badgeY - 8)
+          .attr('width', datasetText.length * 6.5 + 8)
+          .attr('height', 16)
+          .attr('fill', datasetColor)
+          .attr('opacity', 0.2)
+          .attr('rx', 3)
+          .style('cursor', 'help')
+          .append('title')
+          .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
+
+        // Dataset badge text
+        g.append('text')
+          .attr('x', -margin.left + 44)
+          .attr('y', badgeY)
+          .attr('text-anchor', 'start')
+          .attr('dominant-baseline', 'middle')
+          .style('font-size', '9px')
+          .style('font-weight', 'bold')
+          .style('fill', datasetColor)
+          .style('cursor', 'help')
+          .text(datasetText)
+          .append('title')
+          .text(`${t('chart.benchmarkLabel')}: ${test.dataset}`);
+
+        // Test name
+        g.append('text')
+          .attr('x', -15)
+          .attr('y', badgeY)
+          .attr('text-anchor', 'end')
+          .attr('dominant-baseline', 'middle')
+          .style('font-size', '11px')
+          .style('fill', '#262626')
+          .text(
+            test.testName.length > 42
+              ? test.testName.slice(0, 40) + '...'
+              : test.testName,
+          )
+          .append('title')
+          .text(`${test.dataset}/${test.testName}`);
+      }
     });
 
     // Draw bars - models side-by-side, each showing min/avg/max
@@ -476,7 +532,8 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     // X Axis
     const xAxis = d3
       .axisBottom(xScale)
-      .ticks(10)
+      .scale(xScale)
+      .ticks(isMobile ? 5 : 10)
       .tickFormat((d) => formatValue(d as number, scale0100));
 
     g.append('g')
@@ -489,93 +546,142 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('x', innerWidth / 2)
       .attr('y', innerHeight + 40)
       .attr('text-anchor', 'middle')
-      .style('font-size', '13px')
+      .style('font-size', isMobile ? '10px' : '13px')
       .style('font-weight', 'bold')
-      .text(t('chart.accuracyScore')); // Legend for Models
-    const legend = svg
-      .append('g')
-      .attr(
-        'transform',
-        `translate(${width - margin.right + 12}, ${margin.top})`,
-      );
+      .text(t('chart.accuracyScore'));
 
-    legend
-      .append('text')
-      .attr('x', 0)
-      .attr('y', 0)
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(`${t('chart.legendModels')}:`);
-    sources.forEach((source, i) => {
-      const sourceId = getSourceIdentifier(source);
-      const legendRow = legend
+    // Mobile: Horizontal legend at top (below title)
+    if (isMobile) {
+      const mobileLegend = svg
         .append('g')
-        .attr('transform', `translate(0, ${(i + 1) * 22})`)
-        .style('cursor', 'pointer')
-        .on('mouseenter', () => setHighlightedModel(sourceId))
-        .on('mouseleave', () => setHighlightedModel(null));
+        .attr('transform', `translate(10, 30)`);
 
-      legendRow
-        .append('rect')
-        .attr('width', 14)
-        .attr('height', 14)
-        .attr('fill', colorScale(sourceId) as string)
-        .attr('opacity', 0.85)
-        .attr('rx', 2);
+      let currentX = 0;
+      let rowY = 0;
+      const maxWidth = width - 20;
 
-      legendRow
-        .append('text')
-        .attr('x', 18)
-        .attr('y', 11)
-        .style('font-size', '10px')
-        .style('font-weight', highlightedModel === sourceId ? 'bold' : 'normal')
-        .text(() => {
-          const varianceLabel =
-            source.variance !== 'default' ? ` (${source.variance})` : '';
-          const fullName = `${source.modelName}${varianceLabel}`;
-          return fullName.length > 16
-            ? fullName.slice(0, 14) + '...'
-            : fullName;
-        });
-    });
+      sources.forEach((source) => {
+        const color = colorScale(getSourceIdentifier(source)) as string;
+        const varianceLabel =
+          source.variance !== 'default' ? ` (${source.variance})` : '';
+        const fullName = `${source.modelName}${varianceLabel}`;
+        const itemWidth = fullName.length * 5.5 + 18;
 
-    // Legend for Benchmarks/Datasets
-    const datasetLegend = svg
-      .append('g')
-      .attr(
-        'transform',
-        `translate(${width - margin.right + 12}, ${margin.top + sources.length * 22 + 40})`,
-      );
+        if (currentX + itemWidth > maxWidth && currentX > 0) {
+          currentX = 0;
+          rowY += 16;
+        }
 
-    datasetLegend
-      .append('text')
-      .attr('x', 0)
-      .attr('y', 0)
-      .style('font-size', '12px')
-      .style('font-weight', 'bold')
-      .text(t('chart.legendBenchmarks'));
-    uniqueDatasets.forEach((dataset, i) => {
-      const datasetRow = datasetLegend
+        const item = mobileLegend
+          .append('g')
+          .attr('transform', `translate(${currentX}, ${rowY})`);
+
+        item
+          .append('rect')
+          .attr('width', 10)
+          .attr('height', 10)
+          .attr('fill', color)
+          .attr('rx', 2);
+
+        item
+          .append('text')
+          .attr('x', 14)
+          .attr('y', 8)
+          .style('font-size', '8px')
+          .text(fullName);
+
+        currentX += itemWidth;
+      });
+    } else {
+      // Desktop: Side legend for Models
+      const legend = svg
         .append('g')
-        .attr('transform', `translate(0, ${(i + 1) * 22})`);
+        .attr(
+          'transform',
+          `translate(${width - margin.right + 12}, ${margin.top})`,
+        );
 
-      datasetRow
-        .append('rect')
-        .attr('width', 14)
-        .attr('height', 14)
-        .attr('fill', datasetColorScale(dataset) as string)
-        .attr('opacity', 0.3)
-        .attr('rx', 2);
-
-      datasetRow
+      legend
         .append('text')
-        .attr('x', 18)
-        .attr('y', 11)
-        .style('font-size', '10px')
-        .text(dataset.length > 16 ? dataset.slice(0, 14) + '...' : dataset)
-        .append('title')
-        .text(dataset);
-    });
+        .attr('x', 0)
+        .attr('y', 0)
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .text(`${t('chart.legendModels')}:`);
+      sources.forEach((source, i) => {
+        const sourceId = getSourceIdentifier(source);
+        const legendRow = legend
+          .append('g')
+          .attr('transform', `translate(0, ${(i + 1) * 22})`)
+          .style('cursor', 'pointer')
+          .on('mouseenter', () => setHighlightedModel(sourceId))
+          .on('mouseleave', () => setHighlightedModel(null));
+
+        legendRow
+          .append('rect')
+          .attr('width', 14)
+          .attr('height', 14)
+          .attr('fill', colorScale(sourceId) as string)
+          .attr('opacity', 0.85)
+          .attr('rx', 2);
+
+        legendRow
+          .append('text')
+          .attr('x', 18)
+          .attr('y', 11)
+          .style('font-size', '10px')
+          .style(
+            'font-weight',
+            highlightedModel === sourceId ? 'bold' : 'normal',
+          )
+          .text(() => {
+            const varianceLabel =
+              source.variance !== 'default' ? ` (${source.variance})` : '';
+            const fullName = `${source.modelName}${varianceLabel}`;
+            return fullName.length > 16
+              ? fullName.slice(0, 14) + '...'
+              : fullName;
+          });
+      });
+
+      // Legend for Benchmarks/Datasets (desktop only)
+      const datasetLegend = svg
+        .append('g')
+        .attr(
+          'transform',
+          `translate(${width - margin.right + 12}, ${margin.top + sources.length * 22 + 40})`,
+        );
+
+      datasetLegend
+        .append('text')
+        .attr('x', 0)
+        .attr('y', 0)
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .text(t('chart.legendBenchmarks'));
+      uniqueDatasets.forEach((dataset, i) => {
+        const datasetRow = datasetLegend
+          .append('g')
+          .attr('transform', `translate(0, ${(i + 1) * 22})`);
+
+        datasetRow
+          .append('rect')
+          .attr('width', 14)
+          .attr('height', 14)
+          .attr('fill', datasetColorScale(dataset) as string)
+          .attr('opacity', 0.3)
+          .attr('rx', 2);
+
+        datasetRow
+          .append('text')
+          .attr('x', 18)
+          .attr('y', 11)
+          .style('font-size', '10px')
+          .text(dataset.length > 16 ? dataset.slice(0, 14) + '...' : dataset)
+          .append('title')
+          .text(dataset);
+      });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     expandedCategory,
@@ -622,9 +728,11 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       {expandedCategory && (
         <>
           <Card size='small' title={t('chart.testViewControls')}>
-            <Space direction='horizontal' size='middle'>
-              <Space size='small'>
-                <span style={{ fontWeight: 600 }}>{t('chart.sortTests')}</span>
+            <div className='flex flex-col sm:flex-row sm:items-center gap-2 flex-wrap'>
+              <div className='flex items-center gap-2 flex-wrap'>
+                <span style={{ fontWeight: 600, fontSize: '13px' }}>
+                  {t('chart.sortTests')}
+                </span>
                 <Radio.Group
                   value={testSortMode}
                   onChange={(e) => setTestSortMode(e.target.value)}
@@ -641,7 +749,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
                     <SortAscendingOutlined /> A-Z
                   </Radio.Button>
                 </Radio.Group>
-              </Space>
+              </div>
               <Button
                 size='small'
                 icon={<UpOutlined />}
@@ -649,7 +757,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
               >
                 {t('chart.collapse')}
               </Button>
-            </Space>
+            </div>
           </Card>
           <Card
             title={

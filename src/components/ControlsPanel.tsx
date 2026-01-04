@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Switch, Checkbox, Divider, Button, List, Input } from 'antd';
+import { Switch, Checkbox, Divider, Button, Input } from 'antd';
 import {
   SlidersOutlined,
   CheckSquareOutlined,
   SearchOutlined,
+  DownloadOutlined,
+  UploadOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
 import type { DataSource, PivotRow } from '../types';
-import Item from 'antd/es/list/Item';
 
 interface ControlsPanelProps {
   onFilesUpload: (files: File[]) => void;
@@ -19,6 +20,7 @@ interface ControlsPanelProps {
   scale0100: boolean;
   onScaleToggle: (checked: boolean) => void;
   pivotData: PivotRow[];
+  hideHeader?: boolean;
 }
 
 export const ControlsPanel: React.FC<ControlsPanelProps> = ({
@@ -29,6 +31,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   scale0100,
   onScaleToggle,
   pivotData,
+  hideHeader = false,
 }) => {
   const { t } = useTranslation();
   const handleSelectAll = () => {
@@ -73,122 +76,164 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   );
 
   return (
-    <div className='h-full overflow-y-auto p-4 bg-gray-50'>
-      <h2 className='text-xl font-bold mb-4'>{t('controls.title')}</h2>
+    <div className='h-full overflow-y-auto p-5'>
+      {/* Section Header - Logo (hidden when used in drawer) */}
+      {!hideHeader && (
+        <div className='flex items-center gap-3 mb-6'>
+          <img
+            src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
+            alt='Twinkle AI Logo'
+            className='w-8 h-8 rounded-lg'
+          />
+          <h2 className='text-lg font-bold !mb-0 text-gray-800'>
+            {t('controls.title')}
+          </h2>
+        </div>
+      )}
 
-      {/* File Upload */}
-      <FileUploader onFilesSelected={onFilesUpload} />
+      {/* File Upload Section */}
+      <div className='mb-5'>
+        <div className='section-header text-sm mb-3'>
+          <UploadOutlined className='!text-amber-500' />
+          <span>{t('controls.uploadFiles')}</span>
+        </div>
+        <FileUploader onFilesSelected={onFilesUpload} />
+      </div>
 
-      <Divider />
+      <Divider className='!my-4' />
 
       {/* Model Selection for Comparison */}
       {sources.length > 0 && (
         <>
-          <div className='mb-4'>
-            <div className='font-medium mb-2 flex items-center justify-between'>
-              <span className='flex items-center'>
-                <CheckSquareOutlined className='mr-2' />
-                {t('controls.selectModels')}
-              </span>
-              <div className='space-x-2'>
+          <div className='mb-5'>
+            <div className='flex items-center justify-between mb-3'>
+              <div className='section-header text-sm'>
+                <CheckSquareOutlined className='!text-amber-500' />
+                <span>{t('controls.selectModels')}</span>
+              </div>
+              <div className='flex gap-1'>
                 <Button
                   type='link'
                   size='small'
                   onClick={handleSelectAll}
-                  style={{ padding: 0, height: 'auto' }}
+                  className='!p-0 !h-auto !text-xs'
                 >
                   {t('controls.all')}
                 </Button>
-                <span className='text-gray-400'>|</span>
+                <span className='text-gray-300'>|</span>
                 <Button
                   type='link'
                   size='small'
                   onClick={handleClearAll}
-                  style={{ padding: 0, height: 'auto' }}
+                  className='!p-0 !h-auto !text-xs'
                 >
                   {t('controls.none')}
                 </Button>
               </div>
             </div>
+
             <Input
               placeholder={t('controls.searchPlaceholder')}
-              prefix={<SearchOutlined />}
+              prefix={<SearchOutlined className='text-gray-400' />}
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               allowClear
-              className='mb-2'
+              className='mb-3'
+              size='small'
             />
-            <List className='space-y-2 max-h-70 overflow-y-auto'>
+
+            <div className='max-h-64 overflow-y-auto space-y-3 pr-1'>
               {Object.entries(groupedByProvider).map(
                 ([provider, providerSources]) => (
-                  <div key={provider} className='mb-3'>
+                  <div key={provider}>
                     {/* Provider Header */}
-                    <div className='text-xs font-bold text-gray-600 mb-1'>
+                    <div className='text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2 flex items-center gap-1'>
+                      <span className='w-2 h-2 rounded-full bg-amber-400'></span>
                       {provider}
                     </div>
                     {/* Models in this provider group */}
-                    {providerSources.map((source) => (
-                      <Item key={source.id} className='flex items-center pl-2'>
-                        <Checkbox
-                          checked={selectedSourceIds.includes(source.id)}
-                          onChange={(e) =>
-                            handleToggleSource(source.id, e.target.checked)
+                    <div className='space-y-1.5'>
+                      {providerSources.map((source) => (
+                        <div
+                          key={source.id}
+                          className={`model-card ${selectedSourceIds.includes(source.id) ? 'selected' : ''}`}
+                          onClick={() =>
+                            handleToggleSource(
+                              source.id,
+                              !selectedSourceIds.includes(source.id),
+                            )
                           }
                         >
-                          <span className='text-sm'>
-                            {source.modelName}
+                          <Checkbox
+                            checked={selectedSourceIds.includes(source.id)}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              handleToggleSource(source.id, e.target.checked);
+                            }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span className='text-sm font-medium text-gray-700'>
+                              {source.modelName}
+                            </span>
+                          </Checkbox>
+                          <div className='flex items-center gap-1.5 mt-1 ml-6'>
                             {source.variance !== 'default' && (
-                              <span className='ml-1 text-xs text-gray-600'>
-                                ({source.variance})
+                              <span className='text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded'>
+                                {source.variance}
                               </span>
                             )}
                             {source.openSource && (
-                              <span className='ml-1 text-xs text-green-600'>
-                                (OSS)
-                              </span>
+                              <span className='badge-oss'>OSS</span>
                             )}
                             {source.isOfficial && (
-                              <span className='ml-1 text-xs text-blue-600'>
-                                ({t('controls.official')})
+                              <span className='badge-official'>
+                                {t('controls.official')}
                               </span>
                             )}
-                            <div className='text-xs text-gray-500'>
-                              {source.timestamp}
-                            </div>
-                          </span>
-                        </Checkbox>
-                      </Item>
-                    ))}
+                          </div>
+                          <div className='text-xs text-gray-400 mt-1 ml-6'>
+                            {source.timestamp}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ),
               )}
-            </List>
+            </div>
           </div>
         </>
       )}
 
-      <Divider />
+      <Divider className='!my-4' />
 
       {/* Scale Toggle */}
-      <div className='mb-4'>
-        <div className='flex items-center justify-between mb-2'>
-          <span className='font-medium flex items-center'>
-            <SlidersOutlined className='mr-2' />
-            {t('controls.scale')}
-          </span>
+      <div className='mb-5'>
+        <div className='flex items-center justify-between'>
+          <div className='section-header text-sm'>
+            <SlidersOutlined className='!text-amber-500' />
+            <span>{t('controls.scale')}</span>
+          </div>
           <Switch
             checked={scale0100}
             onChange={onScaleToggle}
             checkedChildren='0-100'
             unCheckedChildren='0-1'
+            className='!min-w-16'
           />
         </div>
       </div>
 
-      <Divider />
+      <Divider className='!my-4' />
 
       {/* Download Buttons */}
-      <DownloadButtons pivotData={pivotData} scale0100={scale0100} />
+      <div>
+        <div className='section-header text-sm mb-3'>
+          <DownloadOutlined className='!text-amber-500' />
+          <span>{t('controls.exportCSV')}</span>
+        </div>
+        <DownloadButtons pivotData={pivotData} scale0100={scale0100} />
+      </div>
     </div>
   );
 };

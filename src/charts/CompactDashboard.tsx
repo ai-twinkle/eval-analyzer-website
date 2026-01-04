@@ -44,14 +44,21 @@ function drawRadarChart(
   onModelClick: (model: string) => void,
   t: TFunction,
 ) {
-  const margin = { top: 100, right: 220, bottom: 80, left: 220 };
+  // Responsive margins based on width
+  const isMobile = width < 940;
+  const margin = {
+    top: isMobile ? 20 : 100,
+    right: isMobile ? 40 : 220,
+    bottom: isMobile ? 40 : 80,
+    left: isMobile ? 40 : 220,
+  };
   const radius =
     Math.min(
       width - margin.left - margin.right,
       height - margin.top - margin.bottom,
     ) / 2;
   const centerX = width / 2;
-  const centerY = height / 2 + 20;
+  const centerY = height / 2 + (isMobile ? 0 : 20);
 
   // Use all categories - no limit
   const topCategories = categoryData;
@@ -130,13 +137,14 @@ function drawRadarChart(
       const translatedName = t(
         `categories.${d}` as `categories.${CategoryKey}`,
       );
+      const maxLen = isMobile ? 12 : 18;
       const shortName =
-        translatedName.length > 18
-          ? translatedName.substring(0, 15) + '...'
+        translatedName.length > maxLen
+          ? translatedName.substring(0, maxLen - 3) + '...'
           : translatedName;
       return categoryInfo ? `${shortName} (${categoryInfo.count})` : shortName;
     })
-    .style('font-size', '11px')
+    .style('font-size', isMobile ? '9px' : '11px')
     .style('font-weight', (d) => (selectedCategory === d ? 'bold' : 'normal'))
     .style('fill', (d) => (selectedCategory === d ? '#1890ff' : '#333'))
     .style('cursor', 'pointer')
@@ -339,152 +347,233 @@ function drawRadarChart(
       });
   });
 
-  // Add title
+  // Add title - responsive for mobile
   svg
     .append('text')
     .attr('x', width / 2)
-    .attr('y', 25)
+    .attr('y', isMobile ? 20 : 25)
     .attr('text-anchor', 'middle')
-    .style('font-size', '18px')
+    .style('font-size', isMobile ? '14px' : '18px')
     .style('font-weight', 'bold')
-    .text(t('chart.radarTitle'));
+    .text(
+      isMobile
+        ? (t as (k: string) => string)('chart.radarTitleShort')
+        : t('chart.radarTitle'),
+    );
 
-  svg
-    .append('text')
-    .attr('x', width / 2)
-    .attr('y', 48)
-    .attr('text-anchor', 'middle')
-    .style('font-size', '12px')
-    .style('fill', '#666')
-    .text(t('chart.radarSubtitle'));
+  if (!isMobile) {
+    svg
+      .append('text')
+      .attr('x', width / 2)
+      .attr('y', 48)
+      .attr('text-anchor', 'middle')
+      .style('font-size', '12px')
+      .style('fill', '#666')
+      .text(t('chart.radarSubtitle'));
+  }
 
   // Legend (clickable) - Grouped by provider
-  const legendG = svg
-    .append('g')
-    .attr('transform', `translate(${width - 200}, 100)`);
+  // Only show legend on larger screens
+  if (!isMobile) {
+    const legendG = svg
+      .append('g')
+      .attr('transform', `translate(${width - 200}, 100)`);
 
-  legendG
-    .append('text')
-    .attr('x', 0)
-    .attr('y', -10)
-    .style('font-size', '13px')
-    .style('font-weight', 'bold')
-    .text(t('chart.legendModels'));
-
-  legendG
-    .append('text')
-    .attr('x', 0)
-    .attr('y', 5)
-    .style('font-size', '10px')
-    .style('fill', '#666')
-    .text(t('chart.legendClickToHighlight'));
-
-  // Group sources by provider
-  const groupedByProvider = sources.reduce(
-    (acc, source, idx) => {
-      const provider = source.provider;
-      if (!acc[provider]) {
-        acc[provider] = [];
-      }
-      acc[provider].push({ source, index: idx });
-      return acc;
-    },
-    {} as Record<string, Array<{ source: DataSource; index: number }>>,
-  );
-
-  let currentY = 25;
-
-  // Render each provider group
-  Object.entries(groupedByProvider).forEach(([provider, items]) => {
-    // Provider header
     legendG
       .append('text')
       .attr('x', 0)
-      .attr('y', currentY)
-      .style('font-size', '12px')
+      .attr('y', -10)
+      .style('font-size', '13px')
       .style('font-weight', 'bold')
-      .style('fill', '#555')
-      .text(provider);
+      .text(t('chart.legendModels'));
 
-    currentY += 20;
+    legendG
+      .append('text')
+      .attr('x', 0)
+      .attr('y', 5)
+      .style('font-size', '10px')
+      .style('fill', '#666')
+      .text(t('chart.legendClickToHighlight'));
 
-    // Render each model in the group
-    items.forEach(({ source, index: i }) => {
+    // Group sources by provider
+    const groupedByProvider = sources.reduce(
+      (acc, source, idx) => {
+        const provider = source.provider;
+        if (!acc[provider]) {
+          acc[provider] = [];
+        }
+        acc[provider].push({ source, index: idx });
+        return acc;
+      },
+      {} as Record<string, Array<{ source: DataSource; index: number }>>,
+    );
+
+    let currentY = 25;
+
+    // Render each provider group
+    Object.entries(groupedByProvider).forEach(([provider, items]) => {
+      // Provider header
+      legendG
+        .append('text')
+        .attr('x', 0)
+        .attr('y', currentY)
+        .style('font-size', '12px')
+        .style('font-weight', 'bold')
+        .style('fill', '#555')
+        .text(provider);
+
+      currentY += 20;
+
+      // Render each model in the group
+      items.forEach(({ source, index: i }) => {
+        const sourceId = getSourceIdentifier(source);
+        const color = colorScale(i.toString());
+        const isHighlighted =
+          !highlightedModel || highlightedModel === sourceId;
+        const isSelected = highlightedModel === sourceId;
+
+        const legendItem = legendG
+          .append('g')
+          .attr('transform', `translate(10, ${currentY})`)
+          .attr('class', 'legend-item')
+          .style('cursor', 'pointer')
+          .style('opacity', isHighlighted ? 1 : 0.4)
+          .on('click', () => onModelClick(sourceId))
+          .on('mouseenter', function () {
+            d3.select(this).style('opacity', 1);
+          })
+          .on('mouseleave', function () {
+            d3.select(this).style('opacity', isHighlighted ? 1 : 0.4);
+          });
+
+        // Line sample
+        legendItem
+          .append('line')
+          .attr('x1', 0)
+          .attr('x2', 25)
+          .attr('y1', 0)
+          .attr('y2', 0)
+          .attr('stroke', color)
+          .attr('stroke-width', isSelected ? 3 : 2);
+
+        // Circle sample
+        legendItem
+          .append('circle')
+          .attr('cx', 12.5)
+          .attr('cy', 0)
+          .attr('r', isSelected ? 5 : 4)
+          .attr('fill', color)
+          .attr('stroke', 'white')
+          .attr('stroke-width', 2);
+
+        // Model name without provider
+        const varianceLabel =
+          source.variance !== 'default' ? ` (${source.variance})` : '';
+        const fullModelName = `${source.modelName}${varianceLabel}`;
+        const modelLabel =
+          fullModelName.length > 20
+            ? fullModelName.substring(0, 17) + '...'
+            : fullModelName;
+
+        legendItem
+          .append('text')
+          .attr('x', 33)
+          .attr('y', 0)
+          .attr('dy', '0.35em')
+          .style('font-size', '10px')
+          .style('font-weight', isSelected ? 'bold' : 'normal')
+          .style('fill', isSelected ? '#1890ff' : '#333')
+          .text(
+            modelLabel +
+              (source.isOfficial ? ' ⭐' : '') +
+              (source.openSource ? ' 🟢' : ''),
+          );
+
+        legendItem
+          .append('title')
+          .text(
+            fullModelName +
+              (source.isOfficial ? ` (${t('chart.officialTag')})` : '') +
+              (source.openSource ? ' (OSS)' : ''),
+          );
+
+        currentY += 25;
+      });
+
+      currentY += 10; // Extra spacing between provider groups
+    });
+  } else {
+    // Mobile legend - rendered at bottom as a compact horizontal list
+    const mobileRadius = radius;
+    const mobileLegendY = centerY + mobileRadius + 60;
+
+    const mobileLegendG = svg
+      .append('g')
+      .attr('transform', `translate(10, ${mobileLegendY})`);
+
+    mobileLegendG
+      .append('text')
+      .attr('x', 0)
+      .attr('y', 0)
+      .style('font-size', '11px')
+      .style('font-weight', 'bold')
+      .text(t('chart.legendModels'));
+
+    let currentX = 0;
+    let rowY = 20;
+    const maxWidth = width - 20;
+
+    sources.forEach((source, i) => {
       const sourceId = getSourceIdentifier(source);
       const color = colorScale(i.toString());
       const isHighlighted = !highlightedModel || highlightedModel === sourceId;
-      const isSelected = highlightedModel === sourceId;
+      const varianceLabel =
+        source.variance !== 'default' ? ` (${source.variance})` : '';
+      const fullLabel = `${source.modelName}${varianceLabel}`;
+      const itemWidth = fullLabel.length * 5.5 + 25;
 
-      const legendItem = legendG
+      // Check if item fits on current row
+      if (currentX + itemWidth > maxWidth && currentX > 0) {
+        currentX = 0;
+        rowY += 18;
+      }
+
+      const legendItem = mobileLegendG
         .append('g')
-        .attr('transform', `translate(10, ${currentY})`)
-        .attr('class', 'legend-item')
+        .attr('transform', `translate(${currentX}, ${rowY})`)
         .style('cursor', 'pointer')
-        .style('opacity', isHighlighted ? 1 : 0.4)
-        .on('click', () => onModelClick(sourceId))
-        .on('mouseenter', function () {
-          d3.select(this).style('opacity', 1);
-        })
-        .on('mouseleave', function () {
-          d3.select(this).style('opacity', isHighlighted ? 1 : 0.4);
-        });
+        .style('opacity', isHighlighted ? 1 : 0.5)
+        .on('click', () => onModelClick(sourceId));
 
-      // Line sample
       legendItem
         .append('line')
         .attr('x1', 0)
-        .attr('x2', 25)
+        .attr('x2', 12)
         .attr('y1', 0)
         .attr('y2', 0)
         .attr('stroke', color)
-        .attr('stroke-width', isSelected ? 3 : 2);
-
-      // Circle sample
-      legendItem
-        .append('circle')
-        .attr('cx', 12.5)
-        .attr('cy', 0)
-        .attr('r', isSelected ? 5 : 4)
-        .attr('fill', color)
-        .attr('stroke', 'white')
         .attr('stroke-width', 2);
 
-      // Model name without provider
-      const varianceLabel =
-        source.variance !== 'default' ? ` (${source.variance})` : '';
-      const fullModelName = `${source.modelName}${varianceLabel}`;
-      const modelLabel =
-        fullModelName.length > 20
-          ? fullModelName.substring(0, 17) + '...'
-          : fullModelName;
+      legendItem
+        .append('circle')
+        .attr('cx', 6)
+        .attr('cy', 0)
+        .attr('r', 3)
+        .attr('fill', color);
 
       legendItem
         .append('text')
-        .attr('x', 33)
+        .attr('x', 16)
         .attr('y', 0)
         .attr('dy', '0.35em')
-        .style('font-size', '10px')
-        .style('font-weight', isSelected ? 'bold' : 'normal')
-        .style('fill', isSelected ? '#1890ff' : '#333')
-        .text(
-          modelLabel +
-            (source.isOfficial ? ' ⭐' : '') +
-            (source.openSource ? ' 🟢' : ''),
-        );
+        .style('font-size', '8px')
+        .text(fullLabel + (source.isOfficial ? ' ⭐' : ''));
 
-      legendItem
-        .append('title')
-        .text(
-          fullModelName +
-            (source.isOfficial ? ` (${t('chart.officialTag')})` : '') +
-            (source.openSource ? ' (OSS)' : ''),
-        );
+      legendItem.append('title').text(fullLabel);
 
-      currentY += 25;
+      currentX += itemWidth;
     });
-
-    currentY += 10; // Extra spacing between provider groups
-  });
+  } // End of legend group
 }
 
 export const CompactDashboard: React.FC<CompactDashboardProps> = ({
@@ -521,7 +610,10 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
     d3.select(container).selectAll('*').remove();
 
     const width = container.clientWidth;
-    const height = 700;
+    const isMobile = width < 940;
+    // On mobile, height should be proportional to width to avoid large vertical gaps
+    // On desktop, keep 700px
+    const height = isMobile ? width + 200 : 700;
 
     const svg = d3
       .select(container)
@@ -631,8 +723,8 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
     <div className='w-full'>
       <div
         ref={containerRef}
-        className='w-full'
-        style={{ minHeight: '700px' }}
+        className='w-full min-h-[500px] md:min-h-[700px]'
+        style={{}}
       />
     </div>
   );

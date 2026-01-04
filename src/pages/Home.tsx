@@ -1,9 +1,23 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { App, Button, Flex, Radio, Space } from 'antd';
+import {
+  App,
+  Button,
+  Flex,
+  Radio,
+  Space,
+  Tooltip,
+  Drawer,
+  Spin,
+  Result,
+} from 'antd';
 import {
   BarChartOutlined,
   TableOutlined,
   GithubOutlined,
+  StarFilled,
+  FileAddOutlined,
+  MenuOutlined,
+  CloseOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { ControlsPanel } from '../components/ControlsPanel';
@@ -34,6 +48,9 @@ export const Home: React.FC = () => {
   // UI state
   const [scale0100, setScale0100] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('dashboard');
+
+  // Mobile sidebar drawer state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Model selection for comparison (simple multi-select)
   const [selectedSourceIds, setSelectedSourceIds] = useState<string[]>([]);
@@ -242,10 +259,49 @@ export const Home: React.FC = () => {
     return sources.filter((s) => selectedSourceIds.includes(s.id));
   }, [sources, selectedSourceIds]);
 
+  // Sidebar content component (shared between desktop and mobile)
+  const sidebarContent = (
+    <ControlsPanel
+      onFilesUpload={handleFilesUpload}
+      sources={sources}
+      selectedSourceIds={selectedSourceIds}
+      onSourceSelectionChange={setSelectedSourceIds}
+      scale0100={scale0100}
+      onScaleToggle={setScale0100}
+      pivotData={pivotData}
+    />
+  );
+
   return (
-    <div className='flex h-screen'>
-      {/* Sidebar */}
-      <div className='w-80 border-r border-gray-200 overflow-y-auto'>
+    <div className='flex flex-col lg:flex-row h-screen'>
+      {/* Desktop Sidebar - Hidden on mobile */}
+      <div className='hidden lg:block w-80 app-sidebar overflow-y-auto flex-shrink-0'>
+        {sidebarContent}
+      </div>
+
+      {/* Mobile Sidebar Drawer */}
+      <Drawer
+        title={
+          <div className='flex items-center gap-3'>
+            <img
+              src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
+              alt='Twinkle AI Logo'
+              className='w-8 h-8 rounded-lg'
+            />
+            <span className='font-bold'>{t('controls.title')}</span>
+          </div>
+        }
+        placement='left'
+        onClose={() => setSidebarOpen(false)}
+        open={sidebarOpen}
+        width={320}
+        className='lg:hidden'
+        styles={{
+          body: { padding: 0 },
+        }}
+        closeIcon={<CloseOutlined />}
+      >
+        {/* Use a version without header for drawer */}
         <ControlsPanel
           onFilesUpload={handleFilesUpload}
           sources={sources}
@@ -254,17 +310,46 @@ export const Home: React.FC = () => {
           scale0100={scale0100}
           onScaleToggle={setScale0100}
           pivotData={pivotData}
+          hideHeader
         />
-      </div>
+      </Drawer>
 
       {/* Main content */}
-      <div className='flex-1 overflow-y-auto p-6 pt-0'>
-        {/* Header with title and view toggle - Sticky and half opacity*/}
-        <div className='sticky top-0 z-10 bg-white pt-6 pb-4 mb-2 border-b border-gray-200'>
-          <Flex justify='space-between' align='center'>
-            <h1 className='text-2xl font-bold !mb-0'>{t('app.title')}</h1>
-            <Space size={'small'}>
-              <LanguageSwitcher />
+      <div className='flex-1 flex flex-col overflow-hidden min-w-0'>
+        {/* Header - Sticky with glass effect */}
+        <div className='app-header sticky top-0 z-10 px-4 lg:px-6 py-3 lg:py-4'>
+          <Flex justify='space-between' align='center' gap={8}>
+            {/* Mobile menu button + Logo and Title */}
+            <Flex align='center' gap={8} className='min-w-0 flex-1'>
+              {/* Mobile menu button - only visible below lg breakpoint */}
+              <Button
+                type='text'
+                icon={<MenuOutlined />}
+                onClick={() => setSidebarOpen(true)}
+                className='!hidden max-lg:!inline-flex flex-shrink-0'
+                style={{ color: '#FFD400' }}
+              />
+
+              <img
+                src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
+                alt='Twinkle AI Logo'
+                className='w-8 h-8 lg:w-10 lg:h-10 rounded-lg shadow-md flex-shrink-0'
+              />
+              <div className='min-w-0 hidden sm:block'>
+                <h1 className='text-lg lg:text-xl font-bold !mb-0 text-gradient truncate'>
+                  {t('app.title')}
+                </h1>
+                <p className='text-xs text-gray-500 !mb-0 hidden md:block'>
+                  Language Model Benchmark Visualizer
+                </p>
+              </div>
+            </Flex>
+
+            {/* Controls */}
+            <Space size={'small'} className='flex-shrink-0'>
+              <div>
+                <LanguageSwitcher />
+              </div>
               {/* View Mode Toggle */}
               <Radio.Group
                 value={viewMode}
@@ -273,49 +358,84 @@ export const Home: React.FC = () => {
                 size={'middle'}
               >
                 <Radio.Button value='dashboard'>
-                  <BarChartOutlined /> {t('view.dashboard')}
+                  <BarChartOutlined />{' '}
+                  <span className='hidden sm:inline'>
+                    {t('view.dashboard')}
+                  </span>
                 </Radio.Button>
                 <Radio.Button value='table'>
-                  <TableOutlined /> {t('view.table')}
+                  <TableOutlined />{' '}
+                  <span className='hidden sm:inline'>{t('view.table')}</span>
                 </Radio.Button>
               </Radio.Group>
-              <Button
-                variant={'text'}
-                shape='circle'
-                href='https://github.com/ai-twinkle/eval-analyzer-website'
-                target='_blank'
-                rel='noopener noreferrer'
-                title='View on GitHub'
-                icon={<GithubOutlined className={'!text-xl'} />}
-                className={'!border-none'}
-              />
+              <Tooltip title='View on GitHub'>
+                <Button
+                  variant={'text'}
+                  shape='circle'
+                  href='https://github.com/ai-twinkle/eval-analyzer-website'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  icon={<GithubOutlined className={'!text-xl'} />}
+                  className={
+                    '!border-none hover:!bg-yellow-50 hidden sm:inline-flex'
+                  }
+                />
+              </Tooltip>
             </Space>
           </Flex>
         </div>
 
-        {loading ? (
-          <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>{t('app.loading')}</p>
-            <p className='mt-2 text-sm'>{t('app.loadingNote')}</p>
-          </div>
-        ) : sources.length === 0 ? (
-          <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>{t('app.noData')}</p>
-            <p className='mt-2'>{t('app.noDataHint')}</p>
-          </div>
-        ) : selectedSourceIds.length === 0 ? (
-          <div className='text-center text-gray-500 mt-20'>
-            <p className='text-lg'>{t('app.noSelection')}</p>
-            <p className='mt-2'>{t('app.noSelectionHint')}</p>
-          </div>
-        ) : viewMode === 'dashboard' ? (
-          <CategoryDashboard sources={selectedSources} scale0100={scale0100} />
-        ) : (
-          <BenchmarkRankingTable
-            sources={selectedSources}
-            scale0100={scale0100}
+        {/* Content Area */}
+        <div className='flex-1 overflow-y-auto p-4 lg:p-6 app-content'>
+          {loading ? (
+            <Result
+              icon={<Spin size='large' />}
+              title={t('app.loading')}
+              subTitle={t('app.loadingNote')}
+            />
+          ) : sources.length === 0 ? (
+            <Result
+              icon={<FileAddOutlined style={{ color: '#FFD400' }} />}
+              title={t('app.noData')}
+              subTitle={t('app.noDataHint')}
+            />
+          ) : selectedSourceIds.length === 0 ? (
+            <Result
+              icon={<StarFilled style={{ color: '#FFD400' }} />}
+              title={t('app.noSelection')}
+              subTitle={t('app.noSelectionHint')}
+            />
+          ) : viewMode === 'dashboard' ? (
+            <CategoryDashboard
+              sources={selectedSources}
+              scale0100={scale0100}
+            />
+          ) : (
+            <BenchmarkRankingTable
+              sources={selectedSources}
+              scale0100={scale0100}
+            />
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className='app-footer text-xs lg:text-sm'>
+          <span>Powered by </span>
+          <a
+            href='https://github.com/ai-twinkle'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            Twinkle AI
+          </a>
+          <span className='mx-2'>·</span>
+          <span className='hidden sm:inline'>
+            Built for benchmark excellence
+          </span>
+          <StarFilled
+            style={{ color: '#FFD400', marginLeft: '4px', fontSize: '12px' }}
           />
-        )}
+        </div>
       </div>
     </div>
   );

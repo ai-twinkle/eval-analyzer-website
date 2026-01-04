@@ -14,7 +14,85 @@ function App() {
       locale={locale}
       theme={{
         token: {
-          colorPrimary: '#1890ff',
+          // Primary bright yellow from logo
+          colorPrimary: '#FFD400',
+          colorPrimaryHover: '#FFD933',
+          colorPrimaryActive: '#FFBC00',
+          colorPrimaryBg: 'rgba(255, 212, 0, 0.08)',
+          colorPrimaryBgHover: 'rgba(255, 212, 0, 0.12)',
+          colorPrimaryBorder: 'rgba(255, 212, 0, 0.3)',
+          colorPrimaryBorderHover: '#FFD400',
+
+          // Link colors
+          colorLink: '#CCAA00',
+          colorLinkHover: '#FFD400',
+          colorLinkActive: '#B89900',
+
+          // Success - keep green
+          colorSuccess: '#52c41a',
+
+          // Warning - amber
+          colorWarning: '#faad14',
+
+          // Error - red
+          colorError: '#ff4d4f',
+
+          // Info - golden
+          colorInfo: '#F5A623',
+
+          // Typography
+          fontFamily:
+            "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontSize: 14,
+
+          // Border radius
+          borderRadius: 8,
+          borderRadiusLG: 12,
+          borderRadiusSM: 6,
+
+          // Shadows
+          boxShadow: '0 1px 3px rgba(212, 146, 10, 0.08)',
+          boxShadowSecondary: '0 4px 12px rgba(212, 146, 10, 0.1)',
+        },
+        components: {
+          Card: {
+            colorBgContainer: 'rgba(255, 255, 255, 0.92)',
+            borderRadiusLG: 12,
+          },
+          Button: {
+            borderRadius: 8,
+            controlHeight: 36,
+          },
+          Input: {
+            borderRadius: 8,
+          },
+          Select: {
+            borderRadius: 8,
+          },
+          Switch: {
+            colorPrimary: '#FFD400',
+            colorPrimaryHover: '#FFD933',
+          },
+          Radio: {
+            colorPrimary: '#FFD400',
+            buttonSolidCheckedBg: '#FFD400',
+            buttonSolidCheckedHoverBg: '#FFD933',
+          },
+          Checkbox: {
+            colorPrimary: '#FFD400',
+            colorPrimaryHover: '#FFD933',
+          },
+          Table: {
+            headerBg: 'rgba(255, 212, 0, 0.08)',
+            headerColor: '#1A1A1A',
+            rowHoverBg: 'rgba(255, 212, 0, 0.06)',
+          },
+          Divider: {
+            colorSplit: 'rgba(0, 0, 0, 0.06)',
+          },
+          List: {
+            colorBorder: 'rgba(0, 0, 0, 0.06)',
+          },
         },
       }}
     >
