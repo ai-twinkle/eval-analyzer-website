@@ -46,20 +46,28 @@ function drawRadarChart(
 ) {
   // Responsive margins based on width
   const isMobile = width < 940;
+  // Calculate dynamic top margin to avoid "half cut" chart
+  // Labels extend outwards by ~15% of radius (rScale(1) * 1.15)
+  // We need to ensure margin.top accommodates the title + label overflow
+  const sideMargins = isMobile ? 60 : 440; // left + right
+  const estimatedRadius = (width - sideMargins) / 2;
+  const labelOverflow = estimatedRadius * 0.15;
+  const titleHeight = 50; // Title Y is ~20-25, plus font size
+  const calculatedTopMargin = titleHeight + labelOverflow + 10;
+
   const margin = {
-    top: isMobile ? 50 : 100, // Increase mobile top margin for labels
-    right: isMobile ? 30 : 220, // Decrease right margin to maximize chart size
+    top: isMobile ? calculatedTopMargin : 100,
+    right: isMobile ? 30 : 220,
     bottom: isMobile ? 40 : 80,
-    left: isMobile ? 30 : 220, // Decrease left margin to maximize chart size
+    left: isMobile ? 30 : 220,
   };
   const radius =
     Math.min(
       width - margin.left - margin.right,
-      isMobile ? 10000 : height - margin.top - margin.bottom, // Unconstrain height on mobile
+      isMobile ? 10000 : height - margin.top - margin.bottom,
     ) / 2;
   const centerX = width / 2;
-  // On mobile, align to top (margin.top + radius) to save space for legend
-  // On desktop, center vertically as before
+  // On mobile, align to top (margin.top + radius)
   const centerY = isMobile ? margin.top + radius : height / 2 + 20;
 
   // Use all categories - no limit
