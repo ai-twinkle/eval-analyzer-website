@@ -578,15 +578,15 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
 
         // Label for avg bar (only if space allows)
         // Label for avg bar (always append, control visibility via update)
-        if (xScale(stats.avg) > 50) {
+        if (xScale(stats.min) > 35) {
           g.append('text')
             .attr('class', 'model-avg-label')
             .attr('data-source-id', sourceId)
-            .attr('x', xScale(stats.avg) - 3)
+            .attr('x', xScale(stats.min) - 2)
             .attr('y', modelY + barHeight + barHeight / 2)
             .attr('text-anchor', 'end')
             .attr('dominant-baseline', 'middle')
-            .style('font-size', '7px')
+            .style('font-size', '9px') // Increased from 7px for better readability
             .style('font-weight', 'bold')
             .style('fill', 'white')
             .style('pointer-events', 'none')
