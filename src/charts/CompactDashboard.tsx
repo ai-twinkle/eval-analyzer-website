@@ -47,18 +47,20 @@ function drawRadarChart(
   // Responsive margins based on width
   const isMobile = width < 940;
   const margin = {
-    top: isMobile ? 20 : 100,
-    right: isMobile ? 40 : 220,
+    top: isMobile ? 50 : 100, // Increase mobile top margin for labels
+    right: isMobile ? 30 : 220, // Decrease right margin to maximize chart size
     bottom: isMobile ? 40 : 80,
-    left: isMobile ? 40 : 220,
+    left: isMobile ? 30 : 220, // Decrease left margin to maximize chart size
   };
   const radius =
     Math.min(
       width - margin.left - margin.right,
-      height - margin.top - margin.bottom,
+      isMobile ? 10000 : height - margin.top - margin.bottom, // Unconstrain height on mobile
     ) / 2;
   const centerX = width / 2;
-  const centerY = height / 2 + (isMobile ? 0 : 20);
+  // On mobile, align to top (margin.top + radius) to save space for legend
+  // On desktop, center vertically as before
+  const centerY = isMobile ? margin.top + radius : height / 2 + 20;
 
   // Use all categories - no limit
   const topCategories = categoryData;
@@ -586,6 +588,12 @@ function drawRadarChart(
 
       currentX += itemWidth;
     });
+
+    // Dynamically update SVG height to fit the mobile legend
+    const requiredHeight = rowY + mobileLegendY + 40;
+    if (requiredHeight > height) {
+      svg.attr('height', requiredHeight);
+    }
   } // End of legend group
 }
 
