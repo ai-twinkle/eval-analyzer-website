@@ -1,6 +1,6 @@
-# Eval Analyzer Website
+# Twinkle Eval Leaderboard
 
-Serverless Official Benchmark Visualizer built with React, TypeScript, Ant Design, and D3.
+Official Benchmark Leaderboard and Visualizer for comparing AI model performance with clear visualizations and tables. Built with React, TypeScript, Ant Design, and D3.
 
 ## Features
 
@@ -9,6 +9,7 @@ Serverless Official Benchmark Visualizer built with React, TypeScript, Ant Desig
 - **Multi-File Upload**: Upload and compare multiple JSON/JSONL result files side-by-side
 - **Dynamic Schema Inference**: Schema is derived from data at runtime using Zod
 - **Interactive Visualizations**: D3-powered charts for category-based analysis, including expandable dashboards with bar charts and radar plots
+- **Leaderboard Tables**: Comprehensive ranking tables with sortable columns for detailed model comparison
 - **CSV Export**: Export pivot tables and summaries
 - **Fully Static**: Deployable to GitHub Pages, Netlify, or Vercel without a backend
 

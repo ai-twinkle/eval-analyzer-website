@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Twinkle 評測視覺化工具",
+    "title": "Twinkle 評測排行榜",
     "loading": "正在載入所有基準測試的最新結果...",
     "loadingNote": "這可能需要一點時間。",
     "noData": "尚未載入資料。",

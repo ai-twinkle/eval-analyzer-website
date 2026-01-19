@@ -1,6 +1,6 @@
 {
   "app": {
-    "title": "Twinkle Eval Visualizer",
+    "title": "Twinkle Eval Leaderboard",
     "loading": "Loading latest results from all benchmarks...",
     "loadingNote": "This may take a moment.",
     "noData": "No data loaded yet.",
