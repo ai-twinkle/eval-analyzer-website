@@ -41,7 +41,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // Apply theme to document
-  useEffect(() => {
+  React.useLayoutEffect(() => {
     document.documentElement.setAttribute('data-theme', themeMode);
   }, [themeMode]);
 
