@@ -6,10 +6,17 @@
     "noData": "尚未載入資料。",
     "noDataHint": "上傳檔案以開始使用。",
     "noSelection": "未選擇模型。",
-    "noSelectionHint": "從側邊欄選擇一個或多個模型進行比較。"
+    "noSelectionHint": "從側邊欄選擇一個或多個模型進行比較。",
+    "subtitle": "語言模型評測視覺化工具",
+    "viewOnGithub": "在 GitHub 上查看",
+    "poweredBy": "由",
+    "builtFor": "為卓越評測打造"
   },
   "controls": {
     "title": "控制面板",
+    "settings": "設定",
+    "language": "Language / 語言",
+    "theme": "主題",
     "uploadFiles": "上傳 JSON/JSONL 檔案",
     "selectModels": "選擇要比較的模型",
     "all": "全選",

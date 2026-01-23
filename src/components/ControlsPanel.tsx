@@ -91,18 +91,22 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
           <div className='mb-5'>
             <div className='section-header text-sm mb-3'>
               <SlidersOutlined className='!text-amber-500' />
-              <span>Settings</span>
+              <span>{t('controls.settings')}</span>
             </div>
             <div className='flex flex-col gap-3'>
               <div className='flex items-center justify-between'>
-                <span className='text-xs text-gray-500'>Language</span>
+                <span className='text-xs text-gray-500'>
+                  {t('controls.language')}
+                </span>
                 <LanguageSwitcher size={'small'} />
               </div>
 
               {/* Theme Toggle - restored for mobile */}
               {hideHeader && toggleTheme && isDarkMode !== undefined && (
                 <div className='flex items-center justify-between'>
-                  <span className='text-xs text-gray-500'>Theme</span>
+                  <span className='text-xs text-gray-500'>
+                    {t('controls.theme')}
+                  </span>
                   <Button
                     icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />}
                     onClick={toggleTheme}

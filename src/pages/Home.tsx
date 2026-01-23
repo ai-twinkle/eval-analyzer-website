@@ -307,7 +307,7 @@ export const Home: React.FC = () => {
                   {t('app.title')}
                 </h1>
                 <p className='text-xs text-gray-500 !mb-0 hidden md:block'>
-                  Language Model Benchmark Visualizer
+                  {t('app.subtitle')}
                 </p>
               </div>
             </a>
@@ -361,7 +361,7 @@ export const Home: React.FC = () => {
             </div>
 
             {/* GitHub Link */}
-            <Tooltip title='View on GitHub'>
+            <Tooltip title={t('app.viewOnGithub')}>
               <Button
                 variant={'text'}
                 shape='circle'
@@ -459,7 +459,7 @@ export const Home: React.FC = () => {
 
           {/* Footer */}
           <div className='app-footer text-xs lg:text-sm'>
-            <span>Powered by </span>
+            <span>{t('app.poweredBy')} </span>
             <a
               href='https://github.com/ai-twinkle'
               target='_blank'
@@ -468,9 +468,7 @@ export const Home: React.FC = () => {
               Twinkle AI
             </a>
             <span className='mx-2'>·</span>
-            <span className='hidden sm:inline'>
-              Built for benchmark excellence
-            </span>
+            <span className='hidden sm:inline'>{t('app.builtFor')}</span>
             <StarFilled
               style={{ color: '#FFD400', marginLeft: '4px', fontSize: '12px' }}
             />

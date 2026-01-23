@@ -6,10 +6,17 @@
     "noData": "No data loaded yet.",
     "noDataHint": "Upload files to get started.",
     "noSelection": "No models selected.",
-    "noSelectionHint": "Select one or more models from the sidebar to compare."
+    "noSelectionHint": "Select one or more models from the sidebar to compare.",
+    "subtitle": "Language Model Benchmark Visualizer",
+    "viewOnGithub": "View on GitHub",
+    "poweredBy": "Powered by",
+    "builtFor": "Built for benchmark excellence"
   },
   "controls": {
     "title": "Controls",
+    "settings": "Settings",
+    "language": "Language / 語言",
+    "theme": "Theme",
     "uploadFiles": "Upload JSON/JSONL Files",
     "selectModels": "Select Models to Compare",
     "all": "All",
