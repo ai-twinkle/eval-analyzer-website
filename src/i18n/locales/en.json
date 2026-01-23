@@ -106,5 +106,12 @@
     "languagesLiterature": "Languages & Literature",
     "miscellaneous": "Miscellaneous",
     "other": "Other"
+  },
+  "theme": {
+    "light": "Light Mode",
+    "dark": "Dark Mode"
+  },
+  "nav": {
+    "homepage": "Twinkle AI Homepage"
   }
 }

@@ -18,7 +18,11 @@ import {
   FileAddOutlined,
   MenuOutlined,
   CloseOutlined,
+  SunOutlined,
+  MoonOutlined,
+  HomeOutlined,
 } from '@ant-design/icons';
+import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { ControlsPanel } from '../components/ControlsPanel';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
@@ -40,6 +44,7 @@ type ViewMode = 'dashboard' | 'table';
 export const Home: React.FC = () => {
   const { message } = App.useApp();
   const { t } = useTranslation();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [config, setConfig] = useState<BenchmarkConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [sources, setSources] = useState<DataSource[]>([]);
@@ -311,6 +316,8 @@ export const Home: React.FC = () => {
           onScaleToggle={setScale0100}
           pivotData={pivotData}
           hideHeader
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
         />
       </Drawer>
 
@@ -335,7 +342,7 @@ export const Home: React.FC = () => {
                 alt='Twinkle AI Logo'
                 className='w-8 h-8 lg:w-10 lg:h-10 rounded-lg shadow-md flex-shrink-0'
               />
-              <div className='min-w-0 hidden sm:block'>
+              <div className='min-w-0'>
                 <h1 className='text-lg lg:text-xl font-bold !mb-0 text-gradient truncate'>
                   {t('app.title')}
                 </h1>
@@ -347,37 +354,81 @@ export const Home: React.FC = () => {
 
             {/* Controls */}
             <Space size={'small'} className='flex-shrink-0'>
-              <div>
+              {/* Language Switcher - desktop only */}
+              <div className='hidden lg:block'>
                 <LanguageSwitcher />
               </div>
-              {/* View Mode Toggle */}
+              {/* View Mode Toggle - hidden on mobile */}
               <Radio.Group
                 value={viewMode}
                 onChange={(e) => setViewMode(e.target.value)}
                 buttonStyle='solid'
-                size={'middle'}
+                size={'small'}
+                className='hidden sm:inline-flex'
               >
                 <Radio.Button value='dashboard'>
-                  <BarChartOutlined />{' '}
-                  <span className='hidden sm:inline'>
+                  <BarChartOutlined />
+                  <span className='hidden md:inline ml-1'>
                     {t('view.dashboard')}
                   </span>
                 </Radio.Button>
                 <Radio.Button value='table'>
-                  <TableOutlined />{' '}
-                  <span className='hidden sm:inline'>{t('view.table')}</span>
+                  <TableOutlined />
+                  <span className='hidden md:inline ml-1'>
+                    {t('view.table')}
+                  </span>
                 </Radio.Button>
               </Radio.Group>
+              {/* Theme Toggle - desktop only (moved to sidebar on mobile) */}
+              <div className='hidden sm:block'>
+                <Tooltip
+                  title={isDarkMode ? t('theme.light') : t('theme.dark')}
+                >
+                  <Button
+                    variant={'text'}
+                    shape='circle'
+                    size='small'
+                    onClick={toggleTheme}
+                    icon={
+                      isDarkMode ? (
+                        <SunOutlined className={'!text-lg'} />
+                      ) : (
+                        <MoonOutlined className={'!text-lg'} />
+                      )
+                    }
+                    className={
+                      '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20'
+                    }
+                  />
+                </Tooltip>
+              </div>
+              {/* Homepage Link - desktop only */}
+              <Tooltip title={t('nav.homepage')}>
+                <Button
+                  variant={'text'}
+                  shape='circle'
+                  size='small'
+                  href='https://twinkleai.tw/'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  icon={<HomeOutlined className={'!text-lg'} />}
+                  className={
+                    '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20 hidden lg:inline-flex'
+                  }
+                />
+              </Tooltip>
+              {/* GitHub Link - desktop only */}
               <Tooltip title='View on GitHub'>
                 <Button
                   variant={'text'}
                   shape='circle'
+                  size='small'
                   href='https://github.com/ai-twinkle/eval-analyzer-website'
                   target='_blank'
                   rel='noopener noreferrer'
-                  icon={<GithubOutlined className={'!text-xl'} />}
+                  icon={<GithubOutlined className={'!text-lg'} />}
                   className={
-                    '!border-none hover:!bg-yellow-50 hidden sm:inline-flex'
+                    '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20 hidden lg:inline-flex'
                   }
                 />
               </Tooltip>

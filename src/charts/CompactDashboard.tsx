@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
+import { useTheme } from '../contexts/ThemeContext';
 import type { DataSource, CategoryKey } from '../types';
 import {
   flattenDatasetResults,
@@ -9,6 +10,13 @@ import {
   getSourceIdentifier,
 } from '../features/transform';
 import { formatValue } from '../features/transform';
+
+// Helper to get CSS variable values for D3 charts
+const getCssVar = (varName: string): string => {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+};
 
 interface CompactDashboardProps {
   sources: DataSource[];
@@ -43,6 +51,7 @@ function drawRadarChart(
   onCategoryClick: (category: string) => void,
   onModelClick: (model: string) => void,
   t: TFunction,
+  isDarkMode: boolean,
 ) {
   // Responsive margins based on width
   const isMobile = width < 940;
@@ -95,7 +104,7 @@ function drawRadarChart(
     g.append('circle')
       .attr('r', levelRadius)
       .attr('fill', 'none')
-      .attr('stroke', '#CDCDCD')
+      .attr('stroke', isDarkMode ? 'rgba(255, 255, 255, 0.2)' : '#CDCDCD')
       .attr('stroke-width', level === levels ? 2 : 1)
       .attr('opacity', 0.5);
 
@@ -106,7 +115,7 @@ function drawRadarChart(
         .attr('y', -levelRadius)
         .attr('dy', '0.4em')
         .style('font-size', '10px')
-        .attr('fill', '#737373')
+        .attr('fill', isDarkMode ? 'rgba(255, 255, 255, 0.5)' : '#737373')
         .text(formatValue(level / levels, scale0100));
     }
   }
@@ -125,7 +134,13 @@ function drawRadarChart(
     .attr('y1', 0)
     .attr('x2', (_d, i) => rScale(1) * Math.cos(angleSlice * i - Math.PI / 2))
     .attr('y2', (_d, i) => rScale(1) * Math.sin(angleSlice * i - Math.PI / 2))
-    .attr('stroke', (d) => (selectedCategory === d ? '#1890ff' : '#CDCDCD'))
+    .attr('stroke', (d) =>
+      selectedCategory === d
+        ? '#1890ff'
+        : isDarkMode
+          ? 'rgba(255, 255, 255, 0.2)'
+          : '#CDCDCD',
+    )
     .attr('stroke-width', (d) => (selectedCategory === d ? 2 : 1));
 
   // Draw axis labels (clickable)
@@ -156,7 +171,9 @@ function drawRadarChart(
     })
     .style('font-size', isMobile ? '9px' : '11px')
     .style('font-weight', (d) => (selectedCategory === d ? 'bold' : 'normal'))
-    .style('fill', (d) => (selectedCategory === d ? '#1890ff' : '#333'))
+    .style('fill', (d) =>
+      selectedCategory === d ? '#1890ff' : getCssVar('--chart-text-primary'),
+    )
     .style('cursor', 'pointer')
     .each(function (d, i) {
       // Add background box for better readability
@@ -173,8 +190,24 @@ function drawRadarChart(
         .attr('y', y - bbox.height / 2 - 2)
         .attr('width', bbox.width + 8)
         .attr('height', bbox.height + 4)
-        .attr('fill', selectedCategory === d ? '#e6f7ff' : 'white')
-        .attr('stroke', selectedCategory === d ? '#1890ff' : '#d9d9d9')
+        .attr(
+          'fill',
+          selectedCategory === d
+            ? isDarkMode
+              ? '#1a3653'
+              : '#e6f7ff'
+            : isDarkMode
+              ? '#1a1f2e'
+              : 'white',
+        )
+        .attr(
+          'stroke',
+          selectedCategory === d
+            ? '#1890ff'
+            : isDarkMode
+              ? 'rgba(255, 255, 255, 0.2)'
+              : '#d9d9d9',
+        )
         .attr('stroke-width', 1)
         .attr('rx', 3)
         .style('cursor', 'pointer')
@@ -365,6 +398,7 @@ function drawRadarChart(
     .attr('text-anchor', 'middle')
     .style('font-size', isMobile ? '14px' : '18px')
     .style('font-weight', 'bold')
+    .style('fill', getCssVar('--chart-text-primary'))
     .text(
       isMobile
         ? (t as (k: string) => string)('chart.radarTitleShort')
@@ -378,7 +412,7 @@ function drawRadarChart(
       .attr('y', 48)
       .attr('text-anchor', 'middle')
       .style('font-size', '12px')
-      .style('fill', '#666')
+      .style('fill', getCssVar('--chart-text-secondary'))
       .text(t('chart.radarSubtitle'));
   }
 
@@ -395,6 +429,7 @@ function drawRadarChart(
       .attr('y', -10)
       .style('font-size', '13px')
       .style('font-weight', 'bold')
+      .style('fill', getCssVar('--chart-text-primary'))
       .text(t('chart.legendModels'));
 
     legendG
@@ -402,7 +437,7 @@ function drawRadarChart(
       .attr('x', 0)
       .attr('y', 5)
       .style('font-size', '10px')
-      .style('fill', '#666')
+      .style('fill', getCssVar('--chart-text-secondary'))
       .text(t('chart.legendClickToHighlight'));
 
     // Group sources by provider
@@ -429,7 +464,7 @@ function drawRadarChart(
         .attr('y', currentY)
         .style('font-size', '12px')
         .style('font-weight', 'bold')
-        .style('fill', '#555')
+        .style('fill', getCssVar('--chart-text-secondary'))
         .text(provider);
 
       currentY += 20;
@@ -492,7 +527,10 @@ function drawRadarChart(
           .attr('dy', '0.35em')
           .style('font-size', '10px')
           .style('font-weight', isSelected ? 'bold' : 'normal')
-          .style('fill', isSelected ? '#1890ff' : '#333')
+          .style(
+            'fill',
+            isSelected ? '#1890ff' : getCssVar('--chart-text-primary'),
+          )
           .text(
             modelLabel +
               (source.isOfficial ? ' ⭐' : '') +
@@ -527,6 +565,7 @@ function drawRadarChart(
       .attr('y', 0)
       .style('font-size', '11px')
       .style('font-weight', 'bold')
+      .style('fill', getCssVar('--chart-text-primary'))
       .text(t('chart.legendModels'));
 
     let currentX = 0;
@@ -580,6 +619,7 @@ function drawRadarChart(
         .attr('y', 0)
         .attr('dy', '0.35em')
         .style('font-size', '8px')
+        .style('fill', getCssVar('--chart-text-primary'))
         .text(
           fullLabel +
             (source.isOfficial ? ' ⭐' : '') +
@@ -614,6 +654,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
   onModelHighlight,
 }) => {
   const { t } = useTranslation();
+  const { isDarkMode } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const [internalSelectedCategory, setInternalSelectedCategory] = useState<
     string | null
@@ -725,6 +766,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
         }
       },
       t,
+      isDarkMode,
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -738,6 +780,7 @@ export const CompactDashboard: React.FC<CompactDashboardProps> = ({
     externalHighlightedModel,
     internalSelectedCategory,
     internalHighlightedModel,
+    isDarkMode, // Re-render chart when theme changes
   ]);
 
   if (sources.length === 0) {

@@ -6,10 +6,13 @@ import {
   SearchOutlined,
   DownloadOutlined,
   UploadOutlined,
+  SunOutlined,
+  MoonOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { FileUploader } from './FileUploader';
 import { DownloadButtons } from './DownloadButtons';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import type { DataSource, PivotRow } from '../types';
 
 interface ControlsPanelProps {
@@ -21,6 +24,8 @@ interface ControlsPanelProps {
   onScaleToggle: (checked: boolean) => void;
   pivotData: PivotRow[];
   hideHeader?: boolean;
+  isDarkMode?: boolean;
+  toggleTheme?: () => void;
 }
 
 export const ControlsPanel: React.FC<ControlsPanelProps> = ({
@@ -32,6 +37,8 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   onScaleToggle,
   pivotData,
   hideHeader = false,
+  isDarkMode,
+  toggleTheme,
 }) => {
   const { t } = useTranslation();
   const handleSelectAll = () => {
@@ -76,7 +83,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
   );
 
   return (
-    <div className='h-full overflow-y-auto p-5'>
+    <div className='p-5'>
       {/* Section Header - Logo (hidden when used in drawer) */}
       {!hideHeader && (
         <div className='flex items-center gap-3 mb-6'>
@@ -89,6 +96,40 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
             {t('controls.title')}
           </h2>
         </div>
+      )}
+
+      {/* Mobile Quick Actions - Language Switcher (shown when hideHeader is true, i.e. in drawer) */}
+      {hideHeader && (
+        <>
+          {/* Settings Section */}
+          <div className='mb-5'>
+            <div className='section-header text-sm mb-3'>
+              <SlidersOutlined className='!text-amber-500' />
+              <span>Settings</span>
+            </div>
+            <div className='flex flex-col gap-3'>
+              <div className='flex items-center justify-between'>
+                <span className='text-xs text-gray-500'>Language</span>
+                <LanguageSwitcher size={'small'} />
+              </div>
+
+              {/* Theme Toggle - restored for mobile */}
+              {hideHeader && toggleTheme && isDarkMode !== undefined && (
+                <div className='flex items-center justify-between'>
+                  <span className='text-xs text-gray-500'>Theme</span>
+                  <Button
+                    icon={isDarkMode ? <SunOutlined /> : <MoonOutlined />}
+                    onClick={toggleTheme}
+                    size='small'
+                  >
+                    {isDarkMode ? t('theme.light') : t('theme.dark')}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+          <Divider className='!my-3' />
+        </>
       )}
 
       {/* File Upload Section */}
@@ -142,7 +183,12 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
               size='small'
             />
 
-            <div className='max-h-62 overflow-y-auto space-y-3 pr-1'>
+            <div
+              className={
+                (hideHeader ? 'max-h-55' : 'max-h-85') +
+                ' overflow-y-auto space-y-3 pr-1'
+              }
+            >
               {Object.entries(groupedByProvider).map(
                 ([provider, providerSources]) => (
                   <div key={provider}>

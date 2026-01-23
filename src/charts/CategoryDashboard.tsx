@@ -10,6 +10,7 @@ import {
   RadarChartOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../contexts/ThemeContext';
 import type { DataSource } from '../types';
 import {
   flattenDatasetResults,
@@ -18,6 +19,13 @@ import {
 } from '../features/transform';
 import { formatValue } from '../features/transform';
 import { CompactDashboard } from './CompactDashboard';
+
+// Helper to get CSS variable values for D3 charts
+const getCssVar = (varName: string): string => {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(varName)
+    .trim();
+};
 
 interface CategoryDashboardProps {
   sources: DataSource[];
@@ -47,6 +55,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
   scale0100,
 }) => {
   const { t } = useTranslation();
+  const { isDarkMode } = useTheme();
   const detailChartRef = useRef<HTMLDivElement>(null);
 
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
@@ -331,6 +340,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('text-anchor', 'middle')
       .style('font-size', isMobile ? '12px' : '18px')
       .style('font-weight', 'bold')
+      .style('fill', getCssVar('--chart-text-primary'))
       .text(titleText);
 
     if (!isMobile) {
@@ -340,7 +350,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('y', 48)
         .attr('text-anchor', 'middle')
         .style('font-size', '12px')
-        .style('fill', '#666')
+        .style('fill', getCssVar('--chart-text-secondary'))
         .text(
           `${t('chart.testCount', { count: categoryInfo.testCount })} • ${t('chart.benchmarksShown')} • ${t('chart.modelsSideBySide')}`,
         );
@@ -400,7 +410,10 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('dominant-baseline', 'middle')
           .style('font-size', '10px')
           .style('font-weight', 'bold')
-          .style('fill', rank <= 3 ? '#faad14' : '#bfbfbf')
+          .style(
+            'fill',
+            rank <= 3 ? '#faad14' : getCssVar('--chart-text-muted'),
+          )
           .text(`#${rank}`);
 
         // Color-coded dataset badge background
@@ -442,7 +455,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('text-anchor', 'end')
           .attr('dominant-baseline', 'middle')
           .style('font-size', '11px')
-          .style('fill', '#262626')
+          .style('fill', getCssVar('--chart-text-primary'))
           .text(
             test.testName.length > 42
               ? test.testName.slice(0, 40) + '...'
@@ -615,6 +628,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
       .attr('text-anchor', 'middle')
       .style('font-size', isMobile ? '10px' : '13px')
       .style('font-weight', 'bold')
+      .style('fill', getCssVar('--chart-text-primary'))
       .text(t('chart.accuracyScore'));
 
     // Mobile: Horizontal legend at top (below title)
@@ -633,6 +647,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('y', 8)
         .style('font-size', '9px')
         .style('font-weight', 'bold')
+        .style('fill', getCssVar('--chart-text-primary'))
         .text(t('chart.legendModels'));
 
       sources.forEach((source) => {
@@ -663,6 +678,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('x', 14)
           .attr('y', 8)
           .style('font-size', '8px')
+          .style('fill', getCssVar('--chart-text-primary'))
           .text(fullName);
 
         currentX += itemWidth;
@@ -678,6 +694,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('y', rowY - 8)
         .style('font-size', '9px')
         .style('font-weight', 'bold')
+        .style('fill', getCssVar('--chart-text-primary'))
         .text(t('chart.legendBenchmarks'));
 
       uniqueDatasets.forEach((dataset) => {
@@ -721,6 +738,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('x', 14)
           .attr('y', 8)
           .style('font-size', '8px')
+          .style('fill', getCssVar('--chart-text-primary'))
           .attr('opacity', isDimmed ? 0.4 : 1)
           .text(dataset);
 
@@ -741,6 +759,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('y', 0)
         .style('font-size', '12px')
         .style('font-weight', 'bold')
+        .style('fill', getCssVar('--chart-text-primary'))
         .text(`${t('chart.legendModels')}:`);
       sources.forEach((source, i) => {
         const sourceId = getSourceIdentifier(source);
@@ -766,6 +785,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('x', 18)
           .attr('y', 11)
           .style('font-size', '10px')
+          .style('fill', getCssVar('--chart-text-primary'))
           .style(
             'font-weight',
             highlightedModel === sourceId ? 'bold' : 'normal',
@@ -794,6 +814,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
         .attr('y', 0)
         .style('font-size', '12px')
         .style('font-weight', 'bold')
+        .style('fill', getCssVar('--chart-text-primary'))
         .text(t('chart.legendBenchmarks'));
       uniqueDatasets.forEach((dataset, i) => {
         const isSelected = selectedBenchmark === dataset;
@@ -830,6 +851,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
           .attr('x', 18)
           .attr('y', 11)
           .style('font-size', '10px')
+          .style('fill', getCssVar('--chart-text-primary'))
           .text(dataset.length > 16 ? dataset.slice(0, 14) + '...' : dataset)
           .append('title')
           .text(dataset);
@@ -844,6 +866,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
     testSortMode,
     selectedBenchmark,
     colorScale,
+    isDarkMode, // Re-render chart when theme changes
   ]);
 
   // Separate effect for model highlighting to avoid full re-render (and re-animation)

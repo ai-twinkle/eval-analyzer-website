@@ -42,6 +42,58 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
   --transition-slow: 400ms ease;
+
+  /* Chart Colors - for D3 */
+  --chart-text-primary: #262626;
+  --chart-text-secondary: #666666;
+  --chart-text-muted: #bfbfbf;
+  --chart-axis-line: #e0e0e0;
+  --chart-grid-line: rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   Dark Theme Variables
+   Matching Twinkle AI Homepage Style
+   ============================================ */
+
+[data-theme='dark'] {
+  /* Primary Colors - Keep Yellow Accents */
+  --color-primary: #ffd400;
+  --color-primary-light: #ffe033;
+  --color-primary-dark: #ffbc00;
+  --color-primary-hover: #ffd933;
+
+  /* Accent Colors */
+  --color-accent-gold: #ffe566;
+  --color-accent-amber: #ffcc33;
+
+  /* Dark Background Colors - Matching Homepage */
+  --color-bg-primary: #0a0e1a;
+  --color-bg-secondary: #101623;
+  --color-bg-card: rgba(26, 31, 46, 0.95);
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b0b8c4;
+  --color-text-muted: #6b7280;
+  --color-border: rgba(255, 212, 0, 0.2);
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* Shadows - Adjusted for Dark Mode */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 0 20px rgba(255, 212, 0, 0.15);
+
+  /* Glass Effect - Dark Version */
+  --glass-bg: rgba(16, 22, 35, 0.9);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 12px;
+
+  /* Chart Colors - for D3 in Dark Mode */
+  --chart-text-primary: #ffffff;
+  --chart-text-secondary: #b0b8c4;
+  --chart-text-muted: #6b7280;
+  --chart-axis-line: rgba(255, 255, 255, 0.2);
+  --chart-grid-line: rgba(255, 255, 255, 0.05);
 }
 
 /* ============================================
@@ -92,6 +144,26 @@ body::before {
     );
   pointer-events: none;
   z-index: -1;
+}
+
+/* Dark mode body background */
+[data-theme='dark'] body {
+  background: linear-gradient(135deg, #0a0e1a 0%, #101623 50%, #1a1f2e 100%);
+  color: var(--color-text-primary);
+}
+
+[data-theme='dark'] body::before {
+  background:
+    radial-gradient(
+      ellipse at 20% 20%,
+      rgba(255, 212, 0, 0.03) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 80%,
+      rgba(255, 212, 0, 0.02) 0%,
+      transparent 50%
+    );
 }
 
 /* ============================================
@@ -488,4 +560,96 @@ h6 {
 .app-footer a:hover {
   color: var(--color-primary-dark);
   text-decoration: underline;
+}
+
+/* ============================================
+   Dark Mode Component Overrides
+   ============================================ */
+
+/* Model Card Dark Mode */
+[data-theme='dark'] .model-card {
+  background: rgba(26, 31, 46, 0.5);
+  border-color: var(--color-border-subtle);
+}
+
+[data-theme='dark'] .model-card:hover {
+  background: rgba(255, 212, 0, 0.08);
+  border-color: rgba(255, 212, 0, 0.2);
+}
+
+[data-theme='dark'] .model-card.selected {
+  background: rgba(255, 212, 0, 0.12);
+  border-color: var(--color-primary);
+}
+
+/* Tip Box Dark Mode */
+[data-theme='dark'] .tip-box,
+[data-theme='dark'] .bg-blue-50 {
+  background: rgba(255, 212, 0, 0.08) !important;
+  border-color: rgba(255, 212, 0, 0.15) !important;
+  color: var(--color-text-secondary) !important;
+}
+
+/* Scrollbar Dark Mode */
+[data-theme='dark'] ::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Typography Dark Mode */
+[data-theme='dark'] h1,
+[data-theme='dark'] h2,
+[data-theme='dark'] h3,
+[data-theme='dark'] h4,
+[data-theme='dark'] h5,
+[data-theme='dark'] h6 {
+  color: var(--color-text-primary);
+}
+
+/* Badge in Dark Mode */
+[data-theme='dark'] .badge-official {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] .badge-oss {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Section Header Dark Mode */
+[data-theme='dark'] .section-header {
+  color: var(--color-text-primary);
+}
+
+/* Text overrides for dark mode */
+[data-theme='dark'] .text-gray-800 {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme='dark'] .text-gray-700 {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme='dark'] .text-gray-600 {
+  color: var(--color-text-secondary) !important;
+}
+
+[data-theme='dark'] .text-gray-500 {
+  color: var(--color-text-muted) !important;
+}
+
+[data-theme='dark'] .text-gray-400 {
+  color: var(--color-text-muted) !important;
+}
+
+[data-theme='dark'] .text-gray-300 {
+  color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Background overrides for dark mode */
+[data-theme='dark'] .bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Hover states for dark mode */
+[data-theme='dark'] .hover\:\!bg-yellow-50:hover {
+  background-color: rgba(255, 212, 0, 0.1) !important;
 }

@@ -106,5 +106,12 @@
     "languagesLiterature": "語言與文學",
     "miscellaneous": "其他雜項",
     "other": "其他"
+  },
+  "theme": {
+    "light": "淺色模式",
+    "dark": "深色模式"
+  },
+  "nav": {
+    "homepage": "Twinkle AI 首頁"
   }
 }

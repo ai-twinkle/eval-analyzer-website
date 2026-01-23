@@ -4,7 +4,11 @@ import { GlobalOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { MenuProps } from 'antd';
 
-export const LanguageSwitcher: React.FC = () => {
+export const LanguageSwitcher: React.FC = ({
+  size = 'middle',
+}: {
+  size?: 'small' | 'middle' | 'large';
+}) => {
   const { i18n } = useTranslation();
 
   const currentLangLabel = i18n.language === 'en' ? 'EN' : '繁中';
@@ -28,7 +32,7 @@ export const LanguageSwitcher: React.FC = () => {
 
   return (
     <Dropdown menu={{ items, onClick: handleMenuClick }}>
-      <Button icon={<GlobalOutlined />} size='middle'>
+      <Button icon={<GlobalOutlined />} size={size}>
         {currentLangLabel}
       </Button>
     </Dropdown>
