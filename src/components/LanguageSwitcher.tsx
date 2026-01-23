@@ -9,11 +9,11 @@ interface LanguageSwitcherProps {
 }
 
 export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
-  size = 'middle',
+  size = 'small',
 }) => {
   const { i18n } = useTranslation();
 
-  const currentLangLabel = i18n.language === 'en' ? 'EN' : '繁中';
+  const currentLangLabel = i18n.language === 'en' ? 'English' : '繁體中文';
 
   const items: MenuProps['items'] = [
     {

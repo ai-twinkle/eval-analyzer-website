@@ -21,7 +21,7 @@ export const DownloadButtons: React.FC<DownloadButtonsProps> = ({
   };
 
   return (
-    <div className='mb-4'>
+    <div>
       <Space direction='vertical' style={{ width: '100%' }}>
         <Button
           icon={<DownloadOutlined />}

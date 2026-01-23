@@ -185,7 +185,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 
             <div
               className={
-                (hideHeader ? 'max-h-55' : 'max-h-85') +
+                (hideHeader ? 'max-h-85' : 'max-h-75') +
                 ' overflow-y-auto space-y-3 pr-1'
               }
             >
@@ -274,11 +274,13 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 
       {/* Download Buttons */}
       <div>
-        <div className='section-header text-sm mb-3'>
-          <DownloadOutlined className='!text-amber-500' />
-          <span>{t('controls.exportCSV')}</span>
+        <div className='flex items-center justify-between'>
+          <div className='section-header text-sm'>
+            <DownloadOutlined className='!text-amber-500' />
+            <span>{t('controls.exportCSV')}</span>
+          </div>
+          <DownloadButtons pivotData={pivotData} scale0100={scale0100} />
         </div>
-        <DownloadButtons pivotData={pivotData} scale0100={scale0100} />
       </div>
     </div>
   );
