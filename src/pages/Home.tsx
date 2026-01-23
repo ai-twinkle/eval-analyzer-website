@@ -20,7 +20,6 @@ import {
   CloseOutlined,
   SunOutlined,
   MoonOutlined,
-  HomeOutlined,
 } from '@ant-design/icons';
 import { useTheme } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -278,65 +277,26 @@ export const Home: React.FC = () => {
   );
 
   return (
-    <div className='flex flex-col lg:flex-row h-screen'>
-      {/* Desktop Sidebar - Hidden on mobile */}
-      <div className='hidden lg:block w-80 app-sidebar overflow-y-auto flex-shrink-0'>
-        {sidebarContent}
-      </div>
-
-      {/* Mobile Sidebar Drawer */}
-      <Drawer
-        title={
-          <div className='flex items-center gap-3'>
-            <img
-              src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
-              alt='Twinkle AI Logo'
-              className='w-8 h-8 rounded-lg'
+    <div className='flex flex-col h-screen'>
+      {/* Header - Sticky with glass effect */}
+      <div className='app-header sticky top-0 z-10 px-4 lg:px-6 py-3 lg:py-4'>
+        <Flex justify='space-between' align='center' gap={8}>
+          {/* Mobile menu button + Logo and Title */}
+          <Flex align='center' gap={8} className='min-w-0 flex-1'>
+            {/* Mobile menu button - only visible below lg breakpoint */}
+            <Button
+              type='text'
+              icon={<MenuOutlined />}
+              onClick={() => setSidebarOpen(true)}
+              className='!hidden max-lg:!inline-flex flex-shrink-0'
+              style={{ color: '#FFD400' }}
             />
-            <span className='font-bold'>{t('controls.title')}</span>
-          </div>
-        }
-        placement='left'
-        onClose={() => setSidebarOpen(false)}
-        open={sidebarOpen}
-        width={320}
-        className='lg:hidden'
-        styles={{
-          body: { padding: 0 },
-        }}
-        closeIcon={<CloseOutlined />}
-      >
-        {/* Use a version without header for drawer */}
-        <ControlsPanel
-          onFilesUpload={handleFilesUpload}
-          sources={sources}
-          selectedSourceIds={selectedSourceIds}
-          onSourceSelectionChange={setSelectedSourceIds}
-          scale0100={scale0100}
-          onScaleToggle={setScale0100}
-          pivotData={pivotData}
-          hideHeader
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      </Drawer>
 
-      {/* Main content */}
-      <div className='flex-1 flex flex-col overflow-hidden min-w-0'>
-        {/* Header - Sticky with glass effect */}
-        <div className='app-header sticky top-0 z-10 px-4 lg:px-6 py-3 lg:py-4'>
-          <Flex justify='space-between' align='center' gap={8}>
-            {/* Mobile menu button + Logo and Title */}
-            <Flex align='center' gap={8} className='min-w-0 flex-1'>
-              {/* Mobile menu button - only visible below lg breakpoint */}
-              <Button
-                type='text'
-                icon={<MenuOutlined />}
-                onClick={() => setSidebarOpen(true)}
-                className='!hidden max-lg:!inline-flex flex-shrink-0'
-                style={{ color: '#FFD400' }}
-              />
-
+            <a
+              href='https://twinkleai.tw/'
+              className='flex items-center gap-3 hover:opacity-80 transition-opacity no-underline'
+              style={{ color: 'inherit' }}
+            >
               <img
                 src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
                 alt='Twinkle AI Logo'
@@ -350,142 +310,171 @@ export const Home: React.FC = () => {
                   Language Model Benchmark Visualizer
                 </p>
               </div>
-            </Flex>
-
-            {/* Controls */}
-            <Space size={'small'} className='flex-shrink-0'>
-              {/* Language Switcher - desktop only */}
-              <div className='hidden lg:block'>
-                <LanguageSwitcher />
-              </div>
-              {/* View Mode Toggle - hidden on mobile */}
-              <Radio.Group
-                value={viewMode}
-                onChange={(e) => setViewMode(e.target.value)}
-                buttonStyle='solid'
-                size={'small'}
-                className='hidden sm:inline-flex'
-              >
-                <Radio.Button value='dashboard'>
-                  <BarChartOutlined />
-                  <span className='hidden md:inline ml-1'>
-                    {t('view.dashboard')}
-                  </span>
-                </Radio.Button>
-                <Radio.Button value='table'>
-                  <TableOutlined />
-                  <span className='hidden md:inline ml-1'>
-                    {t('view.table')}
-                  </span>
-                </Radio.Button>
-              </Radio.Group>
-              {/* Theme Toggle - desktop only (moved to sidebar on mobile) */}
-              <div className='hidden sm:block'>
-                <Tooltip
-                  title={isDarkMode ? t('theme.light') : t('theme.dark')}
-                >
-                  <Button
-                    variant={'text'}
-                    shape='circle'
-                    size='small'
-                    onClick={toggleTheme}
-                    icon={
-                      isDarkMode ? (
-                        <SunOutlined className={'!text-lg'} />
-                      ) : (
-                        <MoonOutlined className={'!text-lg'} />
-                      )
-                    }
-                    className={
-                      '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20'
-                    }
-                  />
-                </Tooltip>
-              </div>
-              {/* Homepage Link - desktop only */}
-              <Tooltip title={t('nav.homepage')}>
-                <Button
-                  variant={'text'}
-                  shape='circle'
-                  size='small'
-                  href='https://twinkleai.tw/'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  icon={<HomeOutlined className={'!text-lg'} />}
-                  className={
-                    '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20 hidden lg:inline-flex'
-                  }
-                />
-              </Tooltip>
-              {/* GitHub Link - desktop only */}
-              <Tooltip title='View on GitHub'>
-                <Button
-                  variant={'text'}
-                  shape='circle'
-                  size='small'
-                  href='https://github.com/ai-twinkle/eval-analyzer-website'
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  icon={<GithubOutlined className={'!text-lg'} />}
-                  className={
-                    '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20 hidden lg:inline-flex'
-                  }
-                />
-              </Tooltip>
-            </Space>
+            </a>
           </Flex>
+
+          {/* Controls */}
+          <Space size={'small'} className='flex-shrink-0'>
+            {/* Language Switcher - desktop only */}
+            <div className='hidden lg:block'>
+              <LanguageSwitcher />
+            </div>
+            {/* View Mode Toggle - hidden on mobile */}
+            <Radio.Group
+              value={viewMode}
+              onChange={(e) => setViewMode(e.target.value)}
+              buttonStyle='solid'
+              size={'small'}
+              className='hidden sm:inline-flex'
+            >
+              <Radio.Button value='dashboard'>
+                <BarChartOutlined />
+                <span className='hidden md:inline ml-1'>
+                  {t('view.dashboard')}
+                </span>
+              </Radio.Button>
+              <Radio.Button value='table'>
+                <TableOutlined />
+                <span className='hidden md:inline ml-1'>{t('view.table')}</span>
+              </Radio.Button>
+            </Radio.Group>
+            {/* Theme Toggle - desktop only (moved to sidebar on mobile) */}
+            <div className='hidden sm:block'>
+              <Tooltip title={isDarkMode ? t('theme.light') : t('theme.dark')}>
+                <Button
+                  variant={'text'}
+                  shape='circle'
+                  size='small'
+                  onClick={toggleTheme}
+                  icon={
+                    isDarkMode ? (
+                      <SunOutlined className={'!text-lg'} />
+                    ) : (
+                      <MoonOutlined className={'!text-lg'} />
+                    )
+                  }
+                  className={
+                    '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20'
+                  }
+                />
+              </Tooltip>
+            </div>
+
+            {/* GitHub Link */}
+            <Tooltip title='View on GitHub'>
+              <Button
+                variant={'text'}
+                shape='circle'
+                size='small'
+                href='https://github.com/ai-twinkle/tw-eval-leaderboard/'
+                target='_blank'
+                rel='noopener noreferrer'
+                icon={<GithubOutlined className={'!text-lg'} />}
+                className={
+                  '!border-none hover:!bg-yellow-50 dark:hover:!bg-yellow-900/20 hidden lg:inline-flex'
+                }
+              />
+            </Tooltip>
+          </Space>
+        </Flex>
+      </div>
+
+      <div className='flex flex-1 overflow-hidden'>
+        {/* Desktop Sidebar - Hidden on mobile */}
+        <div className='hidden lg:block w-80 app-sidebar overflow-y-auto flex-shrink-0'>
+          {sidebarContent}
         </div>
 
-        {/* Content Area */}
-        <div className='flex-1 overflow-y-auto p-4 lg:p-6 app-content'>
-          {loading ? (
-            <Result
-              icon={<Spin size='large' />}
-              title={t('app.loading')}
-              subTitle={t('app.loadingNote')}
-            />
-          ) : sources.length === 0 ? (
-            <Result
-              icon={<FileAddOutlined style={{ color: '#FFD400' }} />}
-              title={t('app.noData')}
-              subTitle={t('app.noDataHint')}
-            />
-          ) : selectedSourceIds.length === 0 ? (
-            <Result
-              icon={<StarFilled style={{ color: '#FFD400' }} />}
-              title={t('app.noSelection')}
-              subTitle={t('app.noSelectionHint')}
-            />
-          ) : viewMode === 'dashboard' ? (
-            <CategoryDashboard
-              sources={selectedSources}
-              scale0100={scale0100}
-            />
-          ) : (
-            <BenchmarkRankingTable
-              sources={selectedSources}
-              scale0100={scale0100}
-            />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className='app-footer text-xs lg:text-sm'>
-          <span>Powered by </span>
-          <a
-            href='https://github.com/ai-twinkle'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Twinkle AI
-          </a>
-          <span className='mx-2'>·</span>
-          <span className='hidden sm:inline'>
-            Built for benchmark excellence
-          </span>
-          <StarFilled
-            style={{ color: '#FFD400', marginLeft: '4px', fontSize: '12px' }}
+        {/* Mobile Sidebar Drawer */}
+        <Drawer
+          title={
+            <div className='flex items-center gap-3'>
+              <img
+                src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
+                alt='Twinkle AI Logo'
+                className='w-8 h-8 rounded-lg'
+              />
+              <span className='font-bold'>{t('controls.title')}</span>
+            </div>
+          }
+          placement='left'
+          onClose={() => setSidebarOpen(false)}
+          open={sidebarOpen}
+          width={320}
+          className='lg:hidden'
+          styles={{
+            body: { padding: 0 },
+          }}
+          closeIcon={<CloseOutlined />}
+        >
+          {/* Use a version without header for drawer */}
+          <ControlsPanel
+            onFilesUpload={handleFilesUpload}
+            sources={sources}
+            selectedSourceIds={selectedSourceIds}
+            onSourceSelectionChange={setSelectedSourceIds}
+            scale0100={scale0100}
+            onScaleToggle={setScale0100}
+            pivotData={pivotData}
+            hideHeader
+            isDarkMode={isDarkMode}
+            toggleTheme={toggleTheme}
           />
+        </Drawer>
+
+        {/* Main content */}
+        <div className='flex-1 flex flex-col overflow-hidden min-w-0'>
+          {/* Content Area */}
+          <div className='flex-1 overflow-y-auto p-4 lg:p-6 app-content'>
+            {loading ? (
+              <Result
+                icon={<Spin size='large' />}
+                title={t('app.loading')}
+                subTitle={t('app.loadingNote')}
+              />
+            ) : sources.length === 0 ? (
+              <Result
+                icon={<FileAddOutlined style={{ color: '#FFD400' }} />}
+                title={t('app.noData')}
+                subTitle={t('app.noDataHint')}
+              />
+            ) : selectedSourceIds.length === 0 ? (
+              <Result
+                icon={<StarFilled style={{ color: '#FFD400' }} />}
+                title={t('app.noSelection')}
+                subTitle={t('app.noSelectionHint')}
+              />
+            ) : viewMode === 'dashboard' ? (
+              <CategoryDashboard
+                sources={selectedSources}
+                scale0100={scale0100}
+              />
+            ) : (
+              <BenchmarkRankingTable
+                sources={selectedSources}
+                scale0100={scale0100}
+              />
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className='app-footer text-xs lg:text-sm'>
+            <span>Powered by </span>
+            <a
+              href='https://github.com/ai-twinkle'
+              target='_blank'
+              rel='noopener noreferrer'
+            >
+              Twinkle AI
+            </a>
+            <span className='mx-2'>·</span>
+            <span className='hidden sm:inline'>
+              Built for benchmark excellence
+            </span>
+            <StarFilled
+              style={{ color: '#FFD400', marginLeft: '4px', fontSize: '12px' }}
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -84,20 +84,6 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 
   return (
     <div className='p-5'>
-      {/* Section Header - Logo (hidden when used in drawer) */}
-      {!hideHeader && (
-        <div className='flex items-center gap-3 mb-6'>
-          <img
-            src={`${import.meta.env.BASE_URL}twinkle-ai.webp`}
-            alt='Twinkle AI Logo'
-            className='w-8 h-8 rounded-lg'
-          />
-          <h2 className='text-lg font-bold !mb-0 text-gray-800'>
-            {t('controls.title')}
-          </h2>
-        </div>
-      )}
-
       {/* Mobile Quick Actions - Language Switcher (shown when hideHeader is true, i.e. in drawer) */}
       {hideHeader && (
         <>
@@ -185,7 +171,7 @@ export const ControlsPanel: React.FC<ControlsPanelProps> = ({
 
             <div
               className={
-                (hideHeader ? 'max-h-85' : 'max-h-75') +
+                (hideHeader ? 'max-h-85' : 'max-h-70') +
                 ' overflow-y-auto space-y-3 pr-1'
               }
             >
