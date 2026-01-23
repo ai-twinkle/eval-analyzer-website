@@ -4,10 +4,12 @@ import { GlobalOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { MenuProps } from 'antd';
 
-export const LanguageSwitcher: React.FC = ({
-  size = 'middle',
-}: {
+interface LanguageSwitcherProps {
   size?: 'small' | 'middle' | 'large';
+}
+
+export const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
+  size = 'middle',
 }) => {
   const { i18n } = useTranslation();
 
