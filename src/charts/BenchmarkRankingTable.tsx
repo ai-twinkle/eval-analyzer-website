@@ -58,7 +58,12 @@ function extractBenchmarkName(category: string): string {
 
 function extractTestName(category: string): string {
   const parts = category.split('/');
-  return parts.length > 1 ? parts.slice(1).join('/') : category;
+  if (parts.length > 1) {
+    const name = parts.slice(1).join('/');
+    // Remove leading slashes if any (e.g. from double slash in path)
+    return name.replace(/^\/+/, '');
+  }
+  return category;
 }
 
 /**
