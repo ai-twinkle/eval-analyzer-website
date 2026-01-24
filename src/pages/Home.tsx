@@ -296,7 +296,7 @@ export const Home: React.FC = () => {
 
             <a
               href='https://twinkleai.tw/'
-              className='flex items-center gap-3 hover:opacity-80 transition-opacity no-underline'
+              className='flex items-center gap-3 hover:opacity-80 transition-opacity no-underline min-w-0'
               style={{ color: 'inherit' }}
             >
               <img
@@ -304,13 +304,19 @@ export const Home: React.FC = () => {
                 alt='Twinkle AI Logo'
                 className='w-8 h-8 lg:w-10 lg:h-10 rounded-lg shadow-md flex-shrink-0'
               />
-              <div className='min-w-0'>
-                <h1 className='text-lg lg:text-xl font-bold !mb-0 text-gradient truncate'>
-                  {t('app.title')}
+              <div className='flex flex-col justify-center min-w-0'>
+                <h1 className='text-lg lg:text-xl font-bold !mb-0 text-gradient truncate leading-tight'>
+                  <span className='sm:hidden'>{t('app.titleShort')}</span>
+                  <span className='hidden sm:inline'>{t('app.title')}</span>
                 </h1>
-                <p className='text-xs text-gray-500 !mb-0 hidden md:block'>
+                {/* Desktop Subtitle */}
+                <p className='text-xs text-gray-500 !mb-0 hidden sm:block'>
                   {t('app.subtitle')}
                 </p>
+                {/* Mobile Subtitle (Leaderboard) */}
+                <span className='text-xs text-gray-500 font-semibold sm:hidden leading-none'>
+                  {t('app.leaderboard')}
+                </span>
               </div>
             </a>
           </Flex>
