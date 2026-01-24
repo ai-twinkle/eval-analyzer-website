@@ -994,6 +994,7 @@ export const CategoryDashboard: React.FC<CategoryDashboardProps> = ({
                 {t('chart.detailedResults')}: {expandedCategory}
               </span>
             }
+            className='!mt-5'
           >
             <div
               ref={detailChartRef}
