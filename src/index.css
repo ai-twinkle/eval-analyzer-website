@@ -529,13 +529,95 @@ h6 {
 }
 
 .ant-table-thead > tr > th {
-  background: rgba(245, 166, 35, 0.06) !important;
+  background: #fefcf7 !important;
   border-bottom: 2px solid var(--color-border) !important;
   font-weight: 600 !important;
+  position: relative !important;
+  z-index: 100 !important;
+}
+
+/* Ensure fixed/sticky header cells have solid background and highest z-index */
+.ant-table-thead > tr > th.ant-table-cell-fix-left,
+.ant-table-thead > tr > th.ant-table-cell-fix-right {
+  background: #fefcf7 !important;
+  z-index: 200 !important;
+}
+
+/* Fixed body cells need solid background too */
+.ant-table-tbody > tr > td.ant-table-cell-fix-left,
+.ant-table-tbody > tr > td.ant-table-cell-fix-right {
+  background: #fefcf7 !important;
+  z-index: 50 !important;
+}
+
+/* Fixed header z-index to stay above cell content */
+.ant-table-thead {
+  position: relative;
+  z-index: 100 !important;
 }
 
 .ant-table-tbody > tr:hover > td {
   background: rgba(245, 166, 35, 0.04) !important;
+}
+
+/* Heatmap cell styling - ensure full height fill */
+.ant-table-tbody > tr > td {
+  position: relative;
+  z-index: 1;
+}
+
+/* Heatmap cell inner content */
+.heatmap-cell {
+  z-index: 1;
+}
+
+/* Ensure table cells don't overflow headers */
+.ant-table-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark mode table header */
+[data-theme='dark'] .ant-table-thead > tr > th {
+  background: #1a1f2e !important;
+  z-index: 100 !important;
+}
+
+/* Dark mode fixed/sticky header cells */
+[data-theme='dark'] .ant-table-thead > tr > th.ant-table-cell-fix-left,
+[data-theme='dark'] .ant-table-thead > tr > th.ant-table-cell-fix-right {
+  background: #1a1f2e !important;
+  z-index: 200 !important;
+}
+
+/* Dark mode fixed body cells */
+[data-theme='dark'] .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+[data-theme='dark'] .ant-table-tbody > tr > td.ant-table-cell-fix-right {
+  background: #1a1f2e !important;
+  z-index: 50 !important;
+}
+
+/* ============================================
+   Mobile Responsive Table Styles
+   ============================================ */
+
+/* On mobile, disable fixed columns for full horizontal scroll */
+@media (max-width: 768px) {
+  .ant-table-thead > tr > th.ant-table-cell-fix-left,
+  .ant-table-thead > tr > th.ant-table-cell-fix-right,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-left,
+  .ant-table-tbody > tr > td.ant-table-cell-fix-right {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    z-index: auto !important;
+  }
+
+  /* Remove shadow on fixed columns in mobile */
+  .ant-table-cell-fix-left-last::after,
+  .ant-table-cell-fix-right-first::before {
+    display: none !important;
+  }
 }
 
 /* ============================================

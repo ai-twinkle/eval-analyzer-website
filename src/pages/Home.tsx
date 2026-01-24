@@ -81,7 +81,7 @@ export const Home: React.FC = () => {
       .catch(() => {
         void message.error(t('messages.failedLoadConfig'));
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [message]);
 
   // Autoload latest results from all benchmarks when config is loaded

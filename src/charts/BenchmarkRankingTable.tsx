@@ -1,10 +1,29 @@
-import React, { useMemo, useState } from 'react';
-import { Table, Card, Select, Space, Typography } from 'antd';
-import { TableOutlined, SortAscendingOutlined } from '@ant-design/icons';
+import React, { useMemo, useState, useCallback } from 'react';
+import {
+  Table,
+  Card,
+  Select,
+  Space,
+  Typography,
+  Input,
+  Dropdown,
+  Button,
+  Checkbox,
+  Flex,
+  theme,
+} from 'antd';
+import {
+  TableOutlined,
+  SortAscendingOutlined,
+  SearchOutlined,
+  EyeOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { ColumnsType } from 'antd/es/table';
 import type { DataSource } from '../types';
 import { flattenDatasetResults, formatValue } from '../features/transform';
+import { useTheme } from '../contexts/ThemeContext';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -42,12 +61,203 @@ function extractTestName(category: string): string {
   return parts.length > 1 ? parts.slice(1).join('/') : category;
 }
 
+/**
+ * Interpolate color between two hex colors based on ratio (0-1)
+ */
+function interpolateColor(
+  color1: string,
+  color2: string,
+  ratio: number,
+): string {
+  const hex = (x: number) => {
+    const h = Math.round(x).toString(16);
+    return h.length === 1 ? '0' + h : h;
+  };
+
+  const r1 = parseInt(color1.substring(1, 3), 16);
+  const g1 = parseInt(color1.substring(3, 5), 16);
+  const b1 = parseInt(color1.substring(5, 7), 16);
+
+  const r2 = parseInt(color2.substring(1, 3), 16);
+  const g2 = parseInt(color2.substring(3, 5), 16);
+  const b2 = parseInt(color2.substring(5, 7), 16);
+
+  const r = r1 + (r2 - r1) * ratio;
+  const g = g1 + (g2 - g1) * ratio;
+  const b = b1 + (b2 - b1) * ratio;
+
+  return '#' + hex(r) + hex(g) + hex(b);
+}
+
+/**
+ * Get heatmap background color for a score (Excel/HuggingFace style)
+ * Theme-aware: different palettes for light and dark mode
+ */
+function getHeatmapColor(value: number, isDarkMode: boolean): string {
+  if (isDarkMode) {
+    // Dark mode: darker, more saturated colors
+    const colorLow = '#5c1a1a'; // Dark red
+    const colorMid = '#4a4a00'; // Dark olive
+    const colorHigh = '#1a4a1a'; // Dark green
+
+    if (value < 0.5) {
+      const ratio = value / 0.5;
+      return interpolateColor(colorLow, colorMid, ratio);
+    } else {
+      const ratio = (value - 0.5) / 0.5;
+      return interpolateColor(colorMid, colorHigh, ratio);
+    }
+  } else {
+    // Light mode: softer, pastel-like colors with good contrast
+    const colorLow = '#ffcdd2'; // Soft red/pink
+    const colorMid = '#fff9c4'; // Soft yellow
+    const colorHigh = '#c8e6c9'; // Soft green
+
+    if (value < 0.5) {
+      const ratio = value / 0.5;
+      return interpolateColor(colorLow, colorMid, ratio);
+    } else {
+      const ratio = (value - 0.5) / 0.5;
+      return interpolateColor(colorMid, colorHigh, ratio);
+    }
+  }
+}
+
+/**
+ * Get text color based on theme and value
+ */
+function getTextColor(value: number, isDarkMode: boolean): string {
+  if (isDarkMode) {
+    // Dark mode: light colored text
+    return value >= 0.7 ? '#a5d6a7' : value >= 0.4 ? '#fff59d' : '#ef9a9a';
+  } else {
+    // Light mode: dark text for readability
+    return value >= 0.7 ? '#1b5e20' : value >= 0.4 ? '#f57f17' : '#b71c1c';
+  }
+}
+
+interface ColumnVisibilityDropdownProps {
+  allTests: string[];
+  visibleColumns: Record<string, boolean>;
+  onChange: (column: string, checked: boolean) => void;
+  onShowAll: (tests: string[]) => void;
+  onHideAll: (tests: string[]) => void;
+}
+
+const ColumnVisibilityDropdown: React.FC<ColumnVisibilityDropdownProps> = ({
+  allTests,
+  visibleColumns,
+  onChange,
+  onShowAll,
+  onHideAll,
+}) => {
+  const { t } = useTranslation();
+  const { token } = theme.useToken();
+  const [searchText, setSearchText] = useState('');
+
+  const filteredTests = useMemo(() => {
+    if (!searchText.trim()) return allTests;
+    return allTests.filter((test) =>
+      test.toLowerCase().includes(searchText.toLowerCase()),
+    );
+  }, [allTests, searchText]);
+
+  const content = (
+    <div
+      style={{
+        padding: 8,
+        backgroundColor: token.colorBgElevated,
+        boxShadow: token.boxShadowSecondary,
+        borderRadius: token.borderRadiusLG,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+      }}
+    >
+      <Flex gap={8}>
+        <Button
+          size='small'
+          onClick={() => onShowAll(allTests)}
+          style={{ flex: 1 }}
+        >
+          {t('chart.showAll')}
+        </Button>
+        <Button
+          size='small'
+          onClick={() => onHideAll(allTests)}
+          style={{ flex: 1 }}
+        >
+          {t('chart.hideAll')}
+        </Button>
+      </Flex>
+      <Input
+        placeholder={t('chart.searchColumns')}
+        prefix={<SearchOutlined />}
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+        allowClear
+      />
+      <div
+        style={{
+          maxHeight: 300,
+          overflowY: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+        }}
+      >
+        {filteredTests.map((test) => (
+          <Checkbox
+            key={test}
+            checked={visibleColumns[test] !== false}
+            onChange={(e) => onChange(test, e.target.checked)}
+          >
+            {test}
+          </Checkbox>
+        ))}
+        {filteredTests.length === 0 && (
+          <div
+            style={{
+              color: token.colorTextSecondary,
+              textAlign: 'center',
+              padding: '8px 0',
+            }}
+          >
+            {t('chart.noColumnsFound')}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <Dropdown
+      popupRender={() => content}
+      trigger={['click']}
+      placement='bottomRight'
+    >
+      <Button size='small' icon={<EyeOutlined />}>
+        {t('chart.columnVisibility')}
+      </Button>
+    </Dropdown>
+  );
+};
+
 export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
   sources,
   scale0100,
 }) => {
   const { t } = useTranslation();
+  const { isDarkMode } = useTheme();
   const [sortBy, setSortBy] = useState<string>('average');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [visibleColumns, setVisibleColumns] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [tableSize, setTableSize] = useState<'small' | 'middle' | 'large'>(
+    'small',
+  );
+  const [pageSize, setPageSize] = useState<number>(20);
 
   const benchmarkData = useMemo((): BenchmarkData[] => {
     const benchmarkMap = new Map<
@@ -139,6 +349,62 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
     return benchmarks;
   }, [sources]);
 
+  // Initialize visible columns when benchmark data changes
+  useMemo(() => {
+    const allColumns: Record<string, boolean> = {
+      provider: true,
+      displayName: true,
+      average: true,
+    };
+    benchmarkData.forEach((benchmark) => {
+      benchmark.allTests.forEach((test) => {
+        allColumns[test] = true;
+      });
+    });
+    setVisibleColumns((prev) => {
+      // Only set defaults if empty
+      if (Object.keys(prev).length === 0) {
+        return allColumns;
+      }
+      return prev;
+    });
+  }, [benchmarkData]);
+
+  const handleColumnVisibilityChange = useCallback(
+    (columnKey: string, visible: boolean) => {
+      setVisibleColumns((prev) => ({
+        ...prev,
+        [columnKey]: visible,
+      }));
+    },
+    [],
+  );
+
+  const handleShowAll = useCallback((allTests: string[]) => {
+    const allVisible: Record<string, boolean> = {
+      provider: true,
+      displayName: true,
+      average: true,
+    };
+    allTests.forEach((test) => {
+      allVisible[test] = true;
+    });
+    setVisibleColumns(allVisible);
+  }, []);
+
+  const handleHideAll = useCallback((allTests: string[]) => {
+    // Keep essential columns visible, explicitly hide all test columns
+    const hiddenColumns: Record<string, boolean> = {
+      provider: true,
+      displayName: true,
+      average: true,
+    };
+    allTests.forEach((test) => {
+      hiddenColumns[test] = false;
+    });
+    setVisibleColumns(hiddenColumns);
+  }, []);
+
   const generateColumns = (
     allTests: string[],
   ): ColumnsType<ModelRankingRow> => {
@@ -148,6 +414,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         dataIndex: 'provider',
         key: 'provider',
         width: 100,
+        fixed: 'left',
         sorter: (a, b) => a.provider.localeCompare(b.provider),
         render: (text: string) => (
           <Text strong style={{ fontSize: '12px' }}>
@@ -159,7 +426,8 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         title: t('chart.model'),
         dataIndex: 'displayName',
         key: 'displayName',
-        width: 180,
+        width: 200,
+        fixed: 'left',
         sorter: (a, b) => a.displayName.localeCompare(b.displayName),
         render: (text: string, record: ModelRankingRow) => (
           <div>
@@ -194,69 +462,219 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
         title: t('chart.average'),
         dataIndex: 'average',
         key: 'average',
-        width: 100,
+        width: 120,
         align: 'center',
         sorter: (a, b) => a.average - b.average,
         defaultSortOrder: 'descend',
+        onCell: () => ({
+          style: { padding: 0 },
+        }),
         render: (value: number) => {
           const displayValue = scale0100 ? value * 100 : value;
           const formatted = displayValue.toFixed(scale0100 ? 2 : 4);
-
-          let color: string;
-          if (value >= 0.9) color = '#52c41a';
-          else if (value >= 0.8) color = '#1890ff';
-          else if (value >= 0.7) color = '#fa8c16';
-          else if (value >= 0.6) color = '#faad14';
-          else color = '#f5222d';
+          const bgColor = getHeatmapColor(value, isDarkMode);
+          const textColor = getTextColor(value, isDarkMode);
+          const percentage = Math.min(value * 100, 100);
 
           return (
-            <Text strong style={{ color, fontSize: '14px' }}>
-              {formatted}
-              {scale0100 ? '%' : ''}
-            </Text>
+            <div
+              className='heatmap-cell'
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'flex-start',
+                overflow: 'hidden',
+              }}
+            >
+              {/* Progress bar background */}
+              <div
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: `${percentage}%`,
+                  backgroundColor: bgColor,
+                  transition: 'width 0.3s ease',
+                }}
+              />
+              {/* Text content */}
+              <div
+                style={{
+                  position: 'relative',
+                  zIndex: 1,
+                  padding: '8px 12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span
+                  style={{
+                    width: '8px',
+                    height: '8px',
+                    borderRadius: '50%',
+                    backgroundColor: textColor,
+                    flexShrink: 0,
+                  }}
+                />
+                <Text strong style={{ color: textColor, fontSize: '13px' }}>
+                  {formatted}
+                  {scale0100 ? ' %' : ''}
+                </Text>
+              </div>
+            </div>
           );
         },
       },
     ];
 
-    const testColumns: ColumnsType<ModelRankingRow> = allTests.map(
-      (testName) => ({
+    const testColumns: ColumnsType<ModelRankingRow> = allTests
+      .filter((testName) => visibleColumns[testName] !== false)
+      .map((testName) => ({
         title: testName,
         dataIndex: testName,
         key: testName,
-        width: 150,
+        width: 120,
         align: 'center',
         sorter: (a, b) => {
           const aVal = typeof a[testName] === 'number' ? a[testName] : 0;
           const bVal = typeof b[testName] === 'number' ? b[testName] : 0;
           return (aVal as number) - (bVal as number);
         },
+        onCell: () => ({
+          style: { padding: 0 },
+        }),
         render: (value: number | string | boolean | undefined) => {
           if (typeof value === 'number') {
             const displayValue = scale0100 ? value * 100 : value;
             const formatted = displayValue.toFixed(scale0100 ? 2 : 4);
-
-            let color: string;
-            if (value >= 0.9) color = '#52c41a';
-            else if (value >= 0.8) color = '#1890ff';
-            else if (value >= 0.7) color = '#fa8c16';
-            else if (value >= 0.6) color = '#faad14';
-            else color = '#f5222d';
+            const bgColor = getHeatmapColor(value, isDarkMode);
+            const textColor = getTextColor(value, isDarkMode);
+            const percentage = Math.min(value * 100, 100);
 
             return (
-              <Text style={{ color, fontWeight: 500, fontSize: '13px' }}>
-                {formatted}
-                {scale0100 ? '%' : ''}
-              </Text>
+              <div
+                className='heatmap-cell'
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                }}
+              >
+                {/* Progress bar background */}
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: `${percentage}%`,
+                    backgroundColor: bgColor,
+                    transition: 'width 0.3s ease',
+                  }}
+                />
+                {/* Text content */}
+                <Text
+                  style={{
+                    position: 'relative',
+                    zIndex: 1,
+                    color: textColor,
+                    fontWeight: 500,
+                    fontSize: '13px',
+                  }}
+                >
+                  {formatted}
+                  {scale0100 ? ' %' : ''}
+                </Text>
+              </div>
             );
           }
-          return <Text type='secondary'>-</Text>;
+          return (
+            <div style={{ padding: '8px 12px', textAlign: 'center' }}>
+              <Text type='secondary'>-</Text>
+            </div>
+          );
         },
-      }),
-    );
+      }));
 
     return [...baseColumns, ...testColumns];
   };
+
+  const tableOptionsMenu = useMemo(
+    () => ({
+      items: [
+        {
+          key: 'density-label',
+          label: (
+            <Text strong style={{ fontSize: '12px' }}>
+              {t('chart.rowDensity')}
+            </Text>
+          ),
+          disabled: true,
+        },
+        {
+          key: 'compact',
+          label: (
+            <div
+              onClick={() => setTableSize('small')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Checkbox checked={tableSize === 'small'}>
+                {t('chart.compact')}
+              </Checkbox>
+            </div>
+          ),
+        },
+        {
+          key: 'comfortable',
+          label: (
+            <div
+              onClick={() => setTableSize('large')}
+              style={{ cursor: 'pointer' }}
+            >
+              <Checkbox checked={tableSize === 'large'}>
+                {t('chart.comfortable')}
+              </Checkbox>
+            </div>
+          ),
+        },
+        { type: 'divider' as const },
+        {
+          key: 'pagesize-label',
+          label: (
+            <Text strong style={{ fontSize: '12px' }}>
+              {t('chart.rowsPerPage')}
+            </Text>
+          ),
+          disabled: true,
+        },
+        {
+          key: 'pagesize',
+          label: (
+            <Select
+              value={pageSize}
+              onChange={setPageSize}
+              size='small'
+              style={{ width: 80 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Option value={10}>10</Option>
+              <Option value={20}>20</Option>
+              <Option value={50}>50</Option>
+              <Option value={100}>100</Option>
+            </Select>
+          ),
+        },
+      ],
+    }),
+    [tableSize, pageSize, t],
+  );
 
   if (sources.length === 0) {
     return (
@@ -271,6 +689,22 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
 
   return (
     <div className='space-y-6'>
+      {/* Search Bar */}
+      <div className='flex flex-col gap-3'>
+        <Input
+          prefix={<SearchOutlined />}
+          placeholder={t('chart.searchModels')}
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          allowClear
+          size='large'
+          style={{
+            backgroundColor: 'var(--ant-color-bg-container)',
+            borderRadius: '8px',
+          }}
+        />
+      </div>
+
       {/* Header - responsive layout */}
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3'>
         <Space>
@@ -304,7 +738,19 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
       </Card>
 
       {benchmarkData.map((benchmark) => {
-        const sortedModels = [...benchmark.models];
+        // Filter models by search query
+        let filteredModels = benchmark.models;
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase();
+          filteredModels = benchmark.models.filter(
+            (model) =>
+              model.displayName.toLowerCase().includes(query) ||
+              model.provider.toLowerCase().includes(query) ||
+              model.modelName.toLowerCase().includes(query),
+          );
+        }
+
+        const sortedModels = [...filteredModels];
         if (sortBy === 'modelName') {
           sortedModels.sort((a, b) =>
             a.displayName.localeCompare(b.displayName),
@@ -323,17 +769,38 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
           <Card
             key={benchmark.benchmarkName}
             title={
-              <Space>
-                <Text strong style={{ fontSize: 16 }}>
-                  {benchmark.benchmarkName}
-                </Text>
-                <Text type='secondary' style={{ fontSize: 14 }}>
-                  ({sortedModels.length} {t('chart.models')},{' '}
-                  {benchmark.allTests.length} {t('chart.tests')},{' '}
-                  {t('chart.avg')}: {formatValue(avgScore, scale0100)}
-                  {scale0100 ? '%' : ''})
-                </Text>
-              </Space>
+              <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2'>
+                <Space wrap>
+                  <Text strong style={{ fontSize: 16 }}>
+                    {benchmark.benchmarkName}
+                  </Text>
+                  <Text type='secondary' style={{ fontSize: 14 }}>
+                    ({sortedModels.length} / {benchmark.models.length}{' '}
+                    {t('chart.models')}, {benchmark.allTests.length}{' '}
+                    {t('chart.tests')}, {t('chart.avg')}:{' '}
+                    {formatValue(avgScore, scale0100)}
+                    {scale0100 ? '%' : ''})
+                  </Text>
+                </Space>
+                <Space>
+                  <ColumnVisibilityDropdown
+                    allTests={benchmark.allTests}
+                    visibleColumns={visibleColumns}
+                    onChange={handleColumnVisibilityChange}
+                    onShowAll={handleShowAll}
+                    onHideAll={handleHideAll}
+                  />
+                  <Dropdown
+                    menu={tableOptionsMenu}
+                    trigger={['click']}
+                    placement='bottomRight'
+                  >
+                    <Button size='small' icon={<SettingOutlined />}>
+                      {t('chart.tableOptions')}
+                    </Button>
+                  </Dropdown>
+                </Space>
+              </div>
             }
             className='shadow-sm !mb-6'
           >
@@ -341,13 +808,13 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
               columns={generateColumns(benchmark.allTests)}
               dataSource={sortedModels}
               pagination={{
-                defaultPageSize: 20,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '30', '50', '100'],
+                defaultPageSize: pageSize,
+                pageSize: pageSize,
+                showSizeChanger: false,
                 showTotal: (total) => t('chart.totalModels', { total }),
               }}
               scroll={{ x: 'max-content' }}
-              size='small'
+              size={tableSize}
               bordered
             />
           </Card>

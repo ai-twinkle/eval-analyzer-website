@@ -96,7 +96,19 @@
     "benchmarkLabel": "基準測試",
     "accuracyScore": "準確率分數",
     "officialTag": "官方",
-    "testsCount": "{{count}} 個測試"
+    "testsCount": "{{count}} 個測試",
+    "columnVisibility": "欄位顯示",
+    "tableOptions": "表格選項",
+    "showAll": "全部顯示",
+    "hideAll": "全部隱藏",
+    "rowDensity": "列密度",
+    "compact": "緊湊",
+    "comfortable": "舒適",
+    "rowsPerPage": "每頁顯示",
+    "searchModels": "搜尋模型名稱...",
+    "searchColumns": "搜尋欄位...",
+    "noColumnsFound": "找不到欄位",
+    "modelsFound": "{{shown}} / {{total}}"
   },
   "categories": {
     "computerScience": "電腦科學",

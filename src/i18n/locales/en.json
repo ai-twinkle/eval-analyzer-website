@@ -96,7 +96,19 @@
     "benchmarkLabel": "Benchmark",
     "accuracyScore": "Accuracy Score",
     "officialTag": "Official",
-    "testsCount": "{{count}} tests"
+    "testsCount": "{{count}} tests",
+    "columnVisibility": "Column Visibility",
+    "tableOptions": "Table Options",
+    "showAll": "Show All",
+    "hideAll": "Hide All",
+    "rowDensity": "Row Density",
+    "compact": "Compact",
+    "comfortable": "Comfortable",
+    "rowsPerPage": "Rows Per Page",
+    "searchModels": "Search by model name...",
+    "searchColumns": "Search columns...",
+    "noColumnsFound": "No columns found",
+    "modelsFound": "{{shown}} / {{total}}"
   },
   "categories": {
     "computerScience": "Computer Science",
