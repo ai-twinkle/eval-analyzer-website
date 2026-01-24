@@ -11,6 +11,8 @@ import {
   Checkbox,
   Flex,
   theme,
+  Tree,
+  type TreeDataNode,
 } from 'antd';
 import {
   TableOutlined,
@@ -22,7 +24,11 @@ import {
 import { useTranslation } from 'react-i18next';
 import type { ColumnsType } from 'antd/es/table';
 import type { DataSource } from '../types';
-import { flattenDatasetResults, formatValue } from '../features/transform';
+import {
+  flattenDatasetResults,
+  formatValue,
+  categorizeTest,
+} from '../features/transform';
 import { useTheme } from '../contexts/ThemeContext';
 
 const { Title, Text } = Typography;
@@ -144,7 +150,7 @@ function getTextColor(value: number, isDarkMode: boolean): string {
 interface ColumnVisibilityDropdownProps {
   allTests: string[];
   visibleColumns: Record<string, boolean>;
-  onChange: (column: string, checked: boolean) => void;
+  onVisibilityChange: (updates: Record<string, boolean>) => void;
   onShowAll: (tests: string[]) => void;
   onHideAll: (tests: string[]) => void;
 }
@@ -152,20 +158,101 @@ interface ColumnVisibilityDropdownProps {
 const ColumnVisibilityDropdown: React.FC<ColumnVisibilityDropdownProps> = ({
   allTests,
   visibleColumns,
-  onChange,
+  onVisibilityChange,
   onShowAll,
   onHideAll,
 }) => {
   const { t } = useTranslation();
   const { token } = theme.useToken();
   const [searchText, setSearchText] = useState('');
+  const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+  const [autoExpandParent, setAutoExpandParent] = useState(true);
 
-  const filteredTests = useMemo(() => {
-    if (!searchText.trim()) return allTests;
-    return allTests.filter((test) =>
-      test.toLowerCase().includes(searchText.toLowerCase()),
-    );
-  }, [allTests, searchText]);
+  // Group tests by category and build tree data
+  const treeData = useMemo(() => {
+    const grouped: Record<string, string[]> = {};
+
+    allTests.forEach((test) => {
+      const category = categorizeTest(test);
+      if (!grouped[category]) {
+        grouped[category] = [];
+      }
+      grouped[category].push(test);
+    });
+
+    // Create tree nodes
+    const nodes = Object.entries(grouped)
+      .map(([category, tests]) => {
+        const categoryKey = `__CAT__${category}`;
+        // Filter children based on search
+        const filteredChildren = tests.filter(
+          (test) =>
+            !searchText ||
+            test.toLowerCase().includes(searchText.toLowerCase()),
+        );
+
+        // If search is active but no children match, return null (filter out later)
+        if (searchText && filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          title: <Text strong>{t(`categories.${category}`, category)}</Text>,
+          key: categoryKey,
+          children: filteredChildren.map((test) => ({
+            title: test,
+            key: test,
+          })),
+        };
+      })
+      .filter((node) => node !== null) as TreeDataNode[];
+
+    // Sort categories (optional, could sort by localized name)
+    // For now, let's just use the order from Object.entries or sort keys
+    return nodes.sort((a, b) => {
+      // simple sort by key or title string if possible
+      return (a.key as string).localeCompare(b.key as string);
+    });
+  }, [allTests, searchText, t]);
+
+  // Expand all categories when searching
+  useMemo(() => {
+    if (searchText) {
+      setExpandedKeys(treeData.map((node) => node.key));
+      setAutoExpandParent(true);
+    }
+  }, [searchText, treeData]);
+
+  const onExpand = (newExpandedKeys: React.Key[]) => {
+    setExpandedKeys(newExpandedKeys);
+    setAutoExpandParent(false);
+  };
+
+  const checkedKeys = useMemo(() => {
+    return allTests.filter((test) => visibleColumns[test] !== false);
+  }, [allTests, visibleColumns]);
+
+  const handleCheck = (
+    checkedKeysValue:
+      | React.Key[]
+      | { checked: React.Key[]; halfChecked: React.Key[] },
+  ) => {
+    const keys = Array.isArray(checkedKeysValue)
+      ? checkedKeysValue
+      : checkedKeysValue.checked;
+
+    const checkedSet = new Set(keys);
+    const updates: Record<string, boolean> = {};
+
+    // For all tests in this benchmark, update their visibility based on check status
+    // Note: We only care about leaf nodes (tests), not category nodes
+    allTests.forEach((test) => {
+      // If the test key is in the checked set, it's visible. Otherwise hidden.
+      updates[test] = checkedSet.has(test);
+    });
+
+    onVisibilityChange(updates);
+  };
 
   const content = (
     <div
@@ -177,6 +264,7 @@ const ColumnVisibilityDropdown: React.FC<ColumnVisibilityDropdownProps> = ({
         display: 'flex',
         flexDirection: 'column',
         gap: 8,
+        width: 300,
       }}
     >
       <Flex gap={8}>
@@ -204,28 +292,32 @@ const ColumnVisibilityDropdown: React.FC<ColumnVisibilityDropdownProps> = ({
       />
       <div
         style={{
-          maxHeight: 300,
+          maxHeight: 400,
           overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 4,
+          border: `1px solid ${token.colorBorderSecondary}`,
+          borderRadius: token.borderRadiusXS,
+          padding: '4px 0',
         }}
       >
-        {filteredTests.map((test) => (
-          <Checkbox
-            key={test}
-            checked={visibleColumns[test] !== false}
-            onChange={(e) => onChange(test, e.target.checked)}
-          >
-            {test}
-          </Checkbox>
-        ))}
-        {filteredTests.length === 0 && (
+        {treeData.length > 0 ? (
+          <Tree
+            checkable
+            onExpand={onExpand}
+            expandedKeys={expandedKeys}
+            autoExpandParent={autoExpandParent}
+            onCheck={handleCheck}
+            checkedKeys={checkedKeys}
+            treeData={treeData}
+            height={300} // Virtual scroll support
+            itemHeight={24}
+            blockNode
+          />
+        ) : (
           <div
             style={{
               color: token.colorTextSecondary,
               textAlign: 'center',
-              padding: '8px 0',
+              padding: '16px 0',
             }}
           >
             {t('chart.noColumnsFound')}
@@ -375,39 +467,30 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
     });
   }, [benchmarkData]);
 
-  const handleColumnVisibilityChange = useCallback(
-    (columnKey: string, visible: boolean) => {
+  const handleBatchVisibilityChange = useCallback(
+    (updates: Record<string, boolean>) => {
       setVisibleColumns((prev) => ({
         ...prev,
-        [columnKey]: visible,
+        ...updates,
       }));
     },
     [],
   );
 
   const handleShowAll = useCallback((allTests: string[]) => {
-    const allVisible: Record<string, boolean> = {
-      provider: true,
-      displayName: true,
-      average: true,
-    };
+    const updates: Record<string, boolean> = {};
     allTests.forEach((test) => {
-      allVisible[test] = true;
+      updates[test] = true;
     });
-    setVisibleColumns(allVisible);
+    setVisibleColumns((prev) => ({ ...prev, ...updates }));
   }, []);
 
   const handleHideAll = useCallback((allTests: string[]) => {
-    // Keep essential columns visible, explicitly hide all test columns
-    const hiddenColumns: Record<string, boolean> = {
-      provider: true,
-      displayName: true,
-      average: true,
-    };
+    const updates: Record<string, boolean> = {};
     allTests.forEach((test) => {
-      hiddenColumns[test] = false;
+      updates[test] = false;
     });
-    setVisibleColumns(hiddenColumns);
+    setVisibleColumns((prev) => ({ ...prev, ...updates }));
   }, []);
 
   const generateColumns = (
@@ -791,7 +874,7 @@ export const BenchmarkRankingTable: React.FC<RankingTableProps> = ({
                   <ColumnVisibilityDropdown
                     allTests={benchmark.allTests}
                     visibleColumns={visibleColumns}
-                    onChange={handleColumnVisibilityChange}
+                    onVisibilityChange={handleBatchVisibilityChange}
                     onShowAll={handleShowAll}
                     onHideAll={handleHideAll}
                   />
